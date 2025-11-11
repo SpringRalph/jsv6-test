@@ -22,7 +22,7 @@ export default function ButtonsStylingPage() {
             <CartSummary />
           </div>
           <div>
-            <PaymentPlaceholder theme="ButtonsStyling" />
+            <PaymentPlaceholder scenario="ButtonsStyling" />
           </div>
         </div>
       </div>

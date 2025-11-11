@@ -22,7 +22,7 @@ export default function HostedFieldsPage() {
             <CartSummary />
           </div>
           <div>
-            <PaymentPlaceholder theme="HostedFields" />
+            <PaymentPlaceholder scenario="HostedFields" />
           </div>
         </div>
       </div>

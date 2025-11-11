@@ -22,7 +22,7 @@ export default function SubscriptionsPage() {
             <CartSummary />
           </div>
           <div>
-            <PaymentPlaceholder theme="Subscriptions" />
+            <PaymentPlaceholder scenario="Subscriptions" />
           </div>
         </div>
       </div>

@@ -22,7 +22,7 @@ export default function CardFieldsPage() {
             <CartSummary />
           </div>
           <div>
-            <PaymentPlaceholder theme="CardFields" />
+            <PaymentPlaceholder scenario="CardFields" />
           </div>
         </div>
       </div>

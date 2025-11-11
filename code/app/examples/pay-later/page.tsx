@@ -22,7 +22,7 @@ export default function PayLaterPage() {
             <CartSummary />
           </div>
           <div>
-            <PaymentPlaceholder theme="PayLater" />
+            <PaymentPlaceholder scenario="PayLater" />
           </div>
         </div>
       </div>

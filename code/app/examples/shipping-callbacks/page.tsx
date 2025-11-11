@@ -22,7 +22,7 @@ export default function ShippingCallbacksPage() {
             <CartSummary />
           </div>
           <div>
-            <PaymentPlaceholder theme="ShippingCallbacks" />
+            <PaymentPlaceholder scenario="ShippingCallbacks" />
           </div>
         </div>
       </div>

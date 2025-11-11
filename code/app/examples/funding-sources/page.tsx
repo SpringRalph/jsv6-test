@@ -22,7 +22,7 @@ export default function FundingSourcesPage() {
             <CartSummary />
           </div>
           <div>
-            <PaymentPlaceholder theme="FundingSources" />
+            <PaymentPlaceholder scenario="FundingSources" />
           </div>
         </div>
       </div>

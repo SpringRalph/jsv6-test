@@ -3,15 +3,21 @@
 // - 支持切换 src 时自动卸载重载
 // - 无任何支付逻辑
 
+import { PAYPALSDKURL } from "@/hooks/usePayPalWebSdk";
+
 let currentScript: HTMLScriptElement | null = null;
 let currentSrc: string | null = null;
 let loadPromise: Promise<void> | null = null;
 let loaded = false;
 
-const DEFAULT_SRC = "https://www.sandbox.paypal.com/web-sdk/v6/core";
+const SANDBOX_SRC = "https://www.sandbox.paypal.com/web-sdk/v6/core";
+const PRODUCTION_SRC = "https://www.paypal.com/web-sdk/v6/core";
+
 const SCRIPT_ID = "paypal-websdk-v6-core";
 
-export function loadPayPalWebSdk(src: string = DEFAULT_SRC): Promise<void> {
+export function loadPayPalWebSdk(srcType: PAYPALSDKURL): Promise<void> {
+  const src = srcType === PAYPALSDKURL.SANDBOX_SRC ? SANDBOX_SRC : PRODUCTION_SRC;
+
   if (typeof window === "undefined") {
     return Promise.reject(new Error("loadPayPalWebSdk 必须在客户端调用"));
   }
@@ -26,7 +32,7 @@ export function loadPayPalWebSdk(src: string = DEFAULT_SRC): Promise<void> {
   if (currentScript && currentSrc && currentSrc !== src) {
     try {
       currentScript.remove();
-    } catch {}
+    } catch { }
     currentScript = null;
     currentSrc = null;
     loaded = false;
@@ -63,7 +69,7 @@ export function loadPayPalWebSdk(src: string = DEFAULT_SRC): Promise<void> {
       // 同 ID 但不同 src，移除后重新插入
       try {
         existing.remove();
-      } catch {}
+      } catch { }
     }
   }
 
@@ -115,7 +121,7 @@ export function unloadPayPalWebSdk(): void {
   if (currentScript) {
     try {
       currentScript.remove();
-    } catch {}
+    } catch { }
   }
   currentScript = null;
   currentSrc = null;

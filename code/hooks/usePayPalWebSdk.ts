@@ -3,7 +3,12 @@
 import { useEffect, useState } from "react";
 import { loadPayPalWebSdk, isPayPalWebSdkLoaded } from "@/lib/paypalScript";
 
-export function usePayPalWebSdk(src?: string) {
+export enum PAYPALSDKURL {
+  SANDBOX_SRC = "SANDBOX",
+  PRODUCTION_SRC = "PRODUCTION"
+}
+
+export function usePayPalWebSdk(srcType: PAYPALSDKURL = PAYPALSDKURL.SANDBOX_SRC) {
   const [ready, setReady] = useState(isPayPalWebSdkLoaded());
   const [loading, setLoading] = useState(!isPayPalWebSdkLoaded());
   const [error, setError] = useState<Error | null>(null);
@@ -13,7 +18,7 @@ export function usePayPalWebSdk(src?: string) {
     setLoading(true);
     setError(null);
 
-    loadPayPalWebSdk(src)
+    loadPayPalWebSdk(srcType)
       .then(() => {
         if (!cancelled) {
           setReady(true);

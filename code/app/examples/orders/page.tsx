@@ -22,7 +22,7 @@ export default function OrdersPage() {
             <CartSummary />
           </div>
           <div>
-            <PaymentPlaceholder theme="Orders" />
+            <PaymentPlaceholder scenario="Orders" />
           </div>
         </div>
       </div>

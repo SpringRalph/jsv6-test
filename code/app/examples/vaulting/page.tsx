@@ -22,7 +22,7 @@ export default function VaultingPage() {
             <CartSummary />
           </div>
           <div>
-            <PaymentPlaceholder theme="Vaulting" />
+            <PaymentPlaceholder scenario="Vaulting" />
           </div>
         </div>
       </div>

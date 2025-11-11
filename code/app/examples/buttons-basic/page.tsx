@@ -34,7 +34,7 @@ export default function ButtonsBasicPage() {
             <CartSummary />
           </div>
           <div>
-            <PaymentPlaceholder theme="ButtonsBasic" />
+            <PaymentPlaceholder scenario="ButtonsBasic" />
           </div>
         </div>
       </div>

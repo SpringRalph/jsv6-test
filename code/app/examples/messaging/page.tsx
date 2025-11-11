@@ -22,7 +22,7 @@ export default function MessagingPage() {
             <CartSummary />
           </div>
           <div>
-            <PaymentPlaceholder theme="Messaging" />
+            <PaymentPlaceholder scenario="Messaging" />
           </div>
         </div>
       </div>
