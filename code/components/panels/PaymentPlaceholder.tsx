@@ -28,7 +28,7 @@ export function PaymentPlaceholder({ scenario, children }: PaymentPlaceholderPro
                     PayPal Integration Placeholder
                 </h3>
                 <div className="inline-flex items-center gap-2 bg-background px-4 py-2 rounded-full border-2 border-orange-300 dark:border-orange-700">
-                    <span className="text-sm font-medium">Theme:</span>
+                    <span className="text-sm font-medium">Scenario:</span>
                     <span className="font-mono font-semibold text-orange-600 dark:text-orange-400">
                         {scenario}
                     </span>

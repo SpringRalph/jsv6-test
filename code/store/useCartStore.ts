@@ -2,6 +2,8 @@ import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import type { CartState, Product } from "@/types/cart"
 
+export const CART_STORAGE_KEY = "pp-v6-cart";
+
 interface CartStore extends CartState {
   incrementQuantity: () => void
   decrementQuantity: () => void

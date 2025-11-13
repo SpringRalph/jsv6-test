@@ -35,7 +35,7 @@ export function usePayPalWebSdk(srcType: PAYPALSDKURL = PAYPALSDKURL.SANDBOX_SRC
     return () => {
       cancelled = true;
     };
-  }, [src]);
+  }, [srcType]);
 
   return { ready, loading, error };
 }

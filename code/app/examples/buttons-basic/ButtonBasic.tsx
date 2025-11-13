@@ -1,4 +1,7 @@
+"use client";
+
 import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
+import { captureOrder, createOrder, getBrowserSafeClientToken, handlePaymentCancellation, handlePaymentError, handlePaymentSuccess } from "@/services/paypal-sdk-function/browser-function";
 import React, { useEffect } from "react";
 
 export default function ButtonBasic() {
@@ -7,7 +10,7 @@ export default function ButtonBasic() {
     // Shared payment session options for all payment methods
     const paymentSessionOptions = {
         // Called when user approves a payment
-        async onApprove(data:any) {
+        async onApprove(data: any) {
             console.log("Payment approved:", data);
             try {
                 const orderData = await captureOrder({
@@ -22,13 +25,13 @@ export default function ButtonBasic() {
         },
 
         // Called when user cancels a payment
-        onCancel(data:any) {
+        onCancel(data: any) {
             console.log("Payment cancelled:", data);
             handlePaymentCancellation();
         },
 
         // Called when an error occurs during payment
-        onError(error:any) {
+        onError(error: any) {
             console.error("Payment error:", error);
             handlePaymentError(error);
         },
@@ -41,7 +44,7 @@ export default function ButtonBasic() {
                 paymentSessionOptions
             );
 
-        const paypalButton = document.querySelector("#paypal-button")!;
+        const paypalButton = document.querySelector("paypal-button")!;
         paypalButton.removeAttribute("hidden");
 
         paypalButton.addEventListener("click", async () => {
@@ -110,5 +113,11 @@ export default function ButtonBasic() {
     if (loading) return <div>正在加载 PayPal SDK…</div>;
     if (error) return <div>PayPal SDK加载失败: {error.message}</div>;
 
-    return <paypal-button type="pay" hidden></paypal-button>;
+    // return <paypal-button type="pay" hidden></paypal-button>;
+
+    return (
+        <div className="w-full min-h-[60px] flex items-center justify-center">
+            <paypal-button type="pay" hidden></paypal-button>
+        </div>
+    );
 }

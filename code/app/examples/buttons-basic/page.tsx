@@ -3,6 +3,7 @@ import { ProductPanel } from "@/components/panels/ProductPanel"
 import { CartSummary } from "@/components/panels/CartSummary"
 import { PaymentPlaceholder } from "@/components/panels/PaymentPlaceholder"
 import Link from "next/link"
+import ButtonBasic from "./ButtonBasic"
 
 export default function ButtonsBasicPage() {
   return (
@@ -34,7 +35,7 @@ export default function ButtonsBasicPage() {
             <CartSummary />
           </div>
           <div>
-            <PaymentPlaceholder scenario="ButtonsBasic" />
+            <PaymentPlaceholder scenario="ButtonsBasic" children={<ButtonBasic/>} />
           </div>
         </div>
       </div>
