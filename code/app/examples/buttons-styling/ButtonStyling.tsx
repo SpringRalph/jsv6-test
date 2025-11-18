@@ -1,18 +1,19 @@
 "use client";
 
+import Gist from 'react-gist';
 import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
 import {
-    captureOrder,
     createOrder,
-    getBrowserSafeClientToken,
-    handlePaymentCancellation,
     handlePaymentError,
-    handlePaymentSuccess,
+    getBrowserSafeClientToken,
 } from "@/services/paypal-sdk-function/browser-function";
-import { AppSdkInstance, paymentSessionOptions } from "@/services/paypal-sdk-function/paypalSharedObject";
+import {
+    AppSdkInstance,
+    paymentSessionOptions,
+} from "@/services/paypal-sdk-function/paypalSharedObject";
 import React, { useEffect } from "react";
 
-export default function ButtonBasic() {
+export default function ButtonStyling() {
     const { ready, loading, error } = usePayPalWebSdk();
 
     // Setup standard PayPal button
@@ -63,26 +64,7 @@ export default function ButtonBasic() {
                     pageType: "checkout",
                 });
 
-                if (!true) {
-                    // ####################### 进行eligibility check ###############################
-
-                    // Check eligibility for all payment methods
-                    const paymentMethods =
-                        await sdkInstance.findEligibleMethods({
-                            currencyCode: "USD",
-                        });
-
-                    // debugger;
-
-                    // Setup PayPal button if eligible
-                    if (paymentMethods.isEligible("paypal")) {
-                        setupPayPalButton(sdkInstance);
-                    }
-
-                    // ############################################################################
-                }else{
-                    setupPayPalButton(sdkInstance);
-                }
+                setupPayPalButton(sdkInstance);
 
                 if (cancelled) {
                     // 如果实例需要销毁，按需处理
@@ -102,10 +84,19 @@ export default function ButtonBasic() {
     if (loading) return <div>正在加载 PayPal SDK…</div>;
     if (error) return <div>PayPal SDK加载失败: {error.message}</div>;
 
-
     return (
-        <div className="w-full min-h-[60px] flex items-center justify-center">
-            <paypal-button id='paypal-btn' type="pay" hidden></paypal-button>
+        <div className="w-full min-h-[60px] flex items-center justify-center flex-col gap-6">
+            <div>
+                <h2>PayPal JS V6 style Gist</h2>
+                <Gist id="597f3ffc03b89a3f4876dd5d4a5011e0" />
+            </div>
+            <paypal-button
+                id="paypal-btn"
+                type="pay"
+                hidden
+                className="paypal-white paypal-button-styled"
+               
+            ></paypal-button>
         </div>
     );
 }

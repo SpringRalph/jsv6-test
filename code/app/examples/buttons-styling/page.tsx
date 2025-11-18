@@ -1,31 +1,41 @@
-import { Container } from "@/components/layout/Container"
-import { ProductPanel } from "@/components/panels/ProductPanel"
-import { CartSummary } from "@/components/panels/CartSummary"
-import { PaymentPlaceholder } from "@/components/panels/PaymentPlaceholder"
-import Link from "next/link"
+import { Container } from "@/components/layout/Container";
+import { ProductPanel } from "@/components/panels/ProductPanel";
+import { CartSummary } from "@/components/panels/CartSummary";
+import { PaymentPlaceholder } from "@/components/panels/PaymentPlaceholder";
+import Link from "next/link";
+import ButtonStyling from "./ButtonStyling";
 
 export default function ButtonsStylingPage() {
-  return (
-    <Container>
-      <div className="space-y-6">
-        <div>
-          <Link href="/" className="text-primary hover:underline mb-4 inline-block">
-            ← Back to Home
-          </Link>
-          <h1 className="text-3xl font-bold mb-2">Button Styling</h1>
-          <p className="text-muted-foreground">Test button customization options including color, shape, and size</p>
-        </div>
+    return (
+        <Container>
+            <div className="space-y-6">
+                <div>
+                    <Link
+                        href="/"
+                        className="text-primary hover:underline mb-4 inline-block"
+                    >
+                        ← Back to Home
+                    </Link>
+                    <h1 className="text-3xl font-bold mb-2">Button Styling</h1>
+                    <p className="text-muted-foreground">
+                        Test button customization options including color,
+                        shape, and size
+                    </p>
+                </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="space-y-6">
-            <ProductPanel />
-            <CartSummary />
-          </div>
-          <div>
-            <PaymentPlaceholder scenario="ButtonsStyling" />
-          </div>
-        </div>
-      </div>
-    </Container>
-  )
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="space-y-6">
+                        <ProductPanel />
+                        <CartSummary />
+                    </div>
+                    <div>
+                        <PaymentPlaceholder
+                            scenario="ButtonsStyling"
+                            children={<ButtonStyling />}
+                        />
+                    </div>
+                </div>
+            </div>
+        </Container>
+    );
 }

@@ -18,22 +18,22 @@ export const routes: RouteMetadata[] = [
     description: "Test button customization options including color, shape, and size",
     group: "Buttons",
   },
-  {
-    path: "/examples/funding-sources",
-    title: "Funding Sources",
-    description: "Test different funding sources and payment methods",
-    group: "Buttons",
-  },
+  // {
+  //   path: "/examples/funding-sources",
+  //   title: "Funding Sources",
+  //   description: "Test different funding sources and payment methods",
+  //   group: "Buttons",
+  // },
   {
     path: "/examples/pay-later",
     title: "Pay Later",
     description: "Test Pay Later messaging and installment options",
-    group: "Messaging",
+    group: "Buttons",
   },
   {
     path: "/examples/messaging",
-    title: "Messaging",
-    description: "Test PayPal messaging components for promotional content",
+    title: "Pay Later Messaging",
+    description: "Test PayPal Pay Later messaging components for promotional content",
     group: "Messaging",
   },
   {

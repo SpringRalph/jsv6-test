@@ -3,6 +3,7 @@ import { ProductPanel } from "@/components/panels/ProductPanel"
 import { CartSummary } from "@/components/panels/CartSummary"
 import { PaymentPlaceholder } from "@/components/panels/PaymentPlaceholder"
 import Link from "next/link"
+import PayLater from "./PayLater"
 
 export default function PayLaterPage() {
   return (
@@ -22,7 +23,7 @@ export default function PayLaterPage() {
             <CartSummary />
           </div>
           <div>
-            <PaymentPlaceholder scenario="PayLater" />
+            <PaymentPlaceholder scenario="PayLater" children=< PayLater /> />
           </div>
         </div>
       </div>

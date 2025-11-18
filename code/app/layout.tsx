@@ -7,7 +7,7 @@ import { Toaster } from "react-hot-toast";
 export const metadata: Metadata = {
     title: "PayPal JS v6 Test Framework",
     description: "Testing framework for PayPal JavaScript SDK v6 examples",
-    generator: "v0.app",
+    generator: "Yuncong's PayPal JS V6",
 };
 
 export default function RootLayout({

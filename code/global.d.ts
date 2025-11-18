@@ -6,29 +6,42 @@ type ButtonProps = React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HT
   [key: string]: any;
 };
 
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      'paypal-button': ButtonProps;
-      'venmo-button': ButtonProps;
-    }
-  }
+type PayLaterButtonProps = ButtonProps & {
+  productCode?: string;
+  countryCode?: string;
+};
 
+type InstanceInput = {
+  clientToken: string;
+  locale?: string;
+  pageType?: string;
+  components?: string[];
+}
+
+type InstanceOutput = {
+  createPayPalCheckout :()=>{};
+  createVenmoCheckout: ()=>{};
+  findEligibleMethods: (options: EligibilityInput) => Promise<EligibilityOutput>;
+}
+
+declare global {
   interface Window {
     paypal?: {
-      createInstance: (opts: any) => Promise<any>;
+      createInstance: (opts: InstanceInput) => Promise<any>;
     };
   }
 }
 
-/* 兼容新的 JSX runtime：同时扩展 react 模块下的 JSX 命名空间 */  
+/* 兼容新的 JSX runtime：同时扩展 react 模块下的 JSX 命名空间 */
 declare module 'react' {
   namespace JSX {
     interface IntrinsicElements {
       'paypal-button': ButtonProps;
       'venmo-button': ButtonProps;
+      'paypal-pay-later-button': PayLaterButtonProps;
+      'paypal-credit-button': ButtonProps;
     }
   }
 }
 
-export {};
+export { };

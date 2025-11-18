@@ -22,3 +22,12 @@ JS SDK v6 的使用心得:
     这个部门文档中也没写
 
 
+4. checkEligibilty的这个函数的请求很容易报错
+
+5. 无论是内部文档还是online doc都没有提到 `createInstance()` 这个方法中可以传入 `testBuyerCountry`这个参数, 需要查看`typescript`的`d.ts`函数接口才可以
+
+6. 没有办法渲染 `BCDC`
+
+7. `<pay-later>`JSX元素不给`id`的话DOM渲染容易出问题 (存疑) | online-doc上使用的无`id`的example, code-sample中加了`id`
+8. online doc完全没有说`css`样式的问题
+
