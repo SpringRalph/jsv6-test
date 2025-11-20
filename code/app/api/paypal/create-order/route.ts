@@ -2,6 +2,8 @@ import { buildBasicAuthHeader, getPayPalConfig } from "@/services/paypal-server-
 import { NextResponse } from "next/server";
 import consola from "consola";
 
+export const runtime = 'edge';
+
 type Item = {
     id?: string;
     name: string;

@@ -2,6 +2,8 @@ import { buildBasicAuthHeader, getPayPalConfig } from "@/services/paypal-server-
 import consola from "consola";
 import { NextResponse } from "next/server";
 
+export const runtime = 'edge';
+
 const CACHE_TTL = 10 * 60 * 1000;
 let cachedClientToken: string | null = null;
 let cachedAt = 0;
