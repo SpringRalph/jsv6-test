@@ -8,6 +8,9 @@ export const metadata: Metadata = {
     title: "PayPal JS v6 Test Framework",
     description: "Testing framework for PayPal JavaScript SDK v6 examples",
     generator: "Yuncong's PayPal JS V6",
+    icons: {
+        icon: "./icon.svg",
+    },
 };
 
 export default function RootLayout({
