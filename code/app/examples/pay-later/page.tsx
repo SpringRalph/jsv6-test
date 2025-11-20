@@ -14,7 +14,7 @@ export default function PayLaterPage() {
             ← Back to Home
           </Link>
           <h1 className="text-3xl font-bold mb-2">Pay Later</h1>
-          <p className="text-muted-foreground">Test Pay Later messaging and installment options</p>
+          <p className="text-muted-foreground">Test Pay Later Button</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

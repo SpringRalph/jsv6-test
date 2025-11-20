@@ -13,7 +13,7 @@ import {
 import { OneTimePaymentSession } from "@paypal/paypal-js/sdk-v6";
 import React, { useEffect } from "react";
 
-export default function ButtonBasic() {
+export default function MerchantAsyncValidation() {
     const { ready, loading, error } = usePayPalWebSdk();
 
     // Setup standard PayPal button
@@ -26,20 +26,52 @@ export default function ButtonBasic() {
         const paypalButton = document.querySelector("#paypal-btn")!;
         paypalButton.removeAttribute("hidden");
 
-        // get the promise reference by invoking createOrder()
-        // do not await this async function since it can cause transient activation issues
-        const createOrderPromise = createOrder();
-
         paypalButton.addEventListener("click", async () => {
             try {
                 await paypalPaymentSession.start(
-                    { presentationMode: "auto" }, // Auto-detects best presentation mode
-                    createOrderPromise
+                    {
+                        presentationMode: "auto", // Auto-detects best presentation mode
+
+                        //@ts-ignore
+                        loadingScreen: { label: "connecting" },
+                    },
+                    validateAndCreateOrder()
                 );
             } catch (error) {
                 console.error("PayPal payment start error:", error);
                 handlePaymentError(error);
             }
+        });
+    }
+
+    // Async promise to be passed into .start()
+    async function validateAndCreateOrder() {
+        // Run validation and order creation concurrently for better performance
+        // If order creation depends on validation results, switch to sequential execution
+
+        const [validationResult, createOrderResult] = await Promise.all([
+            runAsyncValidation(),
+            createOrder(),
+        ]);
+
+        return createOrderResult;
+    }
+
+    async function runAsyncValidation() {
+        //Mock Value for Validation
+        const shouldPass = true;
+        const delay = 10 * 1000;
+
+        console.log(`Running async validation with ${delay}ms delay...`);
+
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                if (shouldPass) {
+                    resolve("Validation successful");
+                } else {
+                    reject(new Error("Validation failed."));
+                }
+            }, delay);
         });
     }
 

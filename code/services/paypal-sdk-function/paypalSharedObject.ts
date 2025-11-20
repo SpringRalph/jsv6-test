@@ -1,13 +1,16 @@
 import { OnApproveDataOneTimePayments, PayPalOneTimePaymentSessionOptions, SdkInstance } from "@paypal/paypal-js/sdk-v6";
 import { captureOrder, handlePaymentCancellation, handlePaymentError, handlePaymentSuccess } from "./browser-function";
 
-export const paymentSessionOptions:PayPalOneTimePaymentSessionOptions = {
+export const paymentSessionOptions: PayPalOneTimePaymentSessionOptions = {
     // Called when user approves a payment
     async onApprove(data: OnApproveDataOneTimePayments) {
-        console.log("Payment approved:", data);
+        console.log("Payment approved:\r\n", JSON.stringify(data, null, "  "));
+
         try {
+            //@ts-ignore
+            const orderId = data.orderId ?? data.data.orderId
             const orderData = await captureOrder({
-                orderId: data.orderId,
+                orderId: orderId,
             });
             console.log("Payment captured successfully:", orderData);
             handlePaymentSuccess(orderData);

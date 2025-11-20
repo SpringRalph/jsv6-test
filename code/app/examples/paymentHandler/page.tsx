@@ -3,8 +3,9 @@ import { ProductPanel } from "@/components/panels/ProductPanel"
 import { CartSummary } from "@/components/panels/CartSummary"
 import { PaymentPlaceholder } from "@/components/panels/PaymentPlaceholder"
 import Link from "next/link"
+import PaymentHandlerBtn from "./paymentHandlerBtn"
 
-export default function OrdersPage() {
+export default function ShippingCallbacksPage() {
   return (
     <Container>
       <div className="space-y-6">
@@ -12,8 +13,8 @@ export default function OrdersPage() {
           <Link href="/" className="text-primary hover:underline mb-4 inline-block">
             ← Back to Home
           </Link>
-          <h1 className="text-3xl font-bold mb-2">Orders API</h1>
-          <p className="text-muted-foreground">Test Orders API integration for advanced checkout flows</p>
+          <h1 className="text-3xl font-bold mb-2">Payment Handler</h1>
+          <p className="text-muted-foreground">Test Payment Handler Browser User Experience</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -22,7 +23,7 @@ export default function OrdersPage() {
             <CartSummary />
           </div>
           <div>
-            <PaymentPlaceholder scenario="Orders" />
+            <PaymentPlaceholder scenario="Test Payment Handler" children={<PaymentHandlerBtn/>} />
           </div>
         </div>
       </div>

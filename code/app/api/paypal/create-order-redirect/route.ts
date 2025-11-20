@@ -10,7 +10,7 @@ type Item = {
 };
 
 export async function POST(req: Request) {
-    consola.info("[/api/paypal/create-order] HTTP POST received");
+    consola.info("[/api/paypal/create-order-redirect] HTTP POST received");
     try {
         const { clientId, clientSecret, base } = getPayPalConfig();
         console.log("------[1]------")
@@ -62,7 +62,16 @@ export async function POST(req: Request) {
         const orderBody = {
             intent: "CAPTURE",
             purchase_units: [purchaseUnit],
-
+            paymentSource: {
+                paypal: {
+                    experienceContext: {
+                        shippingPreference: "NO_SHIPPING",
+                        userAction: "CONTINUE",
+                        returnUrl: "http://localhost:3000/examples/redirect",
+                        cancelUrl: "http://localhost:3000/examples/redirect",
+                    },
+                },
+            },
         };
 
 

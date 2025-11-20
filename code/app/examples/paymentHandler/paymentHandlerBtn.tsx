@@ -11,9 +11,9 @@ import {
     paymentSessionOptions,
 } from "@/services/paypal-sdk-function/paypalSharedObject";
 import { OneTimePaymentSession } from "@paypal/paypal-js/sdk-v6";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 
-export default function ButtonBasic() {
+export default function PaymentHandlerBtn() {
     const { ready, loading, error } = usePayPalWebSdk();
 
     // Setup standard PayPal button
@@ -26,19 +26,28 @@ export default function ButtonBasic() {
         const paypalButton = document.querySelector("#paypal-btn")!;
         paypalButton.removeAttribute("hidden");
 
-        // get the promise reference by invoking createOrder()
-        // do not await this async function since it can cause transient activation issues
-        const createOrderPromise = createOrder();
-
         paypalButton.addEventListener("click", async () => {
-            try {
-                await paypalPaymentSession.start(
-                    { presentationMode: "auto" }, // Auto-detects best presentation mode
-                    createOrderPromise
-                );
-            } catch (error) {
-                console.error("PayPal payment start error:", error);
-                handlePaymentError(error);
+            const presentationModesToTry = [
+                "payment-handler",
+                "popup",
+                "modal",
+            ];
+            for (const presentationMode of presentationModesToTry) {
+                try {
+                    await paypalPaymentSession.start(
+                        //@ts-ignore
+                        { presentationMode: presentationMode },
+                        createOrder()
+                    );
+                    break;
+                } catch (error: any) {
+                    if (error.isRecoverable) {
+                        continue;
+                    }
+                    console.error("PayPal payment start error:", error);
+                    handlePaymentError(error);
+                    throw error;
+                }
             }
         });
     }
@@ -68,26 +77,7 @@ export default function ButtonBasic() {
                     pageType: "checkout",
                 });
 
-                if (!true) {
-                    // ####################### 进行eligibility check ###############################
-
-                    // Check eligibility for all payment methods
-                    const paymentMethods =
-                        await sdkInstance.findEligibleMethods({
-                            currencyCode: "USD",
-                        });
-
-                    // debugger;
-
-                    // Setup PayPal button if eligible
-                    if (paymentMethods.isEligible("paypal")) {
-                        setupPayPalButton(sdkInstance);
-                    }
-
-                    // ############################################################################
-                } else {
-                    setupPayPalButton(sdkInstance);
-                }
+                setupPayPalButton(sdkInstance);
 
                 if (cancelled) {
                     // 如果实例需要销毁，按需处理

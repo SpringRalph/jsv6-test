@@ -15,61 +15,105 @@ export const routes: RouteMetadata[] = [
   {
     path: "/examples/buttons-styling",
     title: "Button Styling",
-    description: "Test button customization options including color, shape, and size",
+    description: "Test button customization options including color, shape, and words",
     group: "Buttons",
   },
-  // {
-  //   path: "/examples/funding-sources",
-  //   title: "Funding Sources",
-  //   description: "Test different funding sources and payment methods",
-  //   group: "Buttons",
-  // },
+
   {
     path: "/examples/pay-later",
     title: "Pay Later",
-    description: "Test Pay Later messaging and installment options",
+    description: "Test Pay Later and installment options",
     group: "Buttons",
   },
+
+  {
+    path: "/examples/venmo",
+    title: "Venmo",
+    description: "Test Venmo Button",
+    group: "Buttons",
+  },
+
+
   {
     path: "/examples/messaging",
     title: "Pay Later Messaging",
-    description: "Test PayPal Pay Later messaging components for promotional content",
+    description: "Test PayPal Pay Later Messaging components",
     group: "Messaging",
   },
+
   {
-    path: "/examples/card-fields",
-    title: "Card Fields",
-    description: "Test advanced card fields integration for custom checkout",
+    path: "/examples/googlePay",
+    title: "Google Pay",
+    description: "Test Google Pay integration for custom checkout",
     group: "Advanced",
   },
+
   {
-    path: "/examples/hosted-fields",
-    title: "Hosted Fields",
-    description: "Test hosted fields for secure card data collection",
+    path: "/examples/applePay",
+    title: "Apple Pay",
+    description: "Test Apple Pay integration for custom checkout",
     group: "Advanced",
   },
+
   {
-    path: "/examples/shipping-callbacks",
-    title: "Shipping Callbacks",
-    description: "Test shipping address and option callbacks",
+    path: "/examples/fastlane",
+    title: "FastLane",
+    description: "Test Fast Lane integration for custom checkout",
     group: "Advanced",
   },
   {
     path: "/examples/vaulting",
     title: "Vaulting",
     description: "Test payment method vaulting for future transactions",
-    group: "Advanced",
+    group: "Vault",
   },
   {
-    path: "/examples/subscriptions",
-    title: "Subscriptions",
-    description: "Test subscription and recurring payment setup",
-    group: "Advanced",
+    path: "/examples/redirect",
+    title: "Redirect",
+    description: "Browser Redirect",
+    group: "Browser",
   },
   {
-    path: "/examples/orders",
-    title: "Orders API",
-    description: "Test Orders API integration for advanced checkout flows",
-    group: "Advanced",
+    path: "/examples/paymentHandler",
+    title: "Payment Handler",
+    description: "Use Browser Payment Handler",
+    group: "Browser",
   },
+  {
+    path: "/examples/sandboxedIframe",
+    title: "Sandboxed Iframe",
+    description: "Test Browser Sandboxed Iframe behavior",
+    group: "Browser",
+  },
+
+  {
+    path: "/examples/directAppSwitch",
+    title: "Direct App Switch",
+    description: "Test Browser Direct App Switch behavior",
+    group: "Browser",
+  },
+
+
+
+  {
+    path: "/examples/merchantAsyncValidation",
+    title: "Merchant Async Validation",
+    description: "Test Browser Merchant Async Validation behavior",
+    group: "Browser",
+  },
+
+   {
+    path: "/examples/bancontact",
+    title: "Bancontact",
+    description: "Test APM -- Bancontact",
+    group: "APM",
+  },
+
+  {
+    path: "/examples/ideal",
+    title: "Ideal",
+    description: "Test APM -- Ideal",
+    group: "APM",
+  },
+
 ]
