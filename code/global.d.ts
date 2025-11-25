@@ -19,8 +19,8 @@ type InstanceInput = {
 }
 
 type InstanceOutput = {
-  createPayPalCheckout :()=>{};
-  createVenmoCheckout: ()=>{};
+  createPayPalCheckout: () => {};
+  createVenmoCheckout: () => {};
   findEligibleMethods: (options: EligibilityInput) => Promise<EligibilityOutput>;
 }
 
@@ -40,6 +40,10 @@ declare module 'react' {
       'venmo-button': ButtonProps;
       'paypal-pay-later-button': PayLaterButtonProps;
       'paypal-credit-button': ButtonProps;
+      'paypal-basic-card-button': ButtonProps;
+      'paypal-basic-card-container': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
+        [key: string]: any;
+      }
     }
   }
 }

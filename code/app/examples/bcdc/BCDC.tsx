@@ -2,7 +2,7 @@
 
 import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
 import {
-    createOrder,
+    createOrderBCDC,
     getBrowserSafeClientToken,
     handlePaymentError,
 } from "@/services/paypal-sdk-function/browser-function";
@@ -16,24 +16,25 @@ import React, { useEffect } from "react";
 export default function BCDC() {
     const { ready, loading, error } = usePayPalWebSdk();
 
+
     // Setup standard PayPal button
-    async function setupPayPalButton(sdkInstance: AppSdkInstance) {
-        const paypalPaymentSession: OneTimePaymentSession =
-            sdkInstance.createPayPalOneTimePaymentSession(
+    async function setupBCDCButton(sdkInstance: AppSdkInstance) {
+        const paypalGuestPaymentSession =
+            //@ts-ignore
+            sdkInstance.createPayPalGuestOneTimePaymentSession(
                 paymentSessionOptions
             );
 
-        const paypalButton = document.querySelector("#paypal-btn")!;
-        paypalButton.removeAttribute("hidden");
+        const bcdcButton = document.querySelector("#paypal-basic-card-button")!;
 
         // get the promise reference by invoking createOrder()
         // do not await this async function since it can cause transient activation issues
-        const createOrderPromise = createOrder();
+        const createOrderPromise = createOrderBCDC();
 
-        paypalButton.addEventListener("click", async () => {
+        bcdcButton.addEventListener("click", async () => {
             try {
-                await paypalPaymentSession.start(
-                    { presentationMode: "auto" }, // Auto-detects best presentation mode
+                await paypalGuestPaymentSession.start(
+                    { targetElement: bcdcButton, presentationMode: "auto" }, // Auto-detects best presentation mode
                     createOrderPromise
                 );
             } catch (error) {
@@ -64,10 +65,12 @@ export default function BCDC() {
 
                 const sdkInstance = await paypal?.createInstance?.({
                     clientToken,
-                    components: ["paypal-payments"],
+                    //这里是BCDC和普通的最大不同
+                    components: ["paypal-guest-payments"],
                     pageType: "checkout",
                 });
 
+                //因为进行eligibilty check有的时候会出现bug, 所以通过flag来控制是否进行eligibilty check
                 if (!true) {
                     // ####################### 进行eligibility check ###############################
 
@@ -79,14 +82,16 @@ export default function BCDC() {
 
                     // debugger;
 
-                    // Setup PayPal button if eligible
+                    // Setup BCDC button if eligible
                     if (paymentMethods.isEligible("paypal")) {
-                        setupPayPalButton(sdkInstance);
+                        setupBCDCButton(sdkInstance);
                     }
 
                     // ############################################################################
                 } else {
-                    setupPayPalButton(sdkInstance);
+                    // ####################### 不进行eligibility check, 直接渲染按钮 ###############################
+                    setupBCDCButton(sdkInstance);
+                    // ############################################################################################
                 }
 
                 if (cancelled) {
@@ -108,8 +113,8 @@ export default function BCDC() {
     if (error) return <div>PayPal SDK加载失败: {error.message}</div>;
 
     return (
-        <div className="w-full min-h-[60px] flex items-center justify-center">
-            <paypal-button id="paypal-btn" type="pay" hidden></paypal-button>
-        </div>
+        <paypal-basic-card-container className="w-full min-h-[60px] flex items-center justify-center">
+            <paypal-basic-card-button id="paypal-basic-card-button"></paypal-basic-card-button>
+        </paypal-basic-card-container>
     );
 }
