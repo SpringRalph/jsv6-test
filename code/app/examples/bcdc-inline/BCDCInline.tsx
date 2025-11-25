@@ -10,10 +10,10 @@ import {
     AppSdkInstance,
     paymentSessionOptions,
 } from "@/services/paypal-sdk-function/paypalSharedObject";
-import { OneTimePaymentSession } from "@paypal/paypal-js/sdk-v6";
-import React, { useEffect } from "react";
 
-export default function BCDC() {
+import { useEffect } from "react";
+
+export default function BCDCInline() {
     const { ready, loading, error } = usePayPalWebSdk();
 
 
@@ -68,6 +68,7 @@ export default function BCDC() {
                     //这里是BCDC和普通的最大不同
                     components: ["paypal-guest-payments"],
                     pageType: "checkout",  
+                    testBuyerCountry: "US",
                 });
 
                 //因为进行eligibilty check有的时候会出现bug, 所以通过flag来控制是否进行eligibilty check

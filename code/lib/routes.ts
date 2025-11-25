@@ -36,6 +36,14 @@ export const routes: RouteMetadata[] = [
     title: "BCDC(PayPal Guest Payment)",
     description: "Test BCDC/Guest Payment Checkout",
     group: "Buttons",
+    workStage: 4, // 完成
+  },
+
+  {
+    path: "/examples/bcdc-inline",
+    title: "BCDC-inline",
+    description: "Test inline BCDC",
+    group: "Buttons",
     workStage: 2, // 有问题
   },
 
