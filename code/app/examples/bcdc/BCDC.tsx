@@ -67,25 +67,30 @@ export default function BCDC() {
                     clientToken,
                     //这里是BCDC和普通的最大不同
                     components: ["paypal-guest-payments"],
-                    pageType: "checkout",
+                    pageType: "checkout",  
+                    testBuyerCountry: "US",
                 });
 
                 //因为进行eligibilty check有的时候会出现bug, 所以通过flag来控制是否进行eligibilty check
-                if (!true) {
+                // if (!true) {
+                if (true) {
                     // ####################### 进行eligibility check ###############################
 
                     // Check eligibility for all payment methods
                     const paymentMethods =
                         await sdkInstance.findEligibleMethods({
-                            currencyCode: "USD",
+                            currencyCode: "USD",                          
                         });
 
-                    // debugger;
+                    debugger;
 
+                    // [ATTENTION!]这里有问题, 这里不需要 find-eligible-methods, 里面也似乎没有值
                     // Setup BCDC button if eligible
-                    if (paymentMethods.isEligible("paypal")) {
-                        setupBCDCButton(sdkInstance);
-                    }
+                    // if (paymentMethods.isEligible("paypal")) {
+                    //     setupBCDCButton(sdkInstance);
+                    // }
+
+                    setupBCDCButton(sdkInstance);
 
                     // ############################################################################
                 } else {

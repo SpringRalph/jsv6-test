@@ -9,6 +9,7 @@ export const paymentSessionOptions: PayPalOneTimePaymentSessionOptions = {
         try {
             //@ts-ignore
             const orderId = data.orderId ?? data.data.orderId
+            
             const orderData = await captureOrder({
                 orderId: orderId,
             });

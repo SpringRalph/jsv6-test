@@ -34,9 +34,9 @@ export const routes: RouteMetadata[] = [
    {
     path: "/examples/bcdc",
     title: "BCDC(PayPal Guest Payment)",
-    description: "Test BCDC/Guest Checkout",
+    description: "Test BCDC/Guest Payment Checkout",
     group: "Buttons",
-    workStage: 1, // 进行中
+    workStage: 2, // 有问题
   },
 
   {
@@ -73,9 +73,17 @@ export const routes: RouteMetadata[] = [
   },
 
   {
+    path: "/examples/ACDC",
+    title: "ACDC",
+    description: "Test Card Fields integration for custom checkout",
+    group: "Advanced",
+    workStage: 4, //  完成
+  },
+
+  {
     path: "/examples/fastlane",
     title: "FastLane",
-    description: "Test Fast Lane integration for custom checkout",
+    description: "Test FastLane integration for custom checkout",
     group: "Advanced",
     workStage: 0, // 未开始
   },

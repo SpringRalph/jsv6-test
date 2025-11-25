@@ -54,4 +54,32 @@ JS SDK v6 的使用心得:
     ```
     在这个数据结构外, 竟然又包了一层`data`, 需要`data.data.orderId`才能获取到
 
----
+10. ACDC和BCDC中的的
+    `createPayPalGuestOneTimePaymentSession`和`createCardFieldsComponent`的这2个关键地方的类型定义缺失了, 我确认查看过类型定义文件:
+    ```ts
+    export type SdkInstance<T extends readonly [Components, ...Components[]]> =
+        BaseInstance &
+            ("paypal-payments" extends T[number]
+                ? PayPalPaymentsInstance
+                : unknown) &
+            ("venmo-payments" extends T[number] ? VenmoPaymentsInstance : unknown) &
+            ("paypal-legacy-billing-agreements" extends T[number]
+                ? PayPalLegacyBillingInstance
+                : unknown);
+
+    export interface BaseInstance {
+        findEligibleMethods: (
+            findEligibleMethodsOptions: FindEligibleMethodsOptions,
+        ) => Promise<EligiblePaymentMethodsOutput>;
+        updateLocale: (locale: string) => void;
+    ```
+    这其中没有定义BCDC和ACDC的情况
+
+11. ACDC中调用`create-order`和`capture-order`的结构和PayPal按钮是不一样的. 
+    PayPal的函数接受的返回格式是:
+    ```json
+    {
+        orderId:string
+    }
+    ```
+    而ACDC中接受的是一个string而不是一个object, 而且`capture-order`的形参也需要手动传递(这个倒是比较合理)

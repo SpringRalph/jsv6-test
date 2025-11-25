@@ -145,3 +145,42 @@
 
     --paypal-mark-border-radius: 20px;
 }
+
+.card-field {
+    height: 3rem;
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+
+
+.acdc-pay-button {
+    height: 3rem;
+    padding: 0.75rem 1.5rem;
+    background-color: #2563eb;
+    color: white;
+    font-weight: 600;
+    border: none;
+    border-radius: 0.25rem;
+    align-self: flex-start;
+    cursor: pointer;
+    min-width: 120px;
+    transition: all 0.2s ease-in-out;
+}
+
+.acdc-pay-button:hover {
+    background-color: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.acdc-pay-button:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+.acdc-pay-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}

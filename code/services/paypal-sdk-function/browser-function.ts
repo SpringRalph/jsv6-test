@@ -76,12 +76,18 @@ function createOrderAPIFactory(APIEndPoint: string) {
 		if (!json) throw new Error("后端未返回创建订单结果");
 
 		console.log(JSON.stringify(json, null, "  "));
-		return json;
+		// return json;
+
+		const orderId = json["order"]["id"]
+		console.log("[OrderId]:", orderId)
+		return { orderId };
 	}
 }
 
 export async function captureOrder(orderIdObj: { orderId: string }): Promise<any> {
 	if (typeof window === "undefined") throw new Error("captureOrder must be called in browser");
+
+	
 	console.log("[captureOrder] OrderIdObj:", JSON.stringify(orderIdObj, null, "  "))
 	// debugger;
 	const orderId = String(orderIdObj.orderId);
