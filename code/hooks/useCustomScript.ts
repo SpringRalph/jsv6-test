@@ -1,19 +1,25 @@
 import { useEffect, useState } from "react";
-import { loadPayPalWebSdk, isPayPalWebSdkLoaded, getPayPalWebSdkSrc, PAYPALSDKURL } from "@/lib/paypalScript";
+import { loadScript, isScriptLoaded, getScriptSrc, unloadScript, ScriptLoadOptions } from "@/lib/scriptLoader";
 
-export { PAYPALSDKURL };
-
-export function usePayPalWebSdk(srcType: PAYPALSDKURL = PAYPALSDKURL.SANDBOX_SRC) {
-  const [ready, setReady] = useState(isPayPalWebSdkLoaded());
-  const [loading, setLoading] = useState(!isPayPalWebSdkLoaded());
+export function useCustomScript(
+  src: string,
+  options: ScriptLoadOptions = {}
+) {
+  const [ready, setReady] = useState(isScriptLoaded(src));
+  const [loading, setLoading] = useState(!isScriptLoaded(src));
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
+    if (!src) {
+      setReady(false);
+      return;
+    }
+
     let cancelled = false;
     setLoading(true);
     setError(null);
 
-    loadPayPalWebSdk(srcType)
+    loadScript(src, options)
       .then(() => {
         if (!cancelled) {
           setReady(true);
@@ -27,10 +33,14 @@ export function usePayPalWebSdk(srcType: PAYPALSDKURL = PAYPALSDKURL.SANDBOX_SRC
         }
       });
 
+    // 清理函数：组件卸载时卸载脚本
     return () => {
+      if (isScriptLoaded(src)) {
+        unloadScript(src);
+      }
       cancelled = true;
     };
-  }, [srcType]);
+  }, [src, JSON.stringify(options)]);
 
   return { ready, loading, error };
 }
