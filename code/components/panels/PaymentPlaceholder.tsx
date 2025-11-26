@@ -5,9 +5,14 @@ import { ReactNode } from "react";
 interface PaymentPlaceholderProps {
     scenario: string;
     children?: ReactNode;
+    placeHolder?: ReactNode;
 }
 
-export function PaymentPlaceholder({ scenario, children }: PaymentPlaceholderProps) {
+export function PaymentPlaceholder({
+    scenario,
+    children,
+    placeHolder,
+}: PaymentPlaceholderProps) {
     return (
         <Card className="p-6 border-2 border-orange-200 dark:border-orange-800 shadow-lg relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 via-yellow-500/5 to-transparent -z-10" />
@@ -25,7 +30,7 @@ export function PaymentPlaceholder({ scenario, children }: PaymentPlaceholderPro
                 </div>
                 <h3 className="text-lg font-medium flex items-center justify-center gap-2">
                     <span className="text-xl">🔌</span>
-                    PayPal Integration Placeholder
+                    {placeHolder ?? <span>PayPal Integration Placeholder</span>}
                 </h3>
                 <div className="inline-flex items-center gap-2 bg-background px-4 py-2 rounded-full border-2 border-orange-300 dark:border-orange-700">
                     <span className="text-sm font-medium">Scenario:</span>

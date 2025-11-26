@@ -2,7 +2,7 @@ import { Container } from "@/components/layout/Container";
 import { EnvPanel } from "@/components/panels/EnvPanel";
 import { routes } from "@/lib/routes";
 import Link from "next/link";
-import { Loader2Icon, AlertTriangleIcon, CheckIcon, AlertCircleIcon } from 'lucide-react';
+import { Loader2Icon, AlertTriangleIcon, CheckIcon, LightbulbIcon } from 'lucide-react';
 
 // 定义工作状态的样式配置
 const workStageConfig = {
@@ -31,7 +31,7 @@ const workStageConfig = {
     bgColor: 'bg-orange-50 dark:bg-orange-900/20',
     textColor: 'text-orange-800 dark:text-orange-200',
     borderColor: 'border-orange-200 dark:border-orange-800',
-    icon: AlertCircleIcon,
+    icon: LightbulbIcon,
     label: '技术限制'
   },
   4: {
