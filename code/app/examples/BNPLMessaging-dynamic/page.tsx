@@ -3,10 +3,10 @@ import { ProductPanel } from "@/components/panels/ProductPanel";
 import { CartSummary } from "@/components/panels/CartSummary";
 import { PaymentPlaceholder } from "@/components/panels/PaymentPlaceholder";
 import Link from "next/link";
-import PayLater from "./PayLater";
 import Image from "next/image";
+import PayLaterMessageDynamic from "./PayLaterMessageDynamic";
 
-export default function PayLaterPage() {
+export default function MessagingPage() {
     return (
         <Container>
             <div className="space-y-6">
@@ -17,9 +17,11 @@ export default function PayLaterPage() {
                     >
                         ← Back to Home
                     </Link>
-                    <h1 className="text-3xl font-bold mb-2">Pay Later</h1>
+                    <h1 className="text-3xl font-bold mb-2">
+                        Dynamically Messaging
+                    </h1>
                     <p className="text-muted-foreground">
-                        Test Pay Later Button
+                        Test Render PayPal messaging components Dynamically
                     </p>
                 </div>
 
@@ -30,12 +32,25 @@ export default function PayLaterPage() {
                     </div>
                     <div>
                         <PaymentPlaceholder
-                            scenario="PayLater"
-                            children={<PayLater />}
-                            placeHolder=""
+                            scenario="Dynamically Messaging"
+                            children={<PayLaterMessageDynamic />}
+                            placeHolder={
+                                <p className="text-sm">
+                                    <span className="text-sm text-left font-bold text-red-600">
+                                        极其没有意义的一个功能
+                                    </span>
+                                    ,
+                                    因为对于React/Vue这样实现了动态DOM的JS框架,
+                                    不需要手动管理DOM元素的更新.
+                                    使用注册的绑定变量也可以触发组件的刷新
+                                    <br />
+                                    而且Sample中的triggerAmountUpdate竟然只能在初始化的时候触发一次,
+                                    之后即使手动触发也没有效果. 震惊了.
+                                </p>
+                            }
                             paymentAreaIcon={
                                 <Image
-                                    src="/payment-area-icon/paylater-word.svg"
+                                    src="/payment-area-icon/Messaging.svg"
                                     alt="PayPal"
                                     width={100}
                                     height={100}

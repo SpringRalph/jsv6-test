@@ -44,6 +44,16 @@ declare module 'react' {
       'paypal-basic-card-container': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
         [key: string]: any;
       }
+      'paypal-message': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
+        'auto-bootstrap'?: boolean;
+        'amount'?: string;
+        'currency-code'?: string;
+        'text-color'?: 'BLACK' | 'MONOCHROME' | 'WHITE';
+        'logo-position'?: 'INLINE' | 'LEFT' | 'RIGHT' | 'TOP';
+        'logo-type'?: 'MONOGRAM ' | 'TEXT ' | 'WORDMARK';
+        'presentation-mode'?: 'AUTO' | 'MODAL' | 'POPUP' | 'REDIRECT';
+        [key: string]: any;
+      }
     }
   }
 }

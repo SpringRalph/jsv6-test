@@ -60,16 +60,32 @@ export const routes: RouteMetadata[] = [
     title: "Button collection",
     description: "Show button collection",
     group: "Buttons",
-    workStage: 1, 
+    workStage: 4, 
   },
 
 
   {
-    path: "/examples/messaging",
+    path: "/examples/BNPLMessaging",
     title: "Pay Later Messaging",
     description: "Test PayPal Pay Later Messaging components",
     group: "Messaging",
-    workStage: 0, // 未开始
+    workStage: 4, 
+  },
+
+  {
+    path: "/examples/BNPLMessaging-dynamic",
+    title: "Dynamic Pay Later Messaging",
+    description: "Dynamically render PayPal Pay Later Messaging components",
+    group: "Messaging",
+    workStage: 4, 
+  },
+
+  {
+    path: "/examples/BNPLMessaging-Analytics",
+    title: "Analytize Pay Later Messaging",
+    description: "Analytize PayPal Pay Later Messaging Learn More",
+    group: "Messaging",
+    workStage: 1, 
   },
 
   {

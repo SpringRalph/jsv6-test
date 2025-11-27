@@ -94,8 +94,7 @@ export default function ButtonStyling() {
                 id="paypal-btn"
                 type="pay"
                 hidden
-                className="paypal-white paypal-button-styled"
-               
+                className="paypal-white paypal-button-styled"               
             ></paypal-button>
         </div>
     );

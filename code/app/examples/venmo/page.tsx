@@ -4,6 +4,7 @@ import { CartSummary } from "@/components/panels/CartSummary";
 import { PaymentPlaceholder } from "@/components/panels/PaymentPlaceholder";
 import Link from "next/link";
 import Venmo from "./Venmo";
+import Image from "next/image";
 
 export default function ButtonsBasicPage() {
     return (
@@ -69,6 +70,14 @@ export default function ButtonsBasicPage() {
                                     <div>pwv-test-user2/VenmoP@y12345</div>
                                     <div>pwv-test-user3/VenmoP@y12345</div>
                                 </div>
+                            }
+                            paymentAreaIcon={
+                                <Image
+                                    src="/payment-area-icon/Venmo.svg"
+                                    alt="PayPal"
+                                    width={100}
+                                    height={100}
+                                />
                             }
                         />
                     </div>

@@ -4,12 +4,13 @@ import { CartSummary } from "@/components/panels/CartSummary";
 import { PaymentPlaceholder } from "@/components/panels/PaymentPlaceholder";
 import Link from "next/link";
 import BCDC from "./BCDC";
+import Image from "next/image";
 
 export function BCDCContainer() {
     return (
-      <div className="w-full min-h-[60px] flex justify-center items-center">
-        <BCDC />
-      </div>
+        <div className="w-full min-h-[60px] flex justify-center items-center">
+            <BCDC />
+        </div>
     );
 }
 
@@ -51,6 +52,15 @@ export default function ButtonsBasicPage() {
                         <PaymentPlaceholder
                             scenario="PayPal Guest Payments"
                             children={<BCDCContainer />}
+                            placeHolder=""
+                            paymentAreaIcon={
+                                <Image
+                                    src="/payment-area-icon/paypal_credit_all.svg"
+                                    alt="PayPal"
+                                    width={100}
+                                    height={100}
+                                />
+                            }
                         />
                     </div>
                 </div>

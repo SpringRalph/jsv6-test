@@ -3,10 +3,10 @@ import { ProductPanel } from "@/components/panels/ProductPanel";
 import { CartSummary } from "@/components/panels/CartSummary";
 import { PaymentPlaceholder } from "@/components/panels/PaymentPlaceholder";
 import Link from "next/link";
-import PayLater from "./PayLater";
 import Image from "next/image";
+import PayLaterMessageBasic from "./PayLaterMessageBasic";
 
-export default function PayLaterPage() {
+export default function MessagingPage() {
     return (
         <Container>
             <div className="space-y-6">
@@ -17,9 +17,9 @@ export default function PayLaterPage() {
                     >
                         ← Back to Home
                     </Link>
-                    <h1 className="text-3xl font-bold mb-2">Pay Later</h1>
+                    <h1 className="text-3xl font-bold mb-2">Messaging</h1>
                     <p className="text-muted-foreground">
-                        Test Pay Later Button
+                        Test PayPal messaging components for promotional content
                     </p>
                 </div>
 
@@ -30,12 +30,12 @@ export default function PayLaterPage() {
                     </div>
                     <div>
                         <PaymentPlaceholder
-                            scenario="PayLater"
-                            children={<PayLater />}
+                            scenario="Messaging"
+                            children={<PayLaterMessageBasic />}
                             placeHolder=""
                             paymentAreaIcon={
                                 <Image
-                                    src="/payment-area-icon/paylater-word.svg"
+                                    src="/payment-area-icon/Messaging.svg"
                                     alt="PayPal"
                                     width={100}
                                     height={100}
