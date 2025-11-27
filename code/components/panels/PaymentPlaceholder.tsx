@@ -6,12 +6,14 @@ interface PaymentPlaceholderProps {
     scenario: string;
     children?: ReactNode;
     placeHolder?: ReactNode;
+    paymentAreaIcon?: ReactNode;
 }
 
 export function PaymentPlaceholder({
     scenario,
     children,
     placeHolder,
+    paymentAreaIcon,
 }: PaymentPlaceholderProps) {
     return (
         <Card className="p-6 border-2 border-orange-200 dark:border-orange-800 shadow-lg relative overflow-hidden">
@@ -25,12 +27,16 @@ export function PaymentPlaceholder({
                 <div className="relative inline-block">
                     <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-yellow-400 rounded-full blur-xl opacity-30 animate-pulse" />
                     <div className="relative text-7xl animate-bounce-slow">
-                        💳
+                        {paymentAreaIcon ?? <>💳</>}
                     </div>
                 </div>
                 <h3 className="text-lg font-medium flex items-center justify-center gap-2">
-                    <span className="text-xl">🔌</span>
-                    {placeHolder ?? <span>PayPal Integration Placeholder</span>}
+                    {placeHolder ?? (
+                        <span>
+                            <span className="text-xl">🔌</span>
+                            PayPal Integration Placeholder
+                        </span>
+                    )}
                 </h3>
                 <div className="inline-flex items-center gap-2 bg-background px-4 py-2 rounded-full border-2 border-orange-300 dark:border-orange-700">
                     <span className="text-sm font-medium">Scenario:</span>

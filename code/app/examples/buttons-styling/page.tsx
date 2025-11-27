@@ -4,6 +4,7 @@ import { CartSummary } from "@/components/panels/CartSummary";
 import { PaymentPlaceholder } from "@/components/panels/PaymentPlaceholder";
 import Link from "next/link";
 import ButtonStyling from "./ButtonStyling";
+import Image from "next/image";
 
 export default function ButtonsStylingPage() {
     return (
@@ -32,6 +33,15 @@ export default function ButtonsStylingPage() {
                         <PaymentPlaceholder
                             scenario="ButtonsStyling"
                             children={<ButtonStyling />}
+                            placeHolder=""
+                            paymentAreaIcon={
+                                <Image
+                                    src="/payment-area-icon/paypal.svg"
+                                    alt="PayPal"
+                                    width={100}
+                                    height={100}
+                                />
+                            }
                         />
                     </div>
                 </div>
