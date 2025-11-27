@@ -55,6 +55,14 @@ export const routes: RouteMetadata[] = [
     workStage: 4, // 未开始
   },
 
+   {
+    path: "/examples/buttons-collection",
+    title: "Button collection",
+    description: "Show button collection",
+    group: "Buttons",
+    workStage: 1, 
+  },
+
 
   {
     path: "/examples/messaging",

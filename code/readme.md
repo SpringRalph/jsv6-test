@@ -83,3 +83,5 @@ JS SDK v6 的使用心得:
     }
     ```
     而ACDC中接受的是一个string而不是一个object, 而且`capture-order`的形参也需要手动传递(这个倒是比较合理)
+
+12. 文档中有残留: `paypal-credit-button`, 这个估计是以前的`Lit Web Component`. 是给BCDC的, 但是现在废弃不用了. 我们内部的confluence page上也是这个

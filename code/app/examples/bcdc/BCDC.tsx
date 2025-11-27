@@ -117,7 +117,7 @@ export default function BCDC() {
     if (error) return <div>PayPal SDK加载失败: {error.message}</div>;
 
     return (
-        <paypal-basic-card-container className="w-full min-h-[60px] flex flex-col ">
+        <paypal-basic-card-container>
             <paypal-basic-card-button id="paypal-basic-card-button"></paypal-basic-card-button>
         </paypal-basic-card-container>
     );
