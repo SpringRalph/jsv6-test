@@ -93,7 +93,7 @@ export const routes: RouteMetadata[] = [
     title: "Google Pay",
     description: "Test Google Pay integration for custom checkout",
     group: "Advanced",
-    workStage: 0, // 未开始
+    workStage: 1, 
   },
 
   {
@@ -101,7 +101,7 @@ export const routes: RouteMetadata[] = [
     title: "Apple Pay",
     description: "Test Apple Pay integration for custom checkout",
     group: "Advanced",
-    workStage: 0, // 未开始
+    workStage: 0, 
   },
 
   {
