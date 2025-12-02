@@ -17,9 +17,9 @@ export default function ShippingCallbacksPage() {
                     >
                         ← Back to Home
                     </Link>
-                    <h1 className="text-3xl font-bold mb-2">Redirect</h1>
+                    <h1 className="text-3xl font-bold mb-2">Direct APP Switch</h1>
                     <p className="text-muted-foreground">
-                        Need test this on Mobile, In live Env
+                        Need test this on Mobile, and in live Env
                     </p>
                 </div>
 
@@ -30,7 +30,7 @@ export default function ShippingCallbacksPage() {
                     </div>
                     <div>
                         <PaymentPlaceholder
-                            scenario="Test APP Switch"
+                            scenario="Live Env?"
                             children={<APPSwitch />}
                             paymentAreaIcon ={
                                 <Image
