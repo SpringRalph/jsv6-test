@@ -17,8 +17,8 @@ export default function ButtonBasic() {
         loading: applePayLoading,
         error: applePayError,
     } = useCustomScript(
-        "https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js"
-        // "https://applepay.cdn-apple.com/jsapi/1.latest/apple-pay-sdk.js"
+        // "https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js"
+        "https://applepay.cdn-apple.com/jsapi/1.latest/apple-pay-sdk.js"
     );
 
     useEffect(() => {
