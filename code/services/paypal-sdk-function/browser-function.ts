@@ -55,6 +55,10 @@ export async function createOrderGooglePay(): Promise<any> {
 	return createOrderAPIFactory("/api/paypal/create-order","google")();
 }
 
+export async function createOrderApplePay(): Promise<any> {
+	return createOrderAPIFactory("/api/paypal/create-order","apple")();
+}
+
 
 
 export async function captureOrder(orderIdObj: { orderId: string }): Promise<any> {
