@@ -3,6 +3,7 @@
 import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
 import {
     createOrder,
+    createOrderRedirect,
     getBrowserSafeClientToken,
     handlePaymentError,
 } from "@/services/paypal-sdk-function/browser-function";
@@ -37,7 +38,7 @@ export default function Redirect() {
                             enabled: true,
                         },
                     },
-                    createOrder()
+                    createOrderRedirect()
                 );
             } catch (error: any) {
                 if (error.isRecoverable) {

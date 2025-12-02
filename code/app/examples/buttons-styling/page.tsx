@@ -6,6 +6,7 @@ import Link from "next/link";
 import ButtonStyling from "./ButtonStyling";
 import Image from "next/image";
 
+
 export default function ButtonsStylingPage() {
     return (
         <Container>

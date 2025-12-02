@@ -131,7 +131,7 @@ export const routes: RouteMetadata[] = [
     title: "Redirect",
     description: "Browser Redirect",
     group: "Browser",
-    workStage: 3, // 技术限制
+    workStage: 4, // 技术限制
   },
   {
     path: "/examples/paymentHandler",

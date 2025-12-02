@@ -69,8 +69,8 @@ export async function POST(req: Request) {
                     experienceContext: {
                         shippingPreference: "NO_SHIPPING",
                         userAction: "CONTINUE",
-                        returnUrl: "http://localhost:3000/examples/redirect",
-                        cancelUrl: "http://localhost:3000/examples/redirect",
+                        returnUrl: "https://jsv6-test.pages.dev/examples/redirect",
+                        cancelUrl: "http://jsv6-test.pages.dev/examples/redirect",
                     },
                 },
             },

@@ -4,6 +4,7 @@ import { CartSummary } from "@/components/panels/CartSummary"
 import { PaymentPlaceholder } from "@/components/panels/PaymentPlaceholder"
 import Link from "next/link"
 import ButtonCollection from "./ButtonCollection"
+import Image from "next/image";
 
 export default function ButtonsBasicPage() {
   return (
@@ -35,7 +36,14 @@ export default function ButtonsBasicPage() {
             <CartSummary />
           </div>
           <div>
-            <PaymentPlaceholder scenario="Button Collection" children={<ButtonCollection/>}  placeHolder={<span>Render Three Basic Button in the same Page</span>} />
+            <PaymentPlaceholder scenario="Button Collection" children={<ButtonCollection/>}  paymentAreaIcon={
+                                            <Image
+                                                src="/payment-area-icon/paypal.svg"
+                                                alt="PayPal"
+                                                width={100}
+                                                height={100}
+                                            />
+                                        } placeHolder={<span>Render Three Basic Button in the same Page</span>} />
           </div>
         </div>
       </div>
