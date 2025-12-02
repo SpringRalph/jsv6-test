@@ -44,11 +44,34 @@ export default function ButtonsBasicPage() {
                         <PaymentPlaceholder
                             scenario="Apple Pay"
                             children={<ApplePay />}
-                            placeHolder=""
+                            placeHolder={
+                                <div className="space-y-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                                    <div className="flex items-start gap-3">
+                                        <span className="text-yellow-600 dark:text-yellow-400 text-xl mt-0.5">⚠️</span>
+                                        <div>
+                                            <h3 className="font-semibold text-yellow-800 dark:text-yellow-200">Apple Pay 注意事项</h3>
+                                            <ul className="mt-2 space-y-2 text-sm text-yellow-700 dark:text-yellow-300">
+                                                <li className="flex items-start gap-2">
+                                                    <span className="text-yellow-500 mt-1">•</span>
+                                                    <span>Apple Pay 需要 HTTPS 环境才能正常渲染</span>
+                                                </li>
+                                                <li className="flex items-start gap-2">
+                                                    <span className="text-yellow-500 mt-1">•</span>
+                                                    <span>非 Apple 设备上，仅允许加载来自 <code className="bg-yellow-100 dark:bg-yellow-800 px-1 rounded">https://applepay.cdn-apple.com/jsapi/1.latest/apple-pay-sdk.js</code> 的脚本</span>
+                                                </li>
+                                                <li className="flex items-start gap-2">
+                                                    <span className="text-yellow-500 mt-1">•</span>
+                                                    <span>需要Apple Development Suite才能完成测试付款</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
                             paymentAreaIcon={
                                 <Image
                                     src="/payment-area-icon/apple-fill.svg"
-                                    alt="Google Pay"
+                                    alt="Apple Pay"
                                     width={100}
                                     height={100}
                                 />
