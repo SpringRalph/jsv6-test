@@ -3,7 +3,7 @@ import { ProductPanel } from "@/components/panels/ProductPanel";
 import { CartSummary } from "@/components/panels/CartSummary";
 import { PaymentPlaceholder } from "@/components/panels/PaymentPlaceholder";
 import Link from "next/link";
-import Redirect from "./Redirect";
+import APPSwitch from "./APPSwitch";
 import Image from "next/image";
 
 export default function ShippingCallbacksPage() {
@@ -19,8 +19,7 @@ export default function ShippingCallbacksPage() {
                     </Link>
                     <h1 className="text-3xl font-bold mb-2">Redirect</h1>
                     <p className="text-muted-foreground">
-                        Need a domain to Test this, PayPal cannot fetch a
-                        localhost URL
+                        Need test this on Mobile, In live Env
                     </p>
                 </div>
 
@@ -31,8 +30,8 @@ export default function ShippingCallbacksPage() {
                     </div>
                     <div>
                         <PaymentPlaceholder
-                            scenario="Test Redirect"
-                            children={<Redirect />}
+                            scenario="Test APP Switch"
+                            children={<APPSwitch />}
                             paymentAreaIcon ={
                                 <Image
                                     src="/payment-area-icon/paypal.svg"

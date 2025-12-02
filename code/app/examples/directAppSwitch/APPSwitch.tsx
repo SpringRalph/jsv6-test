@@ -14,7 +14,7 @@ import {
 import { OneTimePaymentSession } from "@paypal/paypal-js/sdk-v6";
 import { useEffect } from "react";
 
-export default function Redirect() {
+export default function APPSwitch() {
     const { ready, loading, error } = usePayPalWebSdk();
 
     // Setup standard PayPal button
@@ -26,7 +26,7 @@ export default function Redirect() {
             try {
                 const { redirectURL } = await paypalPaymentSession.start(
                     {
-                        presentationMode: "redirect",
+                        presentationMode: "direct-app-switch",
                         autoRedirect: {
                             enabled: true,
                         },

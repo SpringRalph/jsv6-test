@@ -32,7 +32,7 @@ const workStageConfig = {
     textColor: 'text-orange-800 dark:text-orange-200',
     borderColor: 'border-orange-200 dark:border-orange-800',
     icon: LightbulbIcon,
-    label: '技术限制'
+    label: '需要注意'
   },
   4: {
     bgColor: 'bg-green-50 dark:bg-green-900/20',
@@ -91,7 +91,24 @@ export default function HomePage() {
                                 🧪PayPal JS v6
                                 是开发团队在研究了友商(特别是stripe)SDK后,
                                 给大家带来的全新体验! <br/>
-                                ⚠️ Test Case有5个状态: 未开始, 进行中, 有问题, 技术限制无法在本页面中实现, 已完成
+                                ⚠️ Test Case有5个状态: 
+                                <span className="inline-flex flex-wrap gap-2 mt-2 ml-2">
+                                    <span className="px-3 py-1 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-full text-xs font-medium">
+                                        未开始
+                                    </span>
+                                    <span className="px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 border border-blue-200 dark:border-blue-800 rounded-full text-xs font-medium">
+                                        进行中
+                                    </span>
+                                    <span className="px-3 py-1 bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800 rounded-full text-xs font-medium">
+                                        有问题
+                                    </span>
+                                    <span className="px-3 py-1 bg-orange-50 dark:bg-orange-900/20 text-orange-800 dark:text-orange-200 border border-orange-200 dark:border-orange-800 rounded-full text-xs font-medium">
+                                        需要注意
+                                    </span>
+                                    <span className="px-3 py-1 bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800 rounded-full text-xs font-medium">
+                                        已完成
+                                    </span>
+                                </span>
                             </span>
                         </p>
                     </div>

@@ -2,15 +2,53 @@
 import { CART_STORAGE_KEY, useCartStore } from "@/store/useCartStore";
 
 function readPersistedCartFromStorage(): any | null {
-  try {
-    const raw = sessionStorage.getItem(CART_STORAGE_KEY) ?? localStorage.getItem(CART_STORAGE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    // zustand persist 可能存为 { state: { ... } }，也可能直接存 state
-    return parsed?.state ?? parsed;
-  } catch {
-    return null;
-  }
+    try {
+        const raw = sessionStorage.getItem(CART_STORAGE_KEY) ?? localStorage.getItem(CART_STORAGE_KEY);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        // zustand persist 可能存为 { state: { ... } }，也可能直接存 state
+        return parsed?.state ?? parsed;
+    } catch {
+        return null;
+    }
+}
+
+
+export function createOrderAPIFactory(APIEndPoint: string, payment_source: string) {
+
+    return async (): Promise<any> => {
+        if (typeof window === "undefined") throw new Error("createOrder must be called in browser");
+
+        const payload = getOrderConfig();
+        // console.log("Pay Load:\r\n",JSON.stringify(payload,null,"  "))
+
+        payload["paymentDetail"]["endpoint"]["return_url"] = window.location.href;
+        payload["paymentDetail"]["endpoint"]["cancel_url"] = window.location.href;
+        payload["paymentDetail"]["payment_source"] = payment_source;
+
+        const res = await fetch(APIEndPoint, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+        });
+
+        if (!res.ok) {
+            const text = await res.text().catch(() => "");
+            throw new Error(`创建订单失败: ${res.status} ${text}`);
+        }
+
+        const json = await res.json();
+        if (!json) throw new Error("后端未返回创建订单结果");
+
+        console.log(JSON.stringify(json, null, "  "));
+        // return json;
+
+        const orderId = json["order"]["id"]
+        console.log("[OrderId]:", orderId)
+        return { orderId };
+    }
 }
 
 export const getOrderConfig = () => {
@@ -77,6 +115,13 @@ export const getOrderConfig = () => {
         totalAmount,
         currency,
         meta,
+        paymentDetail: {
+            endpoint: {
+                return_url: "",
+                cancel_url: ""
+            },
+            payment_source: ""
+        }
     };
 
     return payload

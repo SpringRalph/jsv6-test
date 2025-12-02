@@ -1,6 +1,6 @@
 import toast from "react-hot-toast";
-import { getOrderConfig } from "./order-utils";
-import consola from "consola";
+import { createOrderAPIFactory, getOrderConfig } from "./order-utils";
+
 
 export async function getBrowserSafeClientToken(): Promise<string> {
 	if (typeof window === "undefined") throw new Error("getBrowserSafeClientToken must be called in browser");
@@ -40,54 +40,27 @@ export function handlePaymentCancellation(): void {
 
 
 export async function createOrder(): Promise<any> {
-	return createOrderAPIFactory("/api/paypal/create-order")();
+	return createOrderAPIFactory("/api/paypal/create-order","paypal")();
 }
 
 export async function createOrderBCDC(): Promise<any> {
-	return createOrderAPIFactory("/api/paypal/create-order-bcdc")();
+	return createOrderAPIFactory("/api/paypal/create-order-bcdc","paypal")();
 }
 
 export async function createOrderRedirect(): Promise<any> {
-	return createOrderAPIFactory("/api/paypal/create-order-redirect")();
+	return createOrderAPIFactory("/api/paypal/create-order-redirect","paypal")();
+}
+
+export async function createOrderGooglePay(): Promise<any> {
+	return createOrderAPIFactory("/api/paypal/create-order","google")();
 }
 
 
-function createOrderAPIFactory(APIEndPoint: string) {
-
-	return async (): Promise<any> => {
-		if (typeof window === "undefined") throw new Error("createOrder must be called in browser");
-
-		const payload = getOrderConfig()
-
-		const res = await fetch(APIEndPoint, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(payload),
-		});
-
-		if (!res.ok) {
-			const text = await res.text().catch(() => "");
-			throw new Error(`创建订单失败: ${res.status} ${text}`);
-		}
-
-		const json = await res.json();
-		if (!json) throw new Error("后端未返回创建订单结果");
-
-		console.log(JSON.stringify(json, null, "  "));
-		// return json;
-
-		const orderId = json["order"]["id"]
-		console.log("[OrderId]:", orderId)
-		return { orderId };
-	}
-}
 
 export async function captureOrder(orderIdObj: { orderId: string }): Promise<any> {
 	if (typeof window === "undefined") throw new Error("captureOrder must be called in browser");
 
-	
+
 	console.log("[captureOrder] OrderIdObj:", JSON.stringify(orderIdObj, null, "  "))
 	// debugger;
 	const orderId = String(orderIdObj.orderId);

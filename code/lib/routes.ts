@@ -3,7 +3,7 @@ export interface RouteMetadata {
   title: string
   description: string
   group: string
-  workStage?: number // 0: 未开始, 1: 进行中, 2: 有问题, 3: 技术限制, 4: 完成
+  workStage?: number // 0: 未开始, 1: 进行中, 2: 有问题, 3: 需要注意, 4: 完成
 }
 
 export const routes: RouteMetadata[] = [
@@ -31,7 +31,7 @@ export const routes: RouteMetadata[] = [
     workStage: 4, // 完成
   },
 
-   {
+  {
     path: "/examples/bcdc",
     title: "BCDC(PayPal Guest Payment)",
     description: "Test BCDC/Guest Payment Checkout",
@@ -55,12 +55,12 @@ export const routes: RouteMetadata[] = [
     workStage: 4, // 未开始
   },
 
-   {
+  {
     path: "/examples/buttons-collection",
     title: "Button collection",
     description: "Show button collection",
     group: "Buttons",
-    workStage: 4, 
+    workStage: 4,
   },
 
 
@@ -69,7 +69,7 @@ export const routes: RouteMetadata[] = [
     title: "Pay Later Messaging",
     description: "Test PayPal Pay Later Messaging components",
     group: "Messaging",
-    workStage: 4, 
+    workStage: 4,
   },
 
   {
@@ -77,7 +77,7 @@ export const routes: RouteMetadata[] = [
     title: "Dynamic Pay Later Messaging",
     description: "Dynamically render PayPal Pay Later Messaging components",
     group: "Messaging",
-    workStage: 4, 
+    workStage: 4,
   },
 
   {
@@ -85,15 +85,46 @@ export const routes: RouteMetadata[] = [
     title: "Analytize Pay Later Messaging",
     description: "Analytize PayPal Pay Later Messaging Learn More",
     group: "Messaging",
-    workStage: 1, 
+    workStage: 1,
   },
+
+  {
+    path: "/examples/redirect",
+    title: "Redirect",
+    description: "Browser Redirect",
+    group: "Browser",
+    workStage: 2,
+  },
+  {
+    path: "/examples/paymentHandler",
+    title: "Payment Handler",
+    description: "Use Browser Payment Handler",
+    group: "Browser",
+    workStage: 4, // 完成
+  },
+  {
+    path: "/examples/sandboxedIframe",
+    title: "Sandboxed Iframe",
+    description: "Test Browser Sandboxed Iframe behavior",
+    group: "Browser",
+    workStage: 1,
+  },
+
+  {
+    path: "/examples/directAppSwitch",
+    title: "Direct App Switch",
+    description: "Test Browser Direct App Switch behavior",
+    group: "Browser",
+    workStage: 3, 
+  },
+
 
   {
     path: "/examples/googlePay",
     title: "Google Pay",
     description: "Test Google Pay integration for custom checkout",
     group: "Advanced",
-    workStage: 1, 
+    workStage: 1,
   },
 
   {
@@ -101,7 +132,7 @@ export const routes: RouteMetadata[] = [
     title: "Apple Pay",
     description: "Test Apple Pay integration for custom checkout",
     group: "Advanced",
-    workStage: 0, 
+    workStage: 0,
   },
 
   {
@@ -126,35 +157,6 @@ export const routes: RouteMetadata[] = [
     group: "Vault",
     workStage: 0, // 未开始
   },
-  {
-    path: "/examples/redirect",
-    title: "Redirect",
-    description: "Browser Redirect",
-    group: "Browser",
-    workStage: 4, // 技术限制
-  },
-  {
-    path: "/examples/paymentHandler",
-    title: "Payment Handler",
-    description: "Use Browser Payment Handler",
-    group: "Browser",
-    workStage: 4, // 完成
-  },
-  {
-    path: "/examples/sandboxedIframe",
-    title: "Sandboxed Iframe",
-    description: "Test Browser Sandboxed Iframe behavior",
-    group: "Browser",
-    workStage: 3, // 技术限制
-  },
-
-  {
-    path: "/examples/directAppSwitch",
-    title: "Direct App Switch",
-    description: "Test Browser Direct App Switch behavior",
-    group: "Browser",
-    workStage: 0, // 未开始
-  },
 
 
 
@@ -166,7 +168,7 @@ export const routes: RouteMetadata[] = [
     workStage: 4, // 完成
   },
 
-   {
+  {
     path: "/examples/bancontact",
     title: "Bancontact",
     description: "Test APM -- Bancontact",

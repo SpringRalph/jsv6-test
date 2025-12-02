@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { useCartStore } from "@/store/useCartStore";
+import { createOrderGooglePay, captureOrder } from "@/services/paypal-sdk-function/browser-function"
 
 function getTotalAmount() {
     const cartState = useCartStore.getState();
@@ -130,19 +131,20 @@ async function onPaymentAuthorized(
     googlePaySession,
 ) {
     try {
-        // Create PayPal order payload
-        const orderPayload = getPayPalOrderPayload(purchaseAmount);
-        const id = await createOrder(orderPayload);
+
+
+        const { orderId } = await createOrderGooglePay();
+        // debugger;
 
         // Confirm order with Google Pay payment data
         const { status } = await googlePaySession.confirmOrder({
-            orderId: id,
+            orderId,
             paymentMethodData: paymentData.paymentMethodData,
         });
 
         if (status !== "PAYER_ACTION_REQUIRED") {
             // Capture the order
-            const orderData = await captureOrder({ orderId: id });
+            const orderData = await captureOrder({ orderId });
             console.log(JSON.stringify(orderData, null, 2));
         }
 

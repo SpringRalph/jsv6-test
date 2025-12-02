@@ -30,6 +30,7 @@ export async function POST(req: Request) {
         const items: Item[] = Array.isArray(body.items) ? body.items : [];
         const totalAmount: number = Number(body.totalAmount ?? 0);
         const currency: string = String(body.currency ?? "USD").toUpperCase();
+        const paymentDetail = body.paymentDetail ?? {};
 
         if (items.length === 0 || totalAmount <= 0) {
             return NextResponse.json(
@@ -79,8 +80,14 @@ export async function POST(req: Request) {
         const orderBody = {
             intent: "CAPTURE",
             purchase_units: [purchaseUnit],
-            "payment_source": {
-                "paypal": {
+           
+        };
+
+        if (paymentDetail.payment_source) {
+            const return_url = paymentDetail["endpoint"]["return_url"]
+            const cancel_url = paymentDetail["endpoint"]["cancel_url"]
+            const payment_source = {
+                [paymentDetail.payment_source]: {
                     "experience_context": {
                         "payment_method_preference": "IMMEDIATE_PAYMENT_REQUIRED",
                         "brand_name": "EXAMPLE INC",
@@ -88,12 +95,13 @@ export async function POST(req: Request) {
                         "landing_page": "LOGIN",
                         "shipping_preference": "SET_PROVIDED_ADDRESS",
                         "user_action": "PAY_NOW",
-                        "return_url": "https://google.com/returnUrl",
-                        "cancel_url": "https://google.com/cancelUrl"
+                        "return_url": return_url,
+                        "cancel_url": cancel_url
                     }
                 }
-            },
-        };
+            };
+            Object.assign(orderBody, payment_source)
+        }
 
 
         console.log(JSON.stringify(orderBody, null, "  "))
