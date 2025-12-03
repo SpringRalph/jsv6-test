@@ -42,12 +42,12 @@ async function handleApplePayClick(config, paypalSdkApplePayPaymentSession) {
     const applePaySession = new ApplePaySession(4, paymentRequest);
 
     // Configure event handlers
-    setupApplePayEventHandlers(applePaySession, paypalSdkApplePayPaymentSession);
+    setupApplePayEventHandlers(applePaySession, paypalSdkApplePayPaymentSession, paymentRequest);
 
     applePaySession.begin();
 }
 
-function setupApplePayEventHandlers(applePaySession, paypalSession) {
+function setupApplePayEventHandlers(applePaySession, paypalSession, paymentRequest) {
     // Merchant validation
     applePaySession.onvalidatemerchant = (event) => {
         paypalSession.validateMerchant({
