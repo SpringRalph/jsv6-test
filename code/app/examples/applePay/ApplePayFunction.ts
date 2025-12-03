@@ -11,8 +11,7 @@ export async function setupApplePayButton(sdkInstance) {
     const paypalSdkApplePayPaymentSession =
         await sdkInstance.createApplePayOneTimePaymentSession();
 
-    const { merchantCapabilities, supportedNetworks } =
-        await paypalSdkApplePayPaymentSession.config();
+    const config = await paypalSdkApplePayPaymentSession.config();
 
     // Create Apple Pay button
     document.getElementById("applepay-button-container").innerHTML =
@@ -20,16 +19,17 @@ export async function setupApplePayButton(sdkInstance) {
 
     console.log("Apple Pay Button Created!")
 
+    // Pass config parameters to the click handler
     document.getElementById("apple-pay-button")
-        .addEventListener("click", handleApplePayClick);
+        .addEventListener("click", () => handleApplePayClick(config, paypalSdkApplePayPaymentSession));
 }
 
-async function handleApplePayClick() {
+async function handleApplePayClick(config, paypalSdkApplePayPaymentSession) {
     const paymentRequest = {
         countryCode: "US",
         currencyCode: "USD",
-        merchantCapabilities,
-        supportedNetworks,
+        merchantCapabilities: config.merchantCapabilities,
+        supportedNetworks: config.supportedNetworks,
         requiredBillingContactFields: ["name", "phone", "email", "postalAddress"],
         requiredShippingContactFields: [],
         total: {

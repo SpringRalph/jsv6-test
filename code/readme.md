@@ -87,3 +87,4 @@ JS SDK v6 的使用心得:
 12. 文档中有残留: `paypal-credit-button`, 这个估计是以前的`Lit Web Component`. 是给BCDC的, 但是现在废弃不用了. 我们内部的confluence page上也是这个
 13. Pay Later Message的文档完全是 `米田共土亢`!!!.
 14. Google Pay中的`onGooglePayButtonClick`这个函数, 竟然没有函数实现...看了Github中的sample code才找到
+15. Apple Pay中的`handleApplePayClick`中的`merchantCapabilities`,`supportedNetworks`参数作用域是不对的.
