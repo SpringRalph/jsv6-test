@@ -24,6 +24,14 @@ export const routes: RouteMetadata[] = [
   },
 
   {
+    path: "/examples/custom-button",
+    title: "Merchant Custom Button",
+    description: "Test Merchant host button",
+    group: "Buttons",
+    workStage: 1, // 完成
+  },
+
+  {
     path: "/examples/pay-later",
     title: "Pay Later",
     description: "Test Pay Later and installment options",
@@ -132,7 +140,7 @@ export const routes: RouteMetadata[] = [
     title: "Apple Pay",
     description: "Test Apple Pay integration for custom checkout",
     group: "Advanced",
-    workStage: 1,
+    workStage: 4,
   },
 
   {
