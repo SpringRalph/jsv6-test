@@ -54,6 +54,10 @@ declare module 'react' {
         'presentation-mode'?: 'AUTO' | 'MODAL' | 'POPUP' | 'REDIRECT';
         [key: string]: any;
       }
+      'sdk-custom-button-wrapper': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
+        'funding-source'?: string;
+        [key: string]: any;
+      }
     }
   }
 }

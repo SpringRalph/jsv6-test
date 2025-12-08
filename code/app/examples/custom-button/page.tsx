@@ -3,7 +3,7 @@ import { ProductPanel } from "@/components/panels/ProductPanel";
 import { CartSummary } from "@/components/panels/CartSummary";
 import { PaymentPlaceholder } from "@/components/panels/PaymentPlaceholder";
 import Link from "next/link";
-import ButtonBasic from "./ButtonBasic";
+import CustomButton from "./CustomButton";
 import Image from 'next/image';
 
 export default function ButtonsBasicPage() {
@@ -26,12 +26,11 @@ export default function ButtonsBasicPage() {
                     <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 p-6 rounded-2xl border-2 border-blue-200 dark:border-blue-800">
                         <h1 className="text-3xl font-bold mb-2 flex items-center gap-3">
                             <span className="text-4xl">🔘</span>
-                            Basic Buttons
+                            Your Custom Buttons
                         </h1>
                         <p className="text-muted-foreground flex items-center gap-2">
                             <span className="text-lg">📝</span>
-                            Test basic PayPal button integration with default
-                            settings
+                            Let's assume to be Disney
                         </p>
                     </div>
                 </div>
@@ -43,12 +42,12 @@ export default function ButtonsBasicPage() {
                     </div>
                     <div>
                         <PaymentPlaceholder
-                            scenario="ButtonsBasic"
-                            children={<ButtonBasic />}
+                            scenario="Custom Button"
+                            children={<CustomButton />}
                             placeHolder=""
                             paymentAreaIcon={
                                 <Image
-                                    src="/payment-area-icon/paypal.svg"
+                                    src="/payment-area-icon/winnie.svg"
                                     alt="PayPal"
                                     width={100}
                                     height={100}

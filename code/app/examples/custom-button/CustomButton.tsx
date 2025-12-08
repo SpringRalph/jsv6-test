@@ -23,14 +23,13 @@ export default function ButtonBasic() {
                 paymentSessionOptions
             );
 
-        const paypalButton = document.querySelector("#paypal-btn")!;
-        paypalButton.removeAttribute("hidden");
+        const merchantButton = document.querySelector("#merchant-button")!;
 
         // get the promise reference by invoking createOrder()
         // do not await this async function since it can cause transient activation issues
         const createOrderPromise = createOrder();
 
-        paypalButton.addEventListener("click", async () => {
+        merchantButton.addEventListener("click", async () => {
             try {
                 await paypalPaymentSession.start(
                     { presentationMode: "auto" }, // Auto-detects best presentation mode
@@ -41,6 +40,9 @@ export default function ButtonBasic() {
                 handlePaymentError(error);
             }
         });
+
+        // Show the merchant button after everything is set up
+        merchantButton.classList.remove("hidden");
     }
 
     useEffect(() => {
@@ -108,8 +110,23 @@ export default function ButtonBasic() {
     if (error) return <div>PayPal SDK加载失败: {error.message}</div>;
 
     return (
-        <div className="w-full min-h-[60px] flex items-center justify-center">
-            <paypal-button id="paypal-btn" type="pay" hidden></paypal-button>
+        <div className="w-full min-h-[60px] flex items-center justify-center pt-4">
+            <sdk-custom-button-wrapper funding-source="paypal">
+                <button 
+                    id="merchant-button"
+                    className="px-6 py-3 bg-gradient-to-r from-blue-400 to-purple-500 text-white font-bold rounded-full shadow-lg hover:from-blue-500 hover:to-purple-600 focus:outline-none focus:ring-4 focus:ring-blue-300 focus:ring-opacity-50 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 hidden relative overflow-hidden group animate-bounce"
+                >
+                    <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300 rounded-full"></span>
+                    <div className="flex items-center justify-center space-x-2">
+                        <img 
+                            src="/payment-area-icon/disney.svg" 
+                            alt="Disney Icon" 
+                            className="w-8 h-8 ml-2 transform group-hover:rotate-12 transition-transform duration-300"
+                        />
+                        <span>Merchant Button</span>
+                    </div>
+                </button>
+            </sdk-custom-button-wrapper>
         </div>
     );
 }
