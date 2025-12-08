@@ -28,7 +28,7 @@ export const routes: RouteMetadata[] = [
     title: "Merchant Custom Button",
     description: "Test Merchant host button",
     group: "Buttons",
-    workStage: 1, // 完成
+    workStage: 4,
   },
 
   {
