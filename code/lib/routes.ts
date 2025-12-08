@@ -71,6 +71,14 @@ export const routes: RouteMetadata[] = [
     workStage: 4,
   },
 
+   {
+    path: "/examples/subscribe",
+    title: "Subscription",
+    description: "Show bSubscription",
+    group: "Buttons",
+    workStage: 1,
+  },
+
 
   {
     path: "/examples/BNPLMessaging",
