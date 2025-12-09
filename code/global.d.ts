@@ -58,6 +58,9 @@ declare module 'react' {
         'funding-source'?: string;
         [key: string]: any;
       }
+      'bancontact-button': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
+        [key: string]: any;
+      }
     }
   }
 }
