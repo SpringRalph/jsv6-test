@@ -61,6 +61,18 @@ declare module 'react' {
       'bancontact-button': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
         [key: string]: any;
       }
+      'blik-button': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
+        [key: string]: any;
+      }
+      'ideal-button': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
+        [key: string]: any;
+      }
+      'eps-button': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
+        [key: string]: any;
+      }
+      'p24-button': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
+        [key: string]: any;
+      }
     }
   }
 }

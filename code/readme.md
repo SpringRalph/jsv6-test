@@ -27,7 +27,7 @@ JS SDK v6 的使用心得:
 
 5. 无论是内部文档还是 online doc 都没有提到 `createInstance()` 这个方法中可以传入 `testBuyerCountry`这个参数, 需要查看`typescript`的`d.ts`函数接口才可以
 
-6. 没有办法渲染 `BCDC`
+6. ~~没有办法渲染 `BCDC`~~
 
 7. `<pay-later>`JSX 元素不给`id`的话 DOM 渲染容易出问题 (存疑) | online-doc 上使用的无`id`的 example, code-sample 中加了`id`
 8. online doc 完全没有说`css`样式的问题

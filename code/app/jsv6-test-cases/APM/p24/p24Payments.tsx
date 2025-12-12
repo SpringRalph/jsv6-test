@@ -2,7 +2,7 @@
 
 import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
 import {
-    createOrder,
+    createPLNOrder,
     getBrowserSafeClientToken,
     handlePaymentError,
 } from "@/services/paypal-sdk-function/browser-function";
@@ -14,14 +14,29 @@ import {
 import React, { useEffect } from "react";
 import toast from "react-hot-toast";
 
-export default function BancontactPayments() {
+export default function p24Payments() {
     const { ready, loading, error } = usePayPalWebSdk();
 
-    function setupPaymentFields(bancontactCheckout: any) {
+    function setupPaymentFields(p24Checkout: any) {
         // Create payment field for full name with optional prefill
-        const fullNameField = bancontactCheckout.createPaymentFields({
+        const fullNameField = p24Checkout.createPaymentFields({
             type: "name",
-            value: "Test Bancontact", // Optional prefill value
+            value: "Test p24", // Optional prefill value
+            style: {
+                // Optional styling to match your website
+                variables: {
+                    textColor: "#333333",
+                    colorTextPlaceholder: "#999999",
+                    fontFamily: "Verdana, sans-serif",
+                    fontSizeBase: "14px",
+                },
+            },
+        });
+
+        // Create payment field for email with optional prefill
+        const emailField = p24Checkout.createPaymentFields({
+            type: "email",
+            value: "my.test@test.com", // Optional prefill value
             style: {
                 // Optional styling to match your website
                 variables: {
@@ -34,26 +49,21 @@ export default function BancontactPayments() {
         });
 
         // Mount the field to the container
-        document
-            .querySelector("#bancontact-full-name")!
-            .appendChild(fullNameField);
+        document.querySelector("#p24-full-name")!.appendChild(fullNameField);
+        document.querySelector("#p24-email")!.appendChild(emailField);
     }
 
-    // Setup standard PayPal button
-    async function setupBancontactButtonHandler(bancontactSession: any) {
-        const bancontactButton = document.querySelector("#bancontact-button")!;
-        bancontactButton.removeAttribute("hidden");
+    // Setup standard p24 button
+    async function setupP24ButtonHandler(p24Session: any) {
+        const p24Button = document.querySelector("#p24-button")!;
+        p24Button.removeAttribute("hidden");
 
-        // get the promise reference by invoking createOrder()
-        // do not await this async function since it can cause transient activation issues
-        const createOrderPromise = createOrder();
-
-        bancontactButton.addEventListener("click", async () => {
+        p24Button.addEventListener("click", async () => {
             try {
                 console.log("Validating payment fields...");
 
                 // Validate the payment fields
-                const isValid = await bancontactSession.validate();
+                const isValid = await p24Session.validate();
 
                 if (isValid) {
                     console.log(
@@ -62,10 +72,10 @@ export default function BancontactPayments() {
 
                     // get the promise reference by invoking createOrder()
                     // do not await this async function since it can cause transient activation issues
-                    const createOrderPromise = createOrder();
+                    const createOrderPromise = createPLNOrder();
 
                     // Start payment flow with popup mode
-                    await bancontactSession.start(
+                    await p24Session.start(
                         { presentationMode: "popup" },
                         createOrderPromise
                     );
@@ -103,37 +113,37 @@ export default function BancontactPayments() {
 
                 const sdkInstance = await paypal?.createInstance?.({
                     clientToken,
-                    testBuyerCountry: "BE", // Belgium for Bancontact testing
-                    components: ["bancontact-payments"],
+                    testBuyerCountry: "PL", // Poland for p24 testing
+                    components: ["p24-payments"],
                     pageType: "checkout",
                 });
 
-                const bancontactSession =
+                const p24Session =
                     //@ts-ignore
-                    sdkInstance.createBancontactOneTimePaymentSession(
+                    sdkInstance.createP24OneTimePaymentSession(
                         paymentSessionOptions
                     );
 
                 if (!true) {
                     // ####################### 进行eligibility check ###############################
 
-                    // Check if Bancontact is eligible
+                    // Check if p24 is eligible
                     const paymentMethods =
                         await sdkInstance.findEligibleMethods({
-                            currencyCode: "EUR",
+                            currencyCode: "PLN",
                         });
 
-                    if (paymentMethods.isEligible("bancontact")) {
+                    if (paymentMethods.isEligible("p24")) {
                         // Setup payment fields
-                        setupPaymentFields(bancontactSession);
-                        setupBancontactButtonHandler(bancontactSession);
+                        setupPaymentFields(p24Session);
+                        setupP24ButtonHandler(p24Session);
                     }
 
                     // ############################################################################
                 } else {
                     // Setup payment fields
-                    setupPaymentFields(bancontactSession);
-                    setupBancontactButtonHandler(bancontactSession);
+                    setupPaymentFields(p24Session);
+                    setupP24ButtonHandler(p24Session);
                 }
 
                 if (cancelled) {
@@ -155,12 +165,14 @@ export default function BancontactPayments() {
     if (error) return <div>PayPal SDK加载失败: {error.message}</div>;
 
     return (
-        <div className="w-full min-h-[60px] flex items-center justify-center flex-col">
-            <div id="bancontact-full-name"></div>
-            <bancontact-button
-                id="bancontact-button"
+        <div className="w-full flex items-center justify-center flex-col">
+            <div id="p24-full-name" className=" h-[60] w-full"></div>
+            <div id="p24-email" className=" h-[60] w-full"></div>
+            <p24-button
+                id="p24-button"
+                className=" w-[95%] "
                 hidden
-            ></bancontact-button>
+            ></p24-button>
         </div>
     );
 }
