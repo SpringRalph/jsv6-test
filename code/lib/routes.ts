@@ -177,6 +177,15 @@ export const routes: RouteMetadata[] = [
     panelIcon: "CreditCard",
     workStage: 4, // 完成
   },
+
+  {
+    path: "/jsv6-test-cases/advanced/fastlane",
+    title: "Fastlane",
+    description: "Test Fastlane integration for custom checkout",
+    group: "Advanced",
+    panelIcon: "ArrowRight",
+    workStage: 1,
+  },
   
   // APM group
   {
