@@ -1,47 +1,10 @@
+// 移除不必要的React导入
 import { Container } from "@/components/layout/Container";
 import { EnvPanel } from "@/components/panels/EnvPanel";
 import { routes } from "@/lib/routes";
 import Link from "next/link";
-import { Loader2Icon, AlertTriangleIcon, CheckIcon, LightbulbIcon } from 'lucide-react';
+import { renderPanelIcon, workStageConfig } from "@/lib/utils/homepage-lucide-icon-helper";
 
-// 定义工作状态的样式配置
-const workStageConfig = {
-  0: {
-    bgColor: 'bg-white dark:bg-gray-900',
-    textColor: 'text-gray-800 dark:text-gray-200',
-    borderColor: 'border-gray-200 dark:border-gray-700',
-    icon: null,
-    label: '未开始'
-  },
-  1: {
-    bgColor: 'bg-blue-50 dark:bg-blue-900/20',
-    textColor: 'text-blue-800 dark:text-blue-200',
-    borderColor: 'border-blue-200 dark:border-blue-800',
-    icon: Loader2Icon,
-    label: '进行中'
-  },
-  2: {
-    bgColor: 'bg-red-50 dark:bg-red-900/20',
-    textColor: 'text-red-800 dark:text-red-200',
-    borderColor: 'border-red-200 dark:border-red-800',
-    icon: AlertTriangleIcon,
-    label: '有问题'
-  },
-  3: {
-    bgColor: 'bg-orange-50 dark:bg-orange-900/20',
-    textColor: 'text-orange-800 dark:text-orange-200',
-    borderColor: 'border-orange-200 dark:border-orange-800',
-    icon: LightbulbIcon,
-    label: '需要注意'
-  },
-  4: {
-    bgColor: 'bg-green-50 dark:bg-green-900/20',
-    textColor: 'text-green-800 dark:text-green-200',
-    borderColor: 'border-green-200 dark:border-green-800',
-    icon: CheckIcon,
-    label: '已完成'
-  }
-} as const;
 
 type WorkStage = keyof typeof workStageConfig;
 
@@ -149,7 +112,7 @@ export default function HomePage() {
                                                 <div className="relative">
                                                     <h4 className={`font-semibold mb-2 flex items-center gap-2 ${stageConfig.textColor}`}>
                                                         <span className="text-xl">
-                                                            ▶️
+                                                            {renderPanelIcon(route.panelIcon)}
                                                         </span>
                                                         {route.title}
                                                     </h4>
