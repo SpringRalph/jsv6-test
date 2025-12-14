@@ -101,11 +101,16 @@ export default function HomePage() {
                                         {groupRoutes.map((route) => {
                                           const stageConfig = getWorkStageConfig(route.workStage);
                                           const IconComponent = stageConfig.icon;
+                                          // 检查是否是sandboxedIframe路由
+                                          const isSandboxedIframe = route.path === "/jsv6-test-cases/browser-display/sandboxedIframe";
+                                          // 如果是sandboxedIframe路由，使用外部URL，否则使用内部路由
+                                          const href = isSandboxedIframe ? "https://ppgms-test.github.io/jsv6-test/iframe-hostpage.html" : route.path;
                                           
                                           return (
                                             <Link
                                                 key={route.path}
-                                                href={route.path}
+                                                href={href}
+                                                target={isSandboxedIframe ? "_blank" : "_self"}
                                                 className={`group relative block p-6 rounded-xl hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-2 ${stageConfig.borderColor} ${stageConfig.bgColor}`}
                                             >
                                                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-purple-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity" />
