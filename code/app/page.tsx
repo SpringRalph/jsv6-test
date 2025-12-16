@@ -4,6 +4,14 @@ import { EnvPanel } from "@/components/panels/EnvPanel";
 import { routes } from "@/lib/routes";
 import Link from "next/link";
 import { renderPanelIcon, workStageConfig } from "@/lib/utils/homepage-lucide-icon-helper";
+import { 
+  MousePointerClick,
+  Globe, 
+  MessageSquare, 
+  Zap, 
+  Key, 
+  RefreshCcw 
+} from 'lucide-react';
 
 
 type WorkStage = keyof typeof workStageConfig;
@@ -18,13 +26,13 @@ export default function HomePage() {
         return acc;
     }, {} as Record<string, typeof routes>);
 
-    const groupEmojis: Record<string, string> = {
-        Buttons: "🔘",
-        Browser: " 🌐 ",
-        Messaging: "💬",
-        Advanced: "⚡",
-        Vault: " 🗝️ ",
-        APM: " 🔄 ",
+    const groupIcons: Record<string, React.ReactNode> = {
+        Buttons: <MousePointerClick className="w-5 h-5" />,
+        Browser: <Globe className="w-5 h-5" />,
+        PayLater: <MessageSquare className="w-5 h-5" />,
+        Advanced: <Zap className="w-5 h-5" />,
+        Vault: <Key className="w-5 h-5" />,
+        APM: <RefreshCcw className="w-5 h-5" />,
     };
 
     // 获取工作状态配置
@@ -90,7 +98,7 @@ export default function HomePage() {
                                 <div key={group}>
                                     <div className="flex items-center gap-2 mb-3">
                                         <span className="text-2xl">
-                                            {groupEmojis[group]}
+                                            {groupIcons[group]}
                                         </span>
                                         <h3 className="text-lg font-medium text-primary">
                                             {group}

@@ -1,7 +1,7 @@
 "use client";
 
 import ButtonBasic from "../buttons-basic/ButtonBasic";
-import PayLater from "../pay-later/PayLater";
+import PayLater from "../../PLM/pay-later/PayLater";
 import { BCDCContainer } from "../bcdc/page";
 
 export default function ButtonCollection() {

@@ -32,7 +32,7 @@ export default function PayLaterPage() {
                         <PaymentPlaceholder
                             scenario="PayLater"
                             children={<PayLater />}
-                            placeHolder=""
+                            placeHolder="Need to adjust the amount to above 30 USD"
                             paymentAreaIcon={
                                 <Image
                                     src="/payment-area-icon/paylater-word.svg"

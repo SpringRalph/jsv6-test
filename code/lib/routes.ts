@@ -35,14 +35,7 @@ export const routes: RouteMetadata[] = [
     panelIcon: "Code",
     workStage: 4,
   },
-  {
-    path: "/jsv6-test-cases/buttons/pay-later",
-    title: "Pay Later",
-    description: "Test Pay Later and installment options",
-    group: "Buttons",
-    panelIcon: "Clock",
-    workStage: 4, // 完成
-  },
+ 
   {
     path: "/jsv6-test-cases/buttons/bcdc",
     title: "BCDC(PayPal Guest Payment)",
@@ -85,11 +78,29 @@ export const routes: RouteMetadata[] = [
   },
   
   // PLM (Pay Later Messaging) group
+   {
+    path: "/jsv6-test-cases/PLM/pay-later",
+    title: "Pay Later",
+    description: "Test Pay Later and installment options",
+    group: "PayLater",
+    panelIcon: "Clock",
+    workStage: 4, 
+  },
+
+  {
+    path: "/jsv6-test-cases/PLM/pay-later-custom-button",
+    title: "Pay Later with Custom Button",
+    description: "Test Integrate Pay Later with Custom Button",
+    group: "PayLater",
+    panelIcon: "Clock",
+    workStage: 4, 
+  },
+
   {
     path: "/jsv6-test-cases/PLM/BNPLMessaging",
     title: "Pay Later Messaging",
     description: "Test PayPal Pay Later Messaging components",
-    group: "Messaging",
+    group: "PayLater",
     panelIcon: "MessageSquare",
     workStage: 4,
   },
@@ -97,7 +108,7 @@ export const routes: RouteMetadata[] = [
     path: "/jsv6-test-cases/PLM/BNPLMessaging-dynamic",
     title: "Dynamic Pay Later Messaging",
     description: "Dynamically render PayPal Pay Later Messaging components",
-    group: "Messaging",
+    group: "PayLater",
     panelIcon: "Zap",
     workStage: 4,
   },
@@ -105,7 +116,7 @@ export const routes: RouteMetadata[] = [
     path: "/jsv6-test-cases/PLM/BNPLMessaging-Analytics",
     title: "Analytize Pay Later Messaging",
     description: "Analytize PayPal Pay Later Messaging Learn More",
-    group: "Messaging",
+    group: "PayLater",
     panelIcon: "BarChart2",
     workStage: 1,
   },
