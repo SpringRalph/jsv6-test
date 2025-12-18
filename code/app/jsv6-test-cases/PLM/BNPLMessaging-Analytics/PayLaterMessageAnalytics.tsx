@@ -59,18 +59,45 @@ export default function PayLaterMessageAnalytics() {
                         //@ts-ignore
                         messageElement.setContent(content);
                     },
+                    onTemplateReady: (content: any) => {
+                        // ANALYTICS LOG EXAMPLE
+                        console.log("Cached Template Rendered");
+                        //@ts-ignore
+                        messageElement.setContent(content);
+                    },
+                    onContentReady: (content: any) => {
+                        // ANALYTICS LOG EXAMPLE
+                        console.log("Fetched Content Rendered");
+                        //@ts-ignore
+                        messageElement.setContent(content);
+                    },
                 });
 
-                function triggerAmountUpdate(amount: string) {
-                    console.log("Amount:", amount);
-                    content.update({ amount });
-                }
+                const learnMore = await messagesInstance.createLearnMore({
+                    onShow: (content: any) => {
+                        // ANALYTICS LOG EXAMPLE
+                        console.log("Learn More Shown");
+                    },
+                    onApply: (content: any) => {
+                        // ANALYTICS LOG EXAMPLE
+                        console.log("Learn More Apply");
+                    },
+                    onClose: (content: any) => {
+                        // ANALYTICS LOG EXAMPLE
+                        console.log("Learn More Closed");
+                    },
+                });
 
-                document
-                    .querySelector("#refresh-message-btn")!
-                    .addEventListener("click", () => {
-                        triggerAmountUpdate(String(total));
-                    });
+                messageElement.addEventListener(
+                    "paypal-message-click",
+                    (event) => {
+                        event.preventDefault();
+                        //@ts-ignore
+                        learnMore.open(event.detail.config);
+                        // ANALYTICS LOG EXAMPLE
+                        console.log("Message Learn More Clicked");
+                    }
+                );
 
                 if (cancelled) {
                     // 如果实例需要销毁，按需处理
@@ -94,12 +121,6 @@ export default function PayLaterMessageAnalytics() {
     return (
         <div className="w-full min-h-[60px] flex items-center justify-center flex-col">
             <paypal-message id="paypal-message"></paypal-message>
-            <button
-                id="refresh-message-btn"
-                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-200"
-            >
-                Refresh Message
-            </button>
         </div>
     );
 }

@@ -110,7 +110,7 @@ export const routes: RouteMetadata[] = [
     description: "Dynamically render PayPal Pay Later Messaging components",
     group: "PayLater",
     panelIcon: "Zap",
-    workStage: 4,
+    workStage: 3,
   },
   {
     path: "/jsv6-test-cases/PLM/BNPLMessaging-Analytics",
@@ -118,7 +118,7 @@ export const routes: RouteMetadata[] = [
     description: "Analytize PayPal Pay Later Messaging Learn More",
     group: "PayLater",
     panelIcon: "BarChart2",
-    workStage: 1,
+    workStage: 2,
   },
   
   // Browser Display group
@@ -161,6 +161,25 @@ export const routes: RouteMetadata[] = [
     group: "Browser",
     panelIcon: "CheckCircle2",
     workStage: 4, // 完成
+  },
+
+
+  {
+    path: "/jsv6-test-cases/browser-display/redirect-outgoing",
+    title: "Simple Redirect Case",
+    description: "Browser Redirect",
+    group: "Browser",
+    panelIcon: "RefreshCcw",
+    workStage: 4,
+  },
+
+  {
+    path: "/jsv6-test-cases/browser-display/directAppSwitch-outgoing",
+    title: "Simple Direct App Switch",
+    description: "Test Browser Direct App Switch behavior",
+    group: "Browser",
+    panelIcon: "Smartphone",
+    workStage: 4,
   },
   
   // Advanced group

@@ -3,16 +3,18 @@ import { Container } from "@/components/layout/Container";
 import { EnvPanel } from "@/components/panels/EnvPanel";
 import { routes } from "@/lib/routes";
 import Link from "next/link";
-import { renderPanelIcon, workStageConfig } from "@/lib/utils/homepage-lucide-icon-helper";
-import { 
-  MousePointerClick,
-  Globe, 
-  MessageSquare, 
-  Zap, 
-  Key, 
-  RefreshCcw 
-} from 'lucide-react';
-
+import {
+    renderPanelIcon,
+    workStageConfig,
+} from "@/lib/utils/homepage-lucide-icon-helper";
+import {
+    MousePointerClick,
+    Globe,
+    MessageSquare,
+    Zap,
+    Key,
+    RefreshCcw,
+} from "lucide-react";
 
 type WorkStage = keyof typeof workStageConfig;
 
@@ -37,8 +39,51 @@ export default function HomePage() {
 
     // 获取工作状态配置
     const getWorkStageConfig = (stage: number | undefined) => {
-        const validStage = stage !== undefined && stage >= 0 && stage <= 4 ? stage : 0;
+        const validStage =
+            stage !== undefined && stage >= 0 && stage <= 4 ? stage : 0;
         return workStageConfig[validStage as WorkStage];
+    };
+
+    const getHref = (path: string) => {
+        // 检查是否是sandboxedIframe路由
+        const isSandboxedIframe: boolean =
+            path === "/jsv6-test-cases/browser-display/sandboxedIframe";
+
+        const isOutGoingRedirect: boolean =
+            path === "/jsv6-test-cases/browser-display/redirect-outgoing";
+        const isOutGoingAppSwitch: boolean =
+            path ===
+            "/jsv6-test-cases/browser-display/directAppSwitch-outgoing";
+
+        let href = path;
+        let targetFlag = false;
+
+        // 如果是sandboxedIframe路由，使用外部URL，否则使用内部路由
+        if (isSandboxedIframe) {
+            href = isSandboxedIframe
+                ? "https://ppgms-test.github.io/jsv6-test/iframe-hostpage.html"
+                : path;
+            targetFlag = isSandboxedIframe;
+        }
+
+        if (isOutGoingRedirect) {
+            href = isOutGoingRedirect
+                ? "https://ppgms-test.github.io/jsv6-test/redirect-test-vercel-backend.html"
+                : path;
+            targetFlag = isOutGoingRedirect;
+        }
+
+        if (isOutGoingAppSwitch) {
+            href = isOutGoingAppSwitch
+                ? "https://ppgms-test.github.io/jsv6-test/appswitch-test-vercel-backend.html"
+                : path;
+            targetFlag = isOutGoingAppSwitch;
+        }
+
+        return {
+            href,
+            targetFlag,
+        };
     };
 
     return (
@@ -61,8 +106,8 @@ export default function HomePage() {
                                 competitor SDKs, especially Stripe's. <br />
                                 🧪PayPal JS v6
                                 是开发团队在研究了友商(特别是stripe)SDK后,
-                                给大家带来的全新体验! <br/>
-                                ⚠️ Test Case有5个状态: 
+                                给大家带来的全新体验! <br />
+                                ⚠️ Test Case有5个状态:
                                 <span className="inline-flex flex-wrap gap-2 mt-2 ml-2">
                                     <span className="px-3 py-1 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-full text-xs font-medium">
                                         未开始
@@ -107,43 +152,56 @@ export default function HomePage() {
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                         {groupRoutes.map((route) => {
-                                          const stageConfig = getWorkStageConfig(route.workStage);
-                                          const IconComponent = stageConfig.icon;
-                                          // 检查是否是sandboxedIframe路由
-                                          const isSandboxedIframe = route.path === "/jsv6-test-cases/browser-display/sandboxedIframe";
-                                          // 如果是sandboxedIframe路由，使用外部URL，否则使用内部路由
-                                          const href = isSandboxedIframe ? "https://ppgms-test.github.io/jsv6-test/iframe-hostpage.html" : route.path;
-                                          
-                                          return (
-                                            <Link
-                                                key={route.path}
-                                                href={href}
-                                                target={isSandboxedIframe ? "_blank" : "_self"}
-                                                className={`group relative block p-6 rounded-xl hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-2 ${stageConfig.borderColor} ${stageConfig.bgColor}`}
-                                            >
-                                                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-purple-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                                                <div className="relative">
-                                                    <h4 className={`font-semibold mb-2 flex items-center gap-2 ${stageConfig.textColor}`}>
-                                                        <span className="text-xl">
-                                                            {renderPanelIcon(route.panelIcon)}
-                                                        </span>
-                                                        {route.title}
-                                                    </h4>
-                                                    <p className="text-sm text-muted-foreground">
-                                                        {route.description}
-                                                    </p>
-                                                </div>
-                                                {/* 工作状态指示器 */}
-                                                {IconComponent && (
-                                                  <div className={`absolute top-2 right-2 p-1 rounded-full ${stageConfig.bgColor} ${stageConfig.textColor}`}>
-                                                    <IconComponent className="w-4 h-4" />
-                                                  </div>
-                                                )}
-                                                {!IconComponent && (
-                                                  <div className="absolute top-2 right-2 w-2 h-2 bg-primary/20 rounded-full group-hover:scale-150 transition-transform" />
-                                                )}
-                                            </Link>
-                                          );
+                                            const stageConfig =
+                                                getWorkStageConfig(
+                                                    route.workStage
+                                                );
+                                            const IconComponent =
+                                                stageConfig.icon;
+
+                                            const { href, targetFlag } =
+                                                getHref(route.path);
+
+                                            return (
+                                                <Link
+                                                    key={route.path}
+                                                    href={href}
+                                                    target={
+                                                        targetFlag
+                                                            ? "_blank"
+                                                            : "_self"
+                                                    }
+                                                    className={`group relative block p-6 rounded-xl hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-2 ${stageConfig.borderColor} ${stageConfig.bgColor}`}
+                                                >
+                                                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-purple-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                                                    <div className="relative">
+                                                        <h4
+                                                            className={`font-semibold mb-2 flex items-center gap-2 ${stageConfig.textColor}`}
+                                                        >
+                                                            <span className="text-xl">
+                                                                {renderPanelIcon(
+                                                                    route.panelIcon
+                                                                )}
+                                                            </span>
+                                                            {route.title}
+                                                        </h4>
+                                                        <p className="text-sm text-muted-foreground">
+                                                            {route.description}
+                                                        </p>
+                                                    </div>
+                                                    {/* 工作状态指示器 */}
+                                                    {IconComponent && (
+                                                        <div
+                                                            className={`absolute top-2 right-2 p-1 rounded-full ${stageConfig.bgColor} ${stageConfig.textColor}`}
+                                                        >
+                                                            <IconComponent className="w-4 h-4" />
+                                                        </div>
+                                                    )}
+                                                    {!IconComponent && (
+                                                        <div className="absolute top-2 right-2 w-2 h-2 bg-primary/20 rounded-full group-hover:scale-150 transition-transform" />
+                                                    )}
+                                                </Link>
+                                            );
                                         })}
                                     </div>
                                 </div>

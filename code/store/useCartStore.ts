@@ -8,6 +8,7 @@ interface CartStore extends CartState {
   incrementQuantity: () => void
   decrementQuantity: () => void
   clearCart: () => void
+  setQuantity: (quantity: number) => void
 }
 
 const testProduct: Product = {
@@ -31,6 +32,7 @@ export const useCartStore = create<CartStore>()(
           quantity: Math.max(1, state.quantity - 1),
         })),
       clearCart: () => set({ quantity: 1 }),
+      setQuantity: (quantity: number) => set({ quantity }),
     }),
     {
       name: "pp-v6-cart",

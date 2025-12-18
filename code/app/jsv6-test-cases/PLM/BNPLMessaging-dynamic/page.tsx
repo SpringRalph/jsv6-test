@@ -21,7 +21,8 @@ export default function MessagingPage() {
                         Dynamically Messaging
                     </h1>
                     <p className="text-muted-foreground">
-                        Test Render PayPal messaging components Dynamically
+                        Test Render PayPal messaging components Dynamically. <br/>
+                        This is a very confusing feature name. For real use case, goto Message Analytics case
                     </p>
                 </div>
 
