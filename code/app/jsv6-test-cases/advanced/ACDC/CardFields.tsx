@@ -3,7 +3,7 @@
 import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
 import {
     captureOrder,
-    createOrder,
+    createOrderACDC,
     getBrowserSafeClientToken,
     handlePaymentError,
 } from "@/services/paypal-sdk-function/browser-function";
@@ -58,7 +58,7 @@ export default function CardFields() {
         try {
             // get the promise reference by invoking createOrder()
             // do not await this async function since it can cause transient activation issues
-            const { orderId } = await createOrder();
+            const { orderId } = await createOrderACDC();
 
             console.log("[ACDC Create Order]:orderId:", orderId);
             // debugger;
@@ -68,6 +68,8 @@ export default function CardFields() {
                     postalCode: "95131",
                 }, // supply what your business needs
             });
+
+            debugger;
 
             switch (state) {
                 case "succeeded": {

@@ -43,6 +43,10 @@ export async function createOrder(): Promise<any> {
 	return createOrderAPIFactory("/api/paypal/create-order","paypal")();
 }
 
+export async function createOrderACDC(): Promise<any> {
+	return createOrderAPIFactory("/api/paypal/create-order-ACDC","card")();
+}
+
 export async function createEUROrder(): Promise<any> {
 	return createOrderAPIFactory("/api/paypal/create-order-EUR","paypal")();
 }
