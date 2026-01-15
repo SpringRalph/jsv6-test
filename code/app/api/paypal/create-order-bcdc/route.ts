@@ -64,15 +64,15 @@ export async function POST(req: Request) {
                 "type": "SHIPPING",
                 "method": "DHL",
                 "name": {
-                    "full_name": "Fritz von Berlichingen"
+                    "full_name": "John Doe"
                 },
                 "address": {
-                    "address_line_1": "Albert-Einstein-Ring 2-6",
-                    "address_line_2": "PayPal",
-                    "postal_code": "14532",
-                    "admin_area_2": "Kleinmachnow",
+                    "address_line_1": "1600 Amphitheatre Parkway",
+                    "address_line_2": "Suite 100",
+                    "postal_code": "94043",
+                    "admin_area_2": "Mountain View",
                     "country_code": "US",
-                    "admin_area_1": "Brandenburg"
+                    "admin_area_1": "CA"
                 }
             }
         };
@@ -80,7 +80,7 @@ export async function POST(req: Request) {
         const orderBody = {
             intent: "CAPTURE",
             purchase_units: [purchaseUnit],
-           
+
         };
 
         if (paymentDetail.payment_source) {
@@ -89,6 +89,19 @@ export async function POST(req: Request) {
             const payment_source = {
                 [paymentDetail.payment_source]: {
                     "experience_context": {
+                        "name": {
+                            "given_name": "John",
+                            "surname": "Doe"
+                        },
+                        "billing_address": {
+                            "address_line_1": "1600 Amphitheatre Parkway",
+                            "address_line_2": "Suite 100",
+                            "postal_code": "94043",
+                            "admin_area_2": "Mountain View",
+                            "country_code": "US",
+                            "admin_area_1": "CA"
+                        },
+
                         "payment_method_preference": "IMMEDIATE_PAYMENT_REQUIRED",
                         "brand_name": "EXAMPLE INC",
                         "locale": "en-US",
@@ -96,7 +109,9 @@ export async function POST(req: Request) {
                         "shipping_preference": "SET_PROVIDED_ADDRESS",
                         "user_action": "PAY_NOW",
                         "return_url": return_url,
-                        "cancel_url": cancel_url
+                        "cancel_url": cancel_url,
+
+
                     }
                 }
             };
