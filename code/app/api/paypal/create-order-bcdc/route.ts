@@ -77,7 +77,7 @@ export async function POST(req: Request) {
             }
         };
 
-        const orderBody = {
+        const orderBody: Record<string, any> = {
             intent: "CAPTURE",
             purchase_units: [purchaseUnit],
 
@@ -101,7 +101,7 @@ export async function POST(req: Request) {
                             "country_code": "US",
                             "admin_area_1": "CA"
                         },
-
+                        "email_address": "test@test.com",
                         "payment_method_preference": "IMMEDIATE_PAYMENT_REQUIRED",
                         "brand_name": "EXAMPLE INC",
                         "locale": "en-US",
@@ -115,7 +115,9 @@ export async function POST(req: Request) {
                     }
                 }
             };
-            Object.assign(orderBody, payment_source)
+
+            orderBody["payment_source"] = payment_source
+
         }
 
 

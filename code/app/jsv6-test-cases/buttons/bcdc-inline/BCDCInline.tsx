@@ -82,7 +82,7 @@ export default function BCDCInline() {
                             currencyCode: "USD",                          
                         });
 
-                    debugger;
+                    // debugger;
 
                     // [ATTENTION!]这里有问题, 这里不需要 find-eligible-methods, 里面也似乎没有值
                     // Setup BCDC button if eligible
