@@ -50,7 +50,7 @@ export const routes: RouteMetadata[] = [
     description: "Test inline BCDC",
     group: "Buttons",
     panelIcon: "Layers",
-    workStage: 2, // 有问题
+    workStage: 4, // 完成
   },
   {
     path: "/jsv6-test-cases/buttons/venmo",

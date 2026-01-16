@@ -89,19 +89,6 @@ export async function POST(req: Request) {
             const payment_source = {
                 [paymentDetail.payment_source]: {
                     "experience_context": {
-                        "name": {
-                            "given_name": "John",
-                            "surname": "Doe"
-                        },
-                        "billing_address": {
-                            "address_line_1": "1600 Amphitheatre Parkway",
-                            "address_line_2": "Suite 100",
-                            "postal_code": "94043",
-                            "admin_area_2": "Mountain View",
-                            "country_code": "US",
-                            "admin_area_1": "CA"
-                        },
-                        "email_address": "test@test.com",
                         "payment_method_preference": "IMMEDIATE_PAYMENT_REQUIRED",
                         "brand_name": "EXAMPLE INC",
                         "locale": "en-US",
@@ -111,7 +98,25 @@ export async function POST(req: Request) {
                         "return_url": return_url,
                         "cancel_url": cancel_url,
 
-
+                    },
+                    "name": {
+                        "given_name": "John",
+                        "surname": "Doe"
+                    },
+                    "address": {
+                        "address_line_1": "1600 Amphitheatre Parkway",
+                        "address_line_2": "Suite 100",
+                        "postal_code": "94043",
+                        "admin_area_2": "Mountain View",
+                        "country_code": "US",
+                        "admin_area_1": "CA"
+                    },
+                    "email_address": "test@test.com",
+                    "phone": {
+                        "phone_type": "MOBILE",
+                        "phone_number": {
+                            "national_number": "4085551234"
+                        }
                     }
                 }
             };
