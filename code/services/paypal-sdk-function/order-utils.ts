@@ -16,7 +16,7 @@ function readPersistedCartFromStorage(): any | null {
 
 export function createOrderAPIFactory(APIEndPoint: string, payment_source: string) {
 
-    return async (): Promise<any> => {
+    return async (): Promise<{ orderId: string }> => {
         if (typeof window === "undefined") throw new Error("createOrder must be called in browser");
 
         const payload = getOrderConfig();

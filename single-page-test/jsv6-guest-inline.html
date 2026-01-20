@@ -148,10 +148,10 @@
                         <span
                             class="text-5xl font-bold text-slate-900"
                             id="product-price"
-                            >$299.00</span
+                            >$149.95</span
                         >
                         <span class="text-xl text-gray-400 line-through mb-2"
-                            >$349.00</span
+                            >$200.00</span
                         >
                     </div>
 
@@ -200,54 +200,159 @@
             // Initialize Lucide Icons / 初始化 Lucide 图标
             lucide.createIcons();
 
-            try {
-                // Fetch client token from API / 从 API 获取 client token
-                const response = await fetch(
-                    "https://paypal-backend-api-vercel.vercel.app/api/auth/sandbox-browser-safe-client-token"
-                );
-                const { accessToken } = await response.json();
-                const clientToken = accessToken;
+            const APIEndPoint =
+                "https://paypal-backend-api-vercel.vercel.app/api/checkout/orders/create-order-with-BCDC-inline";
 
-                if (window.paypal) {
-                    const sdkInstance = await window.paypal.createInstance({
-                        clientToken,
-                        components: ["paypal-guest-payments"],
-                        pageType: "checkout",
-                        testBuyerCountry: "US",
-                    });
+            const createOrder = new Promise(async (resolve, rej) => {
+                const res = await fetch(APIEndPoint);
 
-                    const paypalGuestPaymentSession =
-                        //@ts-ignore
-                        sdkInstance.createPayPalGuestOneTimePaymentSession(
-                            paymentSessionOptions
+                if (!res.ok) {
+                    const text = await res.text().catch(() => "");
+                    rej(`创建订单失败: ${res.status} ${text}`);
+                }
+
+                const json = await res.json();
+                console.log(JSON.stringify(json, null, "  "));
+                const orderId = json?.id || json?.order?.id;
+                if (!orderId) rej("后端未返回订单ID");
+
+                console.log("[OrderId]:", orderId);
+                resolve({orderId}); // v6 通常要求返回字符串 orderId
+            });
+
+            async function startGuestPaymentSession(
+                checkoutButton,
+                paypalGuestPaymentSession
+            ) {
+                try {
+                    const startOptions = {
+                        targetElement: checkoutButton,
+                        presentationMode: "auto",
+                    };
+
+                    const createOrderPromise = createOrder;
+                    await paypalGuestPaymentSession.start(
+                        startOptions,
+                        createOrderPromise
+                    );
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+
+            async function setupGuestPaymentButton(
+                checkoutButton,
+                paypalGuestPaymentSession
+            ) {
+                checkoutButton.addEventListener("click", onClick);
+
+                async function onClick() {
+                    startGuestPaymentSession(
+                        checkoutButton,
+                        paypalGuestPaymentSession
+                    );
+                }
+            }
+
+            async function onPayPalWebSdkLoaded() {
+                try {
+                    // Fetch client token from API / 从 API 获取 client token
+                    const response = await fetch(
+                        "https://paypal-backend-api-vercel.vercel.app/api/auth/sandbox-browser-safe-client-token"
+                    );
+                    const { accessToken } = await response.json();
+                    const clientToken = accessToken;
+                    console.log("[1] clientToken:", clientToken);
+
+                    if (window.paypal) {
+                        console.log("[2]");
+                        const sdkInstance = await window.paypal.createInstance({
+                            clientToken,
+                            components: ["paypal-guest-payments"],
+                            pageType: "checkout",
+                            testBuyerCountry: "US",
+                        });
+                        // debugger;
+                        console.log("[3]");
+                        const paypalGuestPaymentSession =
+                            //@ts-ignore
+                            await sdkInstance.createPayPalGuestOneTimePaymentSession(
+                                {
+                                    async onApprove(data) {
+                                        console.log("onApprove", data);
+                                        const orderId = data.id;
+
+                                        const response = await fetch(
+                                            `https://paypal-backend-api-vercel.vercel.app/api/checkout/orders/${orderId}/capture`
+                                        );
+                                        const captureResp =
+                                            await response.json();
+
+                                        console.log(
+                                            "Capture result",
+                                            captureResp
+                                        );
+                                    },
+                                    onCancel(data) {
+                                        console.log("onCancel", data);
+                                    },
+                                    onError(error) {
+                                        console.log("onError", error);
+                                    },
+                                }
+                            );
+
+                        const bcdcButton = document.querySelector(
+                            "#paypal-basic-card-button"
                         );
 
-                    const bcdcButton = document.querySelector(
-                        "#paypal-basic-card-button"
-                    );
+                        // start checkout immediately on script load
+                        // startGuestPaymentSession(
+                        //     bcdcButton,
+                        //     paypalGuestPaymentSession
+                        // );
 
-                    const createOrderPromise = createOrderBCDC();
-                    bcdcButton.addEventListener("click", async () => {
-                        try {
-                            await paypalGuestPaymentSession.start(
-                                {
-                                    targetElement: bcdcButton,
-                                    presentationMode: "auto",
-                                }, // Auto-detects best presentation mode
-                                createOrderPromise
-                            );
-                        } catch (error) {
-                            console.error("PayPal payment start error:", error);
-                            handlePaymentError(error);
-                        }
-                    });
+                        // also setup the button to start checkout on click
+                        setupGuestPaymentButton(
+                            bcdcButton,
+                            paypalGuestPaymentSession
+                        );
 
-                    
-                } else {
-                    console.error("PayPal SDK not loaded");
+                        bcdcButton?.addEventListener("click", async () => {
+                            try {
+                                await paypalGuestPaymentSession.start(
+                                    {
+                                        targetElement: bcdcButton,
+                                        presentationMode: "auto",
+                                    }, // Auto-detects best presentation mode
+                                    createOrder
+                                );
+                            } catch (error) {
+                                console.error(
+                                    "PayPal payment start error:",
+                                    error
+                                );
+                                // 可选：这里可以调用一个错误处理函数
+                            }
+                        });
+                    } else {
+                        console.error("PayPal SDK not loaded");
+                    }
+                } catch (error) {
+                    console.error("Error initializing PayPal:", error);
                 }
-            } catch (error) {
-                console.error("Error initializing PayPal:", error);
+            }
+
+            // Ensure we call after function is defined / 在函数定义后再调用
+            const sdkScript = document.querySelector(
+                'script[src="https://www.sandbox.paypal.com/web-sdk/v6/core"]'
+            );
+            if (window.paypal) {
+                // SDK already available (cache/fast load) / SDK 已可用
+                onPayPalWebSdkLoaded();
+            } else {
+                // Wait for SDK script load / 等待脚本加载
+                sdkScript?.addEventListener("load", onPayPalWebSdkLoaded);
             }
         </script>
     </body>
