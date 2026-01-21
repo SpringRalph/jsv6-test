@@ -16,32 +16,35 @@ import { useEffect } from "react";
 export default function BCDCInline() {
     const { ready, loading, error } = usePayPalWebSdk();
 
-
-    // Setup standard PayPal button
-    async function setupBCDCButton(sdkInstance: AppSdkInstance) {
-        const paypalGuestPaymentSession =
-            //@ts-ignore
-            sdkInstance.createPayPalGuestOneTimePaymentSession(
-                paymentSessionOptions
-            );
-
-        const bcdcButton = document.querySelector("#paypal-basic-card-button")!;
-
-        // get the promise reference by invoking createOrder()
-        // do not await this async function since it can cause transient activation issues
-        const createOrderPromise = createOrderBCDC();
-
+    // Setup BCDC button
+    async function setupBCDCButton(
+        bcdcButton: Element,
+        paypalGuestPaymentSession: any,
+        createOrderPromise: Promise<string>,
+    ) {
         bcdcButton.addEventListener("click", async () => {
             try {
-                await paypalGuestPaymentSession.start(
-                    { targetElement: bcdcButton, presentationMode: "auto" }, // Auto-detects best presentation mode
-                    createOrderPromise
+                await startGuestPaymentSession(
+                    bcdcButton,
+                    paypalGuestPaymentSession,
+                    createOrderPromise,
                 );
             } catch (error) {
-                console.error("PayPal payment start error:", error);
+                console.error("PayPal BCDC payment start error:", error);
                 handlePaymentError(error);
             }
         });
+    }
+
+    async function startGuestPaymentSession(
+        checkoutButton: Element,
+        paypalGuestPaymentSession: any,
+        createOrderPromise: Promise<string>,
+    ) {
+        await paypalGuestPaymentSession.start(
+            { targetElement: checkoutButton, presentationMode: "auto" }, // Auto-detects best presentation mode
+            createOrderPromise,
+        );
     }
 
     useEffect(() => {
@@ -60,16 +63,30 @@ export default function BCDCInline() {
                     "PayPal SDK ready:",
                     paypal,
                     "clientToken:",
-                    clientToken
+                    clientToken,
                 );
 
                 const sdkInstance = await paypal?.createInstance?.({
                     clientToken,
                     //这里是BCDC和普通的最大不同
                     components: ["paypal-guest-payments"],
-                    pageType: "checkout",  
+                    pageType: "checkout",
                     testBuyerCountry: "US",
                 });
+
+                const paypalGuestPaymentSession =
+                    //@ts-ignore
+                    sdkInstance.createPayPalGuestOneTimePaymentSession(
+                        paymentSessionOptions,
+                    );
+
+                const bcdcButton = document.querySelector(
+                    "#paypal-basic-card-button",
+                )!;
+
+                // get the promise reference by invoking createOrder()
+                // do not await this async function since it can cause transient activation issues
+                const createOrderPromise = createOrderBCDC();
 
                 //因为进行eligibilty check有的时候会出现bug, 所以通过flag来控制是否进行eligibilty check
                 // if (!true) {
@@ -79,23 +96,31 @@ export default function BCDCInline() {
                     // Check eligibility for all payment methods
                     const paymentMethods =
                         await sdkInstance.findEligibleMethods({
-                            currencyCode: "USD",                          
+                            currencyCode: "USD",
                         });
 
-                    // debugger;
 
-                    // [ATTENTION!]这里有问题, 这里不需要 find-eligible-methods, 里面也似乎没有值
-                    // Setup BCDC button if eligible
-                    // if (paymentMethods.isEligible("paypal")) {
-                    //     setupBCDCButton(sdkInstance);
-                    // }
+                    //Auto-render
+                    await startGuestPaymentSession(
+                        bcdcButton,
+                        paypalGuestPaymentSession,
+                        createOrderPromise,
+                    );
 
-                    setupBCDCButton(sdkInstance);
+                    await setupBCDCButton(
+                        bcdcButton,
+                        paypalGuestPaymentSession,
+                        createOrderPromise,
+                    );
 
                     // ############################################################################
                 } else {
                     // ####################### 不进行eligibility check, 直接渲染按钮 ###############################
-                    setupBCDCButton(sdkInstance);
+                    await setupBCDCButton(
+                        bcdcButton,
+                        paypalGuestPaymentSession,
+                        createOrderPromise,
+                    );
                     // ############################################################################################
                 }
 
