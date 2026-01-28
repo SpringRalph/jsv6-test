@@ -75,8 +75,8 @@ export async function POST(req: Request) {
             const payment_source = {
                 [paymentDetail.payment_source]: {
                     "experience_context": {
-                        shippingPreference: "NO_SHIPPING",
-                        userAction: "CONTINUE",
+                        "shipping_preference": "NO_SHIPPING",
+                        "user_action": "CONTINUE",
                         "return_url": return_url,
                         "cancel_url": cancel_url
                     }
