@@ -27,9 +27,7 @@ export default function APPSwitch() {
                 const { redirectURL } = await paypalPaymentSession.start(
                     {
                         presentationMode: "direct-app-switch",
-                        autoRedirect: {
-                            enabled: true,
-                        },
+                        
                     },
                     createOrderRedirect()
                 );
