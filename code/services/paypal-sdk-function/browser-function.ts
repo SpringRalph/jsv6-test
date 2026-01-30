@@ -24,6 +24,11 @@ export function handlePaymentSuccess(orderData?: any): void {
 	toast.success(msg, { duration: 5000 });
 }
 
+
+export async function getOrderDetail(){
+
+}
+
 // 交易失败：错误通知
 export function handlePaymentError(error?: any): void {
 	if (typeof window === "undefined") return;

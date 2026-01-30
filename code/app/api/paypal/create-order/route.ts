@@ -62,9 +62,10 @@ export async function POST(req: Request) {
             items: paypalItems,
         };
 
-        const orderBody = {
+        const orderBody: Record<string, any> = {
             intent: "CAPTURE",
             purchase_units: [purchaseUnit],
+
         };
 
         if (paymentDetail.payment_source) {
@@ -73,12 +74,19 @@ export async function POST(req: Request) {
             const payment_source = {
                 [paymentDetail.payment_source]: {
                     "experience_context": {
+                        "payment_method_preference": "IMMEDIATE_PAYMENT_REQUIRED",
+                        "brand_name": "EXAMPLE INC",
+                        "locale": "en-US",
+                        "landing_page": "LOGIN",
+                        "shipping_preference": "GET_FROM_FILE",
+                        "user_action": "PAY_NOW",
                         "return_url": return_url,
-                        "cancel_url": cancel_url
-                    }
+                        "cancel_url": cancel_url,
+
+                    },
                 }
             };
-            Object.assign(orderBody, payment_source)
+            orderBody["payment_source"] = payment_source
         }
 
 
