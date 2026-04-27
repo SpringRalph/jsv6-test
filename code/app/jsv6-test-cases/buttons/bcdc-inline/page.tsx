@@ -24,7 +24,7 @@ export default function ButtonsBasicPage() {
             </h1>
             <p className="text-muted-foreground flex items-center gap-2">
               <span className="text-lg">📝</span>
-              Test BCDC-Inline, 目前根据文档, 只发现了可以弹窗的形式, 按理说可以以inline的形式渲染. 不知道和clientId等因素是不是相关. 目前通过传入测试参数testBuyerCountry: "US"来实现. 而且预填信息会丢失
+              在第69行 createInstance方法中 需要传入测试参数testBuyerCountry: "US"来实现测试
             </p>
           </div>
         </div>
