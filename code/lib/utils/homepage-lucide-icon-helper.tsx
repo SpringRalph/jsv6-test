@@ -4,7 +4,8 @@ import {
   LayoutGrid, RefreshCcw, MessageSquare, Zap, BarChart2,
   Wallet, Shield, Smartphone, CheckCircle2,
   CreditCard, Euro, Banknote, Smartphone as Mobile, Building, CircleDollarSign,
-  ArrowRight
+  ArrowRight,
+  GripHorizontal
 } from 'lucide-react';
 
 // 定义工作状态的样式配置
@@ -57,6 +58,7 @@ export const renderPanelIcon = (panelIcon?: string): React.ReactNode => {
     Layers: <Layers className="w-5 h-5" />,
     DollarSign: <DollarSign className="w-5 h-5" />,
     LayoutGrid: <LayoutGrid className="w-5 h-5" />,
+    GripHorizontal: <GripHorizontal className="w-5 h-5" />,
     RefreshCcw: <RefreshCcw className="w-5 h-5" />,
     MessageSquare: <MessageSquare className="w-5 h-5" />,
     Zap: <Zap className="w-5 h-5" />,

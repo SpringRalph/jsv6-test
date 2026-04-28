@@ -61,6 +61,14 @@ export const routes: RouteMetadata[] = [
     workStage: 4,
   },
   {
+    path: "/jsv6-test-cases/buttons/buttons-collection-2",
+    title: "Wallet and BCDC",
+    description: "Button collection(without PayLater)",
+    group: "Buttons",
+    panelIcon: "GripHorizontal",
+    workStage: 4,
+  },
+  {
     path: "/jsv6-test-cases/buttons/buttons-collection",
     title: "Button collection",
     description: "Show button collection",
