@@ -7,7 +7,7 @@ export default function ButtonCollectionWithoutPayLater() {
     return (
         <div className="w-full min-h-[60px] flex flex-col">
             <ButtonBasic />
-            <BCDCContainer />
+            <BCDCContainer bcdcEndPoint="/api/paypal/create-order-bcdc-2" />
         </div>
     );
 }

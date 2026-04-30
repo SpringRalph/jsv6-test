@@ -6,10 +6,14 @@ import Link from "next/link";
 import BCDC from "./BCDC";
 import Image from "next/image";
 
-export function BCDCContainer() {
+interface BCDCProps {
+    bcdcEndPoint?:string
+}
+
+export function BCDCContainer(props: BCDCProps) {
     return (
         <div className="w-full min-h-[60px] flex justify-center items-center">
-            <BCDC />
+            <BCDC {...props} />
         </div>
     );
 }
