@@ -10,6 +10,7 @@ import {
 import { useCartTotal } from "@/store/useCartStore";
 
 import React, { useEffect, useState } from "react";
+import consola from "consola";
 
 export default function PayLaterMessageAnalytics() {
     const { ready, loading, error } = usePayPalWebSdk();
@@ -27,7 +28,7 @@ export default function PayLaterMessageAnalytics() {
                 if (cancelled) return;
 
                 const paypal = (window as any).paypal;
-                console.log(
+                consola.log(
                     "PayPal SDK ready:",
                     paypal,
                     "clientToken:",
@@ -61,13 +62,13 @@ export default function PayLaterMessageAnalytics() {
                     },
                     onTemplateReady: (content: any) => {
                         // ANALYTICS LOG EXAMPLE
-                        console.log("Cached Template Rendered");
+                        consola.log("Cached Template Rendered");
                         //@ts-ignore
                         messageElement.setContent(content);
                     },
                     onContentReady: (content: any) => {
                         // ANALYTICS LOG EXAMPLE
-                        console.log("Fetched Content Rendered");
+                        consola.log("Fetched Content Rendered");
                         //@ts-ignore
                         messageElement.setContent(content);
                     },
@@ -76,15 +77,15 @@ export default function PayLaterMessageAnalytics() {
                 const learnMore = await messagesInstance.createLearnMore({
                     onShow: (content: any) => {
                         // ANALYTICS LOG EXAMPLE
-                        console.log("Learn More Shown");
+                        consola.log("Learn More Shown");
                     },
                     onApply: (content: any) => {
                         // ANALYTICS LOG EXAMPLE
-                        console.log("Learn More Apply");
+                        consola.log("Learn More Apply");
                     },
                     onClose: (content: any) => {
                         // ANALYTICS LOG EXAMPLE
-                        console.log("Learn More Closed");
+                        consola.log("Learn More Closed");
                     },
                 });
 
@@ -95,7 +96,7 @@ export default function PayLaterMessageAnalytics() {
                         //@ts-ignore
                         learnMore.open(event.detail.config);
                         // ANALYTICS LOG EXAMPLE
-                        console.log("Message Learn More Clicked");
+                        consola.log("Message Learn More Clicked");
                     }
                 );
 
@@ -105,7 +106,7 @@ export default function PayLaterMessageAnalytics() {
                     return;
                 }
             } catch (e) {
-                if (!cancelled) console.error("PayPal init error:", e);
+                if (!cancelled) consola.error("PayPal init error:", e);
             }
         })();
 
@@ -117,7 +118,7 @@ export default function PayLaterMessageAnalytics() {
     if (loading) return <div>正在加载 PayPal SDK…</div>;
     if (error) return <div>PayPal SDK加载失败: {error.message}</div>;
 
-    console.log("totolAmount:", total);
+    consola.log("totolAmount:", total);
     return (
         <div className="w-full min-h-[60px] flex items-center justify-center flex-col">
             <paypal-message id="paypal-message"></paypal-message>

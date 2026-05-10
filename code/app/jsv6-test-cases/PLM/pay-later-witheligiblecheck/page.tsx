@@ -3,7 +3,7 @@ import { ProductPanel } from "@/components/panels/ProductPanel";
 import { CartSummary } from "@/components/panels/CartSummary";
 import { PaymentPlaceholder } from "@/components/panels/PaymentPlaceholder";
 import Link from "next/link";
-import PayLater from "./PayLaterWOEligibleChek";
+import PayLater from "./PayLaterEligibleCheck";
 import Image from "next/image";
 
 export default function PayLaterPage() {
@@ -19,7 +19,7 @@ export default function PayLaterPage() {
                     </Link>
                     <h1 className="text-3xl font-bold mb-2">Pay Later</h1>
                     <p className="text-muted-foreground">
-                        Test Pay Later Button
+                        Open Console for Eligible Check Result
                     </p>
                 </div>
 

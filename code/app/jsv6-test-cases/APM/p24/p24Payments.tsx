@@ -13,6 +13,7 @@ import {
 
 import React, { useEffect } from "react";
 import toast from "react-hot-toast";
+import consola from "consola";
 
 export default function p24Payments() {
     const { ready, loading, error } = usePayPalWebSdk();
@@ -60,13 +61,13 @@ export default function p24Payments() {
 
         p24Button.addEventListener("click", async () => {
             try {
-                console.log("Validating payment fields...");
+                consola.log("Validating payment fields...");
 
                 // Validate the payment fields
                 const isValid = await p24Session.validate();
 
                 if (isValid) {
-                    console.log(
+                    consola.log(
                         "Validation successful, starting payment flow..."
                     );
 
@@ -80,13 +81,13 @@ export default function p24Payments() {
                         createOrderPromise
                     );
                 } else {
-                    console.error("Validation failed");
+                    consola.error("Validation failed");
                     toast.error(
                         "Please fill in all required fields correctly."
                     );
                 }
             } catch (error) {
-                console.error("PayPal payment start error:", error);
+                consola.error("PayPal payment start error:", error);
                 handlePaymentError(error);
             }
         });
@@ -104,7 +105,7 @@ export default function p24Payments() {
                 if (cancelled) return;
 
                 const paypal = (window as any).paypal;
-                console.log(
+                consola.log(
                     "PayPal SDK ready:",
                     paypal,
                     "clientToken:",
@@ -152,7 +153,7 @@ export default function p24Payments() {
                     return;
                 }
             } catch (e) {
-                if (!cancelled) console.error("PayPal init error:", e);
+                if (!cancelled) consola.error("PayPal init error:", e);
             }
         })();
 

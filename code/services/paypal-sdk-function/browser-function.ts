@@ -1,4 +1,5 @@
 import toast from "react-hot-toast";
+import consola from "consola";
 import { createOrderAPIFactory, getOrderConfig } from "./order-utils";
 
 
@@ -87,11 +88,11 @@ export async function captureOrder(orderIdObj: { orderId: string }): Promise<any
 	if (typeof window === "undefined") throw new Error("captureOrder must be called in browser");
 
 
-	console.log("[captureOrder] OrderIdObj:", JSON.stringify(orderIdObj, null, "  "))
+	consola.log("[captureOrder] OrderIdObj:", JSON.stringify(orderIdObj, null, "  "))
 	// debugger;
 	const orderId = String(orderIdObj.orderId);
 	if (!orderId) throw new Error("orderId is required to capture order");
-	console.log("[captureOrder] OrderID:", orderId)
+	consola.log("[captureOrder] OrderID:", orderId)
 
 	try {
 		const res = await fetch("/api/paypal/capture-order", {

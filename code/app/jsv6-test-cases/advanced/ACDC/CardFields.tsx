@@ -13,6 +13,7 @@ import {
 } from "@/services/paypal-sdk-function/paypalSharedObject";
 
 import { useEffect } from "react";
+import consola from "consola";
 
 export default function CardFields() {
     const { ready, loading, error } = usePayPalWebSdk();
@@ -60,7 +61,7 @@ export default function CardFields() {
             // do not await this async function since it can cause transient activation issues
             const { orderId } = await createOrderACDC();
 
-            console.log("[ACDC Create Order]:orderId:", orderId);
+            consola.log("[ACDC Create Order]:orderId:", orderId);
             // debugger;
 
             const { data, state } = await cardSession.submit(orderId, {
@@ -88,17 +89,17 @@ export default function CardFields() {
                 }
                 case "failed": {
                     // Validation or processing failure. data.message may be present
-                    console.error("Card submission failed", data);
+                    consola.error("Card submission failed", data);
                     // TODO: surface error to buyer, allow retry
                     break;
                 }
                 default: {
                     // Future-proof for other states (e.g., pending)
-                    console.warn("Unhandled submit state", state, data);
+                    consola.warn("Unhandled submit state", state, data);
                 }
             }
         } catch (err) {
-            console.error("Payment flow error", err);
+            consola.error("Payment flow error", err);
             // TODO: Show generic error and allow retry
         }
     }
@@ -115,7 +116,7 @@ export default function CardFields() {
                 if (cancelled) return;
 
                 const paypal = (window as any).paypal;
-                console.log(
+                consola.log(
                     "PayPal SDK ready:",
                     paypal,
                     "clientToken:",
@@ -135,7 +136,7 @@ export default function CardFields() {
                     const paymentMethods =
                         await sdkInstance.findEligibleMethods();
 
-                    console.log(JSON.stringify(paymentMethods, null, "  "));
+                    consola.log(JSON.stringify(paymentMethods, null, "  "));
 
                     // [ATTENTION!]这里不一样了
                     if (paymentMethods.isEligible("advanced_cards")) {
@@ -153,7 +154,7 @@ export default function CardFields() {
                     return;
                 }
             } catch (e) {
-                if (!cancelled) console.error("PayPal init error:", e);
+                if (!cancelled) consola.error("PayPal init error:", e);
             }
         })();
 

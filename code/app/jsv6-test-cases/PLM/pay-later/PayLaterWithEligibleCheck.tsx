@@ -45,7 +45,7 @@ export default function PayLater() {
                         createOrder(),
                     );
                 } catch (error) {
-                    console.error(error);
+                    consola.error(error);
                 }
             });
         }
@@ -129,7 +129,7 @@ export default function PayLater() {
                     return;
                 }
             } catch (e) {
-                if (!cancelled) console.error("PayPal init error:", e);
+                    if (!cancelled) consola.error("PayPal init error:", e);
             }
         })();
 

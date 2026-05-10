@@ -3,7 +3,7 @@ import { ProductPanel } from "@/components/panels/ProductPanel";
 import { CartSummary } from "@/components/panels/CartSummary";
 import { PaymentPlaceholder } from "@/components/panels/PaymentPlaceholder";
 import Link from "next/link";
-import ButtonCollection from "./ButtonCollection2";
+import ButtonCollection from "./ButtonCollectionwithoutPaylater";
 import Image from "next/image";
 
 export default function ButtonsBasicPage() {

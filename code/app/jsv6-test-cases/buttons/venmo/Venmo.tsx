@@ -12,6 +12,7 @@ import {
 } from "@/services/paypal-sdk-function/paypalSharedObject";
 
 import React, { useEffect } from "react";
+import consola from "consola";
 
 export default function Venmo() {
     const { ready, loading, error } = usePayPalWebSdk();
@@ -37,7 +38,7 @@ export default function Venmo() {
                     createOrderPromise
                 );
             } catch (error) {
-                console.error("PayPal payment start error:", error);
+                consola.error("PayPal payment start error:", error);
                 handlePaymentError(error);
             }
         });
@@ -55,7 +56,7 @@ export default function Venmo() {
                 if (cancelled) return;
 
                 const paypal = (window as any).paypal;
-                console.log(
+                consola.log(
                     "PayPal SDK ready:",
                     paypal,
                     "clientToken:",
@@ -95,7 +96,7 @@ export default function Venmo() {
                     return;
                 }
             } catch (e) {
-                if (!cancelled) console.error("PayPal init error:", e);
+                if (!cancelled) consola.error("PayPal init error:", e);
             }
         })();
 

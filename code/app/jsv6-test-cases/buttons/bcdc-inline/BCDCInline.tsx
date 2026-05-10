@@ -13,6 +13,7 @@ import {
 } from "@/services/paypal-sdk-function/paypalSharedObject";
 
 import { useEffect } from "react";
+import consola from "consola";
 
 export default function BCDCInline() {
     const { ready, loading, error } = usePayPalWebSdk();
@@ -31,7 +32,7 @@ export default function BCDCInline() {
                     createOrderPromise,
                 );
             } catch (error) {
-                console.error("PayPal BCDC payment start error:", error);
+                consola.error("PayPal BCDC payment start error:", error);
                 handlePaymentError(error);
             }
         });
@@ -60,7 +61,7 @@ export default function BCDCInline() {
                 if (cancelled) return;
 
                 const paypal = (window as any).paypal;
-                console.log(
+                consola.log(
                     "PayPal SDK ready:",
                     paypal,
                     "clientToken:",
@@ -134,7 +135,7 @@ export default function BCDCInline() {
                     return;
                 }
             } catch (e) {
-                if (!cancelled) console.error("PayPal init error:", e);
+                if (!cancelled) consola.error("PayPal init error:", e);
             }
         })();
 

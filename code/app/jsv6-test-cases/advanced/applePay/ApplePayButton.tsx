@@ -6,6 +6,7 @@ import { getBrowserSafeClientToken } from "@/services/paypal-sdk-function/browse
 
 import React, { useEffect } from "react";
 import { setupApplePayButton } from "./ApplePayFunction";
+import consola from "consola";
 
 // 引入vConsole用于移动端调试
 import VConsole from "vconsole";
@@ -29,16 +30,16 @@ export default function ButtonBasic() {
         let vConsole: any = null;
         if (typeof window !== "undefined") {
             vConsole = new VConsole();
-            console.log("vConsole initialized for debugging");
-            console.log("ApplePay/applePay Component mounted");
+            consola.log("vConsole initialized for debugging");
+            consola.log("ApplePay/applePay Component mounted");
         }
 
         if (!ready || !applePayReady) {
-            console.log("SDK not ready:", { ready, applePayReady });
+            consola.log("SDK not ready:", { ready, applePayReady });
             return;
         }
 
-        console.log("Both SDKs are ready, starting initialization...");
+        consola.log("Both SDKs are ready, starting initialization...");
 
         (async () => {
             try {
@@ -53,14 +54,14 @@ export default function ButtonBasic() {
                 //     clientToken
                 // );
 
-                console.log("Creating PayPal instance...");
+                consola.log("Creating PayPal instance...");
                 const sdkInstance = await paypal?.createInstance?.({
                     clientToken,
                     components: ["applepay-payments"],
                     pageType: "checkout",
                 });
 
-                console.log("PayPal instance created:", sdkInstance);
+                consola.log("PayPal instance created:", sdkInstance);
 
                 setupApplePayButton(sdkInstance);
 
@@ -70,20 +71,20 @@ export default function ButtonBasic() {
                     return;
                 }
             } catch (e) {
-                console.error("PayPal init error:", e);
+                consola.error("PayPal init error:", e);
                 if (vConsole) {
-                    console.error("Detailed error in vConsole:", e);
+                    consola.error("Detailed error in vConsole:", e);
                 }
             }
         })();
 
         return () => {
             cancelled = true;
-            console.log("Component unmounting, cleaning up...");
+            consola.log("Component unmounting, cleaning up...");
             // 销毁vConsole实例
             if (vConsole) {
                 vConsole.destroy();
-                console.log("vConsole destroyed");
+                consola.log("vConsole destroyed");
             }
         };
     }, [ready, applePayReady]);

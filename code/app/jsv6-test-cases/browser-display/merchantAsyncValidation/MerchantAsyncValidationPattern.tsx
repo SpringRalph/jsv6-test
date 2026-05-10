@@ -12,6 +12,7 @@ import {
 } from "@/services/paypal-sdk-function/paypalSharedObject";
 import { OneTimePaymentSession } from "@paypal/paypal-js/sdk-v6";
 import React, { useEffect } from "react";
+import consola from "consola";
 
 export default function MerchantAsyncValidation() {
     const { ready, loading, error } = usePayPalWebSdk();
@@ -38,7 +39,7 @@ export default function MerchantAsyncValidation() {
                     validateAndCreateOrder()
                 );
             } catch (error) {
-                console.error("PayPal payment start error:", error);
+                consola.error("PayPal payment start error:", error);
                 handlePaymentError(error);
             }
         });
@@ -62,7 +63,7 @@ export default function MerchantAsyncValidation() {
         const shouldPass = true;
         const delay = 10 * 1000;
 
-        console.log(`Running async validation with ${delay}ms delay...`);
+        consola.log(`Running async validation with ${delay}ms delay...`);
 
         return new Promise((resolve, reject) => {
             setTimeout(() => {
@@ -87,7 +88,7 @@ export default function MerchantAsyncValidation() {
                 if (cancelled) return;
 
                 const paypal = (window as any).paypal;
-                console.log(
+                consola.log(
                     "PayPal SDK ready:",
                     paypal,
                     "clientToken:",
@@ -127,7 +128,7 @@ export default function MerchantAsyncValidation() {
                     return;
                 }
             } catch (e) {
-                if (!cancelled) console.error("PayPal init error:", e);
+                if (!cancelled) consola.error("PayPal init error:", e);
             }
         })();
 

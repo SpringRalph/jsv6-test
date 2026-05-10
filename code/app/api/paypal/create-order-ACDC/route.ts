@@ -15,13 +15,13 @@ export async function POST(req: Request) {
     consola.info("[/api/paypal/create-order] HTTP POST received");
     try {
         const { clientId, clientSecret, base } = getPayPalConfig();
-        console.log("------[1]------")
+        consola.debug("------[1]------")
         const basic = buildBasicAuthHeader(clientId, clientSecret);
 
         const body = await req.json().catch(() => null);
-        console.log("------[2]------")
+        consola.debug("------[2]------")
 
-        console.log(JSON.stringify(body, null, "  "))
+        consola.debug(JSON.stringify(body, null, "  "))
 
         if (!body) {
             return NextResponse.json({ error: "invalid request body" }, { status: 400 });
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
             );
         }
 
-        console.log("------[3]------")
+        consola.debug("------[3]------")
         // 组装 PayPal v2 order body
         const paypalItems = items.map((it) => ({
             name: it.name,
@@ -88,7 +88,7 @@ export async function POST(req: Request) {
         }
 
 
-        console.log(JSON.stringify(orderBody, null, "  "))
+        consola.debug(JSON.stringify(orderBody, null, "  "))
 
         const createRes = await fetch(`${base}/v2/checkout/orders`, {
             method: "POST",

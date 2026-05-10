@@ -61,7 +61,7 @@ export const routes: RouteMetadata[] = [
     workStage: 4,
   },
   {
-    path: "/jsv6-test-cases/buttons/buttons-collection-2",
+    path: "/jsv6-test-cases/buttons/buttons-collection-withoutpaylater",
     title: "Wallet and BCDC",
     description: "Button collection(without PayLater)",
     group: "Buttons",
@@ -99,6 +99,15 @@ export const routes: RouteMetadata[] = [
     path: "/jsv6-test-cases/PLM/pay-later-custom-button",
     title: "Pay Later with Custom Button",
     description: "Test Integrate Pay Later with Custom Button",
+    group: "PayLater",
+    panelIcon: "Clock",
+    workStage: 4, 
+  },
+
+   {
+    path: "/jsv6-test-cases/PLM/pay-later-witheligiblecheck",
+    title: "Pay Later with Eligible Check",
+    description: "Test Pay Later with eligibility validation before render",
     group: "PayLater",
     panelIcon: "Clock",
     workStage: 4, 

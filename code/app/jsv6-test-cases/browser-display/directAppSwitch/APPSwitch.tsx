@@ -13,6 +13,7 @@ import {
 } from "@/services/paypal-sdk-function/paypalSharedObject";
 import { OneTimePaymentSession } from "@paypal/paypal-js/sdk-v6";
 import { useEffect } from "react";
+import consola from "consola";
 
 export default function APPSwitch() {
     const { ready, loading, error } = usePayPalWebSdk();
@@ -33,13 +34,13 @@ export default function APPSwitch() {
                 );
                 debugger;
                 if (redirectURL) {
-                    console.log(`redirectURL: ${redirectURL}`);
+                    consola.log(`redirectURL: ${redirectURL}`);
                     window.location.assign(redirectURL);
                 }
             } catch (error: any) {
                 if (error.isRecoverable) {
                 }
-                console.error("PayPal payment start error:", error);
+                consola.error("PayPal payment start error:", error);
                 handlePaymentError(error);
                 throw error;
             }
@@ -78,10 +79,10 @@ export default function APPSwitch() {
 
                 if (paypalPaymentSession.hasReturned()) {
                     
-                    console.log("------[A]------");
+                    consola.log("------[A]------");
                     await paypalPaymentSession.resume();
                 } else {
-                    console.log("------[B]------");
+                    consola.log("------[B]------");
                     setupPayPalButton(paypalPaymentSession);
                 }
 
@@ -93,7 +94,7 @@ export default function APPSwitch() {
                     return;
                 }
             } catch (e) {
-                if (!cancelled) console.error("PayPal init error:", e);
+                if (!cancelled) consola.error("PayPal init error:", e);
             }
         })();
 

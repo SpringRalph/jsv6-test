@@ -10,45 +10,42 @@ import {
     AppSdkInstance,
     paymentSessionOptions,
 } from "@/services/paypal-sdk-function/paypalSharedObject";
-import { OneTimePaymentSession } from "@paypal/paypal-js/sdk-v6";
 import { useEffect } from "react";
+
+
 import consola from "consola";
 
-export default function PaymentHandlerBtn() {
+export default function PayLater() {
     const { ready, loading, error } = usePayPalWebSdk();
 
-    // Setup standard PayPal button
-    async function setupPayPalButton(sdkInstance: AppSdkInstance) {
-        const paypalPaymentSession: OneTimePaymentSession =
-            sdkInstance.createPayPalOneTimePaymentSession(
+   
+
+    // ============================================================
+
+    // Setup Pay Later button
+    async function setupPayLaterButton(sdkInstance: AppSdkInstance) {
+        // debugger;
+        const paylaterPaymentSession =
+            sdkInstance.createPayLaterOneTimePaymentSession(
                 paymentSessionOptions
             );
 
-        const paypalButton = document.querySelector("#paypal-btn")!;
-        paypalButton.removeAttribute("hidden");
+        const paylaterButton = document.querySelector(
+            "#pay-later"
+        )!;
+        paylaterButton.setAttribute("productCode", "PAYLATER");
+        paylaterButton.setAttribute("countryCode", "US");
+        paylaterButton.removeAttribute("hidden");
 
-        paypalButton.addEventListener("click", async () => {
-            const presentationModesToTry = [
-                "payment-handler",
-                "popup",
-                "modal",
-            ];
-            for (const presentationMode of presentationModesToTry) {
-                try {
-                    await paypalPaymentSession.start(
-                        //@ts-ignore
-                        { presentationMode: presentationMode },
-                        createOrder()
-                    );
-                    break;
-                } catch (error: any) {
-                    if (error.isRecoverable) {
-                        continue;
-                    }
-                    consola.error("PayPal payment start error:", error);
-                    handlePaymentError(error);
-                    throw error;
-                }
+        paylaterButton.addEventListener("click", async () => {
+            try {
+                await paylaterPaymentSession.start(
+                    { presentationMode: "auto" }, // Auto-detects best presentation mode
+                    createOrder()
+                );
+            } catch (error) {
+                consola.error("PayLater payment start error:", error);
+                handlePaymentError(error);
             }
         });
     }
@@ -65,7 +62,7 @@ export default function PaymentHandlerBtn() {
                 if (cancelled) return;
 
                 const paypal = (window as any).paypal;
-                consola.log(
+                consola.debug(
                     "PayPal SDK ready:",
                     paypal,
                     "clientToken:",
@@ -76,9 +73,21 @@ export default function PaymentHandlerBtn() {
                     clientToken,
                     components: ["paypal-payments"],
                     pageType: "checkout",
+                    testBuyerCountry: "US",
                 });
 
-                setupPayPalButton(sdkInstance);
+                // 如果需check Paylater Eligible，取消 if 条件并实现 findEligibleMethods 逻辑
+                if (!true) {
+                    const paymentMethods =
+                        await sdkInstance.findEligibleMethods({
+                            currencyCode: "USD",
+                        });
+                    if (paymentMethods.isEligible("paylater")) {
+                         setupPayLaterButton(sdkInstance);
+                    }
+                } else {
+                     setupPayLaterButton(sdkInstance);
+                }
 
                 if (cancelled) {
                     // 如果实例需要销毁，按需处理
@@ -100,7 +109,10 @@ export default function PaymentHandlerBtn() {
 
     return (
         <div className="w-full min-h-[60px] flex items-center justify-center">
-            <paypal-button id="paypal-btn" type="pay" hidden></paypal-button>
+            <paypal-pay-later-button
+                id="pay-later"
+                hidden
+            ></paypal-pay-later-button>
         </div>
     );
 }

@@ -10,6 +10,7 @@ import {
 import { useCartTotal } from "@/store/useCartStore";
 
 import React, { useEffect, useState } from "react";
+import consola from "consola";
 
 export default function PayLaterMessageBasic() {
     const { ready, loading, error } = usePayPalWebSdk();
@@ -27,7 +28,7 @@ export default function PayLaterMessageBasic() {
                 if (cancelled) return;
 
                 const paypal = (window as any).paypal;
-                console.log(
+                consola.log(
                     "PayPal SDK ready:",
                     paypal,
                     "clientToken:",
@@ -48,7 +49,7 @@ export default function PayLaterMessageBasic() {
                     return;
                 }
             } catch (e) {
-                if (!cancelled) console.error("PayPal init error:", e);
+                if (!cancelled) consola.error("PayPal init error:", e);
             }
         })();
 
@@ -60,7 +61,7 @@ export default function PayLaterMessageBasic() {
     if (loading) return <div>正在加载 PayPal SDK…</div>;
     if (error) return <div>PayPal SDK加载失败: {error.message}</div>;
 
-    console.log("totolAmount:",total)
+    consola.log("totolAmount:",total)
     return (
         <div className="w-full min-h-[60px] flex items-center justify-center">
             <paypal-message

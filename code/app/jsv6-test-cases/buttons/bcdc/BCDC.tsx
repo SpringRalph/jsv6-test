@@ -13,6 +13,7 @@ import {
 } from "@/services/paypal-sdk-function/paypalSharedObject";
 import { OneTimePaymentSession } from "@paypal/paypal-js/sdk-v6";
 import React, { useEffect } from "react";
+import consola from "consola";
 
 interface BCDCProps {
     bcdcEndPoint?:string
@@ -45,7 +46,7 @@ export default function BCDC(props: BCDCProps) {
                     createOrderPromise
                 );
             } catch (error) {
-                console.error("PayPal payment start error:", error);
+                consola.error("PayPal payment start error:", error);
                 handlePaymentError(error);
             }
         });
@@ -63,7 +64,7 @@ export default function BCDC(props: BCDCProps) {
                 if (cancelled) return;
 
                 const paypal = (window as any).paypal;
-                console.log(
+                consola.log(
                     "PayPal SDK ready:",
                     paypal,
                     "clientToken:",
@@ -111,7 +112,7 @@ export default function BCDC(props: BCDCProps) {
                     return;
                 }
             } catch (e) {
-                if (!cancelled) console.error("PayPal init error:", e);
+                if (!cancelled) consola.error("PayPal init error:", e);
             }
         })();
 

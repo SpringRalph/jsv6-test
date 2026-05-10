@@ -40,7 +40,7 @@ export default function PayLaterWithCustonButton() {
                     createOrder()
                 );
             } catch (error) {
-                console.error("PayLater payment start error:", error);
+                    consola.error("PayLater payment start error:", error);
                 handlePaymentError(error);
             }
         });
@@ -83,7 +83,7 @@ export default function PayLaterWithCustonButton() {
                     return;
                 }
             } catch (e) {
-                if (!cancelled) console.error("PayPal init error:", e);
+                    if (!cancelled) consola.error("PayPal init error:", e);
             }
         })();
 

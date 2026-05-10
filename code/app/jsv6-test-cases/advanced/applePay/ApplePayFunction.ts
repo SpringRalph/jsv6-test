@@ -1,6 +1,7 @@
 //@ts-nocheck
 import { useCartStore } from "@/store/useCartStore";
 import { createOrderApplePay, captureOrder } from "@/services/paypal-sdk-function/browser-function"
+import consola from "consola";
 
 function getTotalAmount() {
     const cartState = useCartStore.getState();
@@ -17,7 +18,7 @@ export async function setupApplePayButton(sdkInstance) {
     document.getElementById("applepay-button-container").innerHTML =
         '<apple-pay-button id="apple-pay-button" buttonstyle="black" type="buy" locale="en">';
 
-    console.log("Apple Pay Button Created!")
+    consola.log("Apple Pay Button Created!")
 
     // Pass config parameters to the click handler
     document.getElementById("apple-pay-button")
@@ -55,7 +56,7 @@ function setupApplePayEventHandlers(applePaySession, paypalSession, paymentReque
         }).then((payload) => {
             applePaySession.completeMerchantValidation(payload.merchantSession);
         }).catch((err) => {
-            console.error("Merchant validation failed:", err);
+            consola.error("Merchant validation failed:", err);
             applePaySession.abort();
         });
     };
@@ -88,9 +89,9 @@ function setupApplePayEventHandlers(applePaySession, paypalSession, paymentReque
                 status: window.ApplePaySession.STATUS_SUCCESS,
             });
 
-            console.log("Payment successful:", result);
+            consola.log("Payment successful:", result);
         } catch (error) {
-            console.error("Payment failed:", error);
+            consola.error("Payment failed:", error);
             applePaySession.completePayment({
                 status: window.ApplePaySession.STATUS_FAILURE,
             });
@@ -99,6 +100,6 @@ function setupApplePayEventHandlers(applePaySession, paypalSession, paymentReque
 
     // Payment cancellation
     applePaySession.oncancel = () => {
-        console.log("Apple Pay cancelled");
+        consola.log("Apple Pay cancelled");
     };
 }

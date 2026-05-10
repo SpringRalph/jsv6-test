@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { useCartStore } from "@/store/useCartStore";
 import { createOrderGooglePay, captureOrder } from "@/services/paypal-sdk-function/browser-function"
+import consola from "consola";
 
 function getTotalAmount() {
     const cartState = useCartStore.getState();
@@ -26,7 +27,7 @@ export async function setupGooglePayButton(sdkInstance) {
         // Get Google Pay configuration from PayPal
         const googlePayConfig = await googlePaySession.getGooglePayConfig();
 
-        console.log("Google Pay Config:", googlePayConfig);
+        consola.log("Google Pay Config:", googlePayConfig);
 
         // Check if Google Pay is available
         const isReadyToPay = await paymentsClient.isReadyToPay({
@@ -49,7 +50,7 @@ export async function setupGooglePayButton(sdkInstance) {
             document.getElementById("googlepay-button-container")!.appendChild(button);
         }
     } catch (error) {
-        console.error("Setup error:", error);
+        consola.error("Setup error:", error);
     }
 }
 
@@ -66,7 +67,7 @@ async function onGooglePayButtonClick(
 
         paymentsClient.loadPaymentData(paymentDataRequest);
     } catch (error) {
-        console.error(error);
+        consola.error(error);
     }
 }
 
@@ -145,12 +146,12 @@ async function onPaymentAuthorized(
         if (status !== "PAYER_ACTION_REQUIRED") {
             // Capture the order
             const orderData = await captureOrder({ orderId });
-            console.log(JSON.stringify(orderData, null, 2));
+            consola.log(JSON.stringify(orderData, null, 2));
         }
 
         return { transactionState: "SUCCESS" };
     } catch (err) {
-        console.error("Payment authorization error:", err);
+        consola.error("Payment authorization error:", err);
         return {
             transactionState: "ERROR",
             error: {

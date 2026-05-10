@@ -8,6 +8,7 @@ import {
 
 import React, { useEffect } from "react";
 import { setupGooglePayButton } from "./GoolgePayFunction";
+import consola from "consola";
 
 export default function ButtonBasic() {
     const { ready, loading, error } = usePayPalWebSdk();
@@ -26,7 +27,7 @@ export default function ButtonBasic() {
                 if (cancelled) return;
 
                 const paypal = (window as any).paypal;
-                console.log(
+                consola.log(
                     "PayPal SDK ready:",
                     paypal,
                     "clientToken:",
@@ -48,7 +49,7 @@ export default function ButtonBasic() {
                     return;
                 }
             } catch (e) {
-                if (!cancelled) console.error("PayPal init error:", e);
+                if (!cancelled) consola.error("PayPal init error:", e);
             }
         })();
 

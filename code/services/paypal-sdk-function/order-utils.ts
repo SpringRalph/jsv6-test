@@ -1,4 +1,5 @@
 "use client"
+import consola from "consola";
 import { CART_STORAGE_KEY, useCartStore } from "@/store/useCartStore";
 
 function readPersistedCartFromStorage(): any | null {
@@ -42,11 +43,11 @@ export function createOrderAPIFactory(APIEndPoint: string, payment_source: strin
         const json = await res.json();
         if (!json) throw new Error("后端未返回创建订单结果");
 
-        console.log(JSON.stringify(json, null, "  "));
+        consola.log(JSON.stringify(json, null, "  "));
         // return json;
 
         const orderId = json["order"]["id"]
-        console.log("[OrderId]:", orderId)
+        consola.log("[OrderId]:", orderId)
         return { orderId };
     }
 }

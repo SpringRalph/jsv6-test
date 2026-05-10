@@ -12,6 +12,7 @@ import {
     paymentSessionOptions,
 } from "@/services/paypal-sdk-function/paypalSharedObject";
 import React, { useEffect } from "react";
+import consola from "consola";
 
 export default function ButtonStyling() {
     const { ready, loading, error } = usePayPalWebSdk();
@@ -33,7 +34,7 @@ export default function ButtonStyling() {
                     createOrder()
                 );
             } catch (error) {
-                console.error("PayPal payment start error:", error);
+                consola.error("PayPal payment start error:", error);
                 handlePaymentError(error);
             }
         });
@@ -51,7 +52,7 @@ export default function ButtonStyling() {
                 if (cancelled) return;
 
                 const paypal = (window as any).paypal;
-                console.log(
+                consola.log(
                     "PayPal SDK ready:",
                     paypal,
                     "clientToken:",
@@ -72,7 +73,7 @@ export default function ButtonStyling() {
                     return;
                 }
             } catch (e) {
-                if (!cancelled) console.error("PayPal init error:", e);
+                if (!cancelled) consola.error("PayPal init error:", e);
             }
         })();
 
