@@ -26,7 +26,7 @@ export function handlePaymentSuccess(orderData?: any): void {
 }
 
 
-export async function getOrderDetail(){
+export async function getOrderDetail() {
 
 }
 
@@ -46,42 +46,84 @@ export function handlePaymentCancellation(): void {
 
 
 export async function createOrder(): Promise<any> {
-	return createOrderAPIFactory("/api/paypal/create-order","paypal")();
+	return createOrderAPIFactory("/api/paypal/create-order", "paypal")();
 }
 
 export async function createOrderACDC(): Promise<any> {
-	return createOrderAPIFactory("/api/paypal/create-order-ACDC","card")();
+	return createOrderAPIFactory("/api/paypal/create-order-ACDC", "card")();
 }
 
 export async function createEUROrder(): Promise<any> {
-	return createOrderAPIFactory("/api/paypal/create-order-EUR","paypal")();
+	return createOrderAPIFactory("/api/paypal/create-order-EUR", "paypal")();
 }
 
 
 export async function createPLNOrder(): Promise<any> {
-	return createOrderAPIFactory("/api/paypal/create-order-PLN","paypal")();
+	return createOrderAPIFactory("/api/paypal/create-order-PLN", "paypal")();
 }
 
-export async function createPayPalOverAllOrder(url:string): Promise<any> {
-	return createOrderAPIFactory(url,"paypal")();
+export async function createPayPalOverAllOrder(url: string): Promise<any> {
+	return createOrderAPIFactory(url, "paypal")();
 }
 
 export async function createOrderBCDC(): Promise<any> {
-	return createOrderAPIFactory("/api/paypal/create-order-bcdc","paypal")();
+	return createOrderAPIFactory("/api/paypal/create-order-bcdc", "paypal")();
 }
 
 export async function createOrderRedirect(): Promise<any> {
-	return createOrderAPIFactory("/api/paypal/create-order-redirect","paypal")();
+	return createOrderAPIFactory("/api/paypal/create-order-redirect", "paypal")();
 }
 
 export async function createOrderGooglePay(): Promise<any> {
-	return createOrderAPIFactory("/api/paypal/create-order","google")();
+	return createOrderAPIFactory("/api/paypal/create-order", "google")();
 }
 
 export async function createOrderApplePay(): Promise<any> {
-	return createOrderAPIFactory("/api/paypal/create-order","apple")();
+	return createOrderAPIFactory("/api/paypal/create-order", "apple")();
 }
 
+export const findEligibleMethodsPayload = {
+	customer: {
+		// leverage your own service to derive the customer's country code from their IP Address,
+		// or retrieve it from the user's profile if they are already authenticated.
+		country_code: "US",
+	},
+	preferences: {
+		payment_flow: "ONE_TIME_PAYMENT",
+		payment_source_constraint: {
+			constraint_type: "INCLUDE",
+			payment_sources: [
+				"PAYPAL",
+				"PAYPAL_PAY_LATER",
+				"PAYPAL_CREDIT",
+				"VENMO",
+				"ADVANCED_CARDS",
+			],
+		},
+	},
+	purchase_units: [{ amount: { currency_code: "USD" } }],
+}
+
+export async function customFindEligibleMethods(findEligibleMethodsPayload: any) {
+	try {
+		const response = await fetch("/api/paypal/find-eligible-methods", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(findEligibleMethodsPayload),
+		});
+		const jsonResponse = await response.json();
+		consola.log(jsonResponse);
+		consola.info("Custom Eligibility API call is successful")
+
+
+		return jsonResponse;
+	} catch (error) {
+		consola.error("Custom Eligibility API failed")
+
+	}
+}
 
 
 export async function captureOrder(orderIdObj: { orderId: string }): Promise<any> {

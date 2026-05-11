@@ -3,6 +3,8 @@
 import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
 import {
     createOrder,
+    customFindEligibleMethods,
+    findEligibleMethodsPayload,
     getBrowserSafeClientToken,
 } from "@/services/paypal-sdk-function/browser-function";
 import {
@@ -13,8 +15,8 @@ import { useEffect, useState } from "react";
 
 import { type FindEligibleMethodsGetDetails } from "@paypal/paypal-js/sdk-v6";
 import consola from "consola";
-import { Spinner } from "@/components/ui/spinner";
 import { ColorConsoleHelper } from "@/lib/colorConsoleHelper";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function PayLater() {
     const { ready, loading, error } = usePayPalWebSdk();
@@ -86,13 +88,14 @@ export default function PayLater() {
                 });
 
                 const eligibleCheckStart = performance.now();
-                const paymentMethods = await sdkInstance.findEligibleMethods({
-                    currencyCode: "USD",
-                });
-                
+                const customEligibilityResponse = await customFindEligibleMethods(
+                    findEligibleMethodsPayload,
+                );
+                const paymentMethods = await sdkInstance.hydrateEligibleMethods(
+                    customEligibilityResponse,
+                );
                 ColorConsoleHelper.cyan(
-                    `findEligibleMethods took ${(performance.now() - eligibleCheckStart).toFixed(2)} ms`,
-                    16,
+                    `findEligibleMethods took ${(performance.now() - eligibleCheckStart).toFixed(2)} ms`, 16
                 );
 
                 consola.success("Payment Methods Eligible check:");

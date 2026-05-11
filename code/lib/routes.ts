@@ -114,6 +114,15 @@ export const routes: RouteMetadata[] = [
   },
 
   {
+    path: "/jsv6-test-cases/PLM/pay-later-witheligiblecheck-backend",
+    title: "Pay Later with Eligible Check from server side",
+    description: "Test Pay Later with eligibility validation from server side before render",
+    group: "PayLater",
+    panelIcon: "Clock",
+    workStage: 2, 
+  },
+
+  {
     path: "/jsv6-test-cases/PLM/BNPLMessaging",
     title: "Pay Later Messaging",
     description: "Test PayPal Pay Later Messaging components",

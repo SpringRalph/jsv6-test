@@ -1,3 +1,8 @@
 {
-    "liveServer.settings.port": 6000
+    "liveServer.settings.port": 6000,
+    "cSpell.words": [
+        "BNPL",
+        "VENMO",
+        "witheligiblecheck"
+    ]
 }
