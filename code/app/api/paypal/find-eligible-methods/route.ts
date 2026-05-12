@@ -4,6 +4,8 @@ import { buildBasicAuthHeader, getPayPalConfig } from "@/services/paypal-server-
 import consola from "consola";
 import { NextResponse } from "next/server";
 
+export const runtime = 'edge';
+
 const PurchaseUnitSchema = z.object({
     amount: z.object({
         currency_code: z.string().length(3),
