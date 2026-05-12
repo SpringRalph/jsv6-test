@@ -20,8 +20,9 @@ export async function getBrowserSafeClientToken(): Promise<string> {
 // 交易成功：简洁通知
 export function handlePaymentSuccess(orderData?: any): void {
 	if (typeof window === "undefined") return;
-	const id = orderData?.id ?? orderData?.orderId ?? "";
-	const msg = id ? `交易已完成 — 订单号：${id}` : "交易已完成。";
+	const orderId = orderData?.id ?? orderData?.orderId ?? "";
+	const txnId = orderData["capture"]["purchase_units"][0]["payments"]["captures"][0]["id"];
+	const msg = orderId ? `Order Completed — Order No: ${orderId}. \n Txn:${txnId}` : "交易已完成。";
 	toast.success(msg, { duration: 5000 });
 }
 
@@ -46,20 +47,20 @@ export function handlePaymentCancellation(): void {
 
 
 export async function createOrder(): Promise<any> {
-	return createOrderAPIFactory("/api/paypal/create-order", "paypal")();
+	return createOrderAPIFactory("/api/paypal/order/create/create-order", "paypal")();
 }
 
 export async function createOrderACDC(): Promise<any> {
-	return createOrderAPIFactory("/api/paypal/create-order-ACDC", "card")();
+	return createOrderAPIFactory("/api/paypal/order/create/create-order-ACDC", "card")();
 }
 
 export async function createEUROrder(): Promise<any> {
-	return createOrderAPIFactory("/api/paypal/create-order-EUR", "paypal")();
+	return createOrderAPIFactory("/api/paypal/order/create/create-order-EUR", "paypal")();
 }
 
 
 export async function createPLNOrder(): Promise<any> {
-	return createOrderAPIFactory("/api/paypal/create-order-PLN", "paypal")();
+	return createOrderAPIFactory("/api/paypal/order/create/create-order-PLN", "paypal")();
 }
 
 export async function createPayPalOverAllOrder(url: string): Promise<any> {
@@ -67,42 +68,25 @@ export async function createPayPalOverAllOrder(url: string): Promise<any> {
 }
 
 export async function createOrderBCDC(): Promise<any> {
-	return createOrderAPIFactory("/api/paypal/create-order-bcdc", "paypal")();
+	return createOrderAPIFactory("/api/paypal/order/create/create-order-bcdc", "paypal")();
 }
 
 export async function createOrderRedirect(): Promise<any> {
-	return createOrderAPIFactory("/api/paypal/create-order-redirect", "paypal")();
+	return createOrderAPIFactory("/api/paypal/order/create/create-order-redirect", "paypal")();
 }
 
 export async function createOrderGooglePay(): Promise<any> {
-	return createOrderAPIFactory("/api/paypal/create-order", "google")();
+	return createOrderAPIFactory("/api/paypal/order/create/create-order", "google")();
 }
 
 export async function createOrderApplePay(): Promise<any> {
-	return createOrderAPIFactory("/api/paypal/create-order", "apple")();
+	return createOrderAPIFactory("/api/paypal/order/create/create-order", "apple")();
 }
 
-export const findEligibleMethodsPayload = {
-	customer: {
-		// leverage your own service to derive the customer's country code from their IP Address,
-		// or retrieve it from the user's profile if they are already authenticated.
-		country_code: "US",
-	},
-	preferences: {
-		payment_flow: "ONE_TIME_PAYMENT",
-		payment_source_constraint: {
-			constraint_type: "INCLUDE",
-			payment_sources: [
-				"PAYPAL",
-				"PAYPAL_PAY_LATER",
-				"PAYPAL_CREDIT",
-				"VENMO",
-				"ADVANCED_CARDS",
-			],
-		},
-	},
-	purchase_units: [{ amount: { currency_code: "USD" } }],
+export async function createOrderWithVault(): Promise<any> {
+	return createOrderAPIFactory("/api/paypal/order/create/create-order-paypal-one-time-payment-with-vault", "paypal")();
 }
+
 
 export async function customFindEligibleMethods(findEligibleMethodsPayload: any) {
 	try {
@@ -125,6 +109,50 @@ export async function customFindEligibleMethods(findEligibleMethodsPayload: any)
 	}
 }
 
+export async function createVaultSetupToken() {
+	try {
+		const response = await fetch("/api/paypal/vault/create-setup-token-for-paypal-save-payment", {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+			},
+
+		});
+		const jsonResponse = await response.json();
+		const id = jsonResponse["setUpTokenId"]
+
+		consola.log(jsonResponse);
+		consola.info("Vault Setup Token API call is successful")
+
+
+		return { vaultSetupToken: id };
+	} catch (error) {
+		consola.error("Vault Setup Token API failed")
+		throw error;
+	}
+}
+
+export async function createPaymentToken(vaultSetupTokenId: string) {
+	try {
+		const response = await fetch(
+			"/api/paypal/vault/payment-token/create",
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ vaultSetupTokenId }),
+			},
+		);
+		const data = await response.json();
+
+		return data;
+	} catch (error) {
+		consola.error("Vault Setup Token API failed")
+		throw error;
+	}
+}
+
 
 export async function captureOrder(orderIdObj: { orderId: string }): Promise<any> {
 	if (typeof window === "undefined") throw new Error("captureOrder must be called in browser");
@@ -137,7 +165,7 @@ export async function captureOrder(orderIdObj: { orderId: string }): Promise<any
 	consola.log("[captureOrder] OrderID:", orderId)
 
 	try {
-		const res = await fetch("/api/paypal/capture-order", {
+		const res = await fetch("/api/paypal/order/capture/capture-order", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ orderId }),

@@ -10,16 +10,18 @@ import {
     AppSdkInstance,
     paymentSessionOptions,
 } from "@/services/paypal-sdk-function/paypalSharedObject";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import {
     type FindEligibleMethodsGetDetails,
     loadCoreSdkScript,
 } from "@paypal/paypal-js/sdk-v6";
 import consola from "consola";
+import { EligibilityOverlay } from "@/components/ui/EligibilityOverlay";
 
 export default function PayLater() {
     const { ready, loading, error } = usePayPalWebSdk();
+    const [isInitializing, setIsInitializing] = useState(false);
 
     async function setupPayLaterButton(
         sdkInstance: AppSdkInstance,
@@ -90,6 +92,8 @@ export default function PayLater() {
 
         if (!ready) return;
 
+        setIsInitializing(true);
+
         (async () => {
             try {
                 const clientToken = await getBrowserSafeClientToken();
@@ -130,6 +134,8 @@ export default function PayLater() {
                 }
             } catch (e) {
                     if (!cancelled) consola.error("PayPal init error:", e);
+            } finally {
+                if (!cancelled) setIsInitializing(false);
             }
         })();
 
@@ -225,7 +231,8 @@ export default function PayLater() {
     if (error) return <div>PayPal SDK加载失败: {error.message}</div>;
 
     return (
-        <div className="w-full min-h-[60px] flex items-center justify-center">
+        <div className="relative w-full min-h-[60px] flex items-center justify-center">
+            <EligibilityOverlay isVisible={isInitializing} message="Checking PayLater Eligibility…" />
             <paypal-pay-later-button
                 id="pay-later"
                 hidden
