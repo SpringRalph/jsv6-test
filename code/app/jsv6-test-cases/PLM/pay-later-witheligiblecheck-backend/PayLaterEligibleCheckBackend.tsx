@@ -4,11 +4,11 @@ import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
 import {
     createOrder,
     customFindEligibleMethods,
-    findEligibleMethodsPayload,
     getBrowserSafeClientToken,
 } from "@/services/paypal-sdk-function/browser-function";
 import {
     AppSdkInstance,
+    findEligibleMethodsPayload,
     paymentSessionOptions,
 } from "@/services/paypal-sdk-function/paypalSharedObject";
 import { useEffect, useState } from "react";
@@ -17,6 +17,7 @@ import { type FindEligibleMethodsGetDetails } from "@paypal/paypal-js/sdk-v6";
 import consola from "consola";
 import { ColorConsoleHelper } from "@/lib/colorConsoleHelper";
 import { Spinner } from "@/components/ui/spinner";
+import { EligibilityOverlay } from "@/components/ui/EligibilityOverlay";
 
 export default function PayLater() {
     const { ready, loading, error } = usePayPalWebSdk();
@@ -65,8 +66,6 @@ export default function PayLater() {
 
         if (!ready) return;
 
-        setIsInitializing(true);
-
         (async () => {
             try {
                 const clientToken = await getBrowserSafeClientToken();
@@ -88,14 +87,17 @@ export default function PayLater() {
                 });
 
                 const eligibleCheckStart = performance.now();
-                const customEligibilityResponse = await customFindEligibleMethods(
-                    findEligibleMethodsPayload,
-                );
+
+                setIsInitializing(true);
+                const customEligibilityResponse =
+                    await customFindEligibleMethods(findEligibleMethodsPayload);
                 const paymentMethods = await sdkInstance.hydrateEligibleMethods(
                     customEligibilityResponse,
                 );
+                setIsInitializing(false);
                 ColorConsoleHelper.cyan(
-                    `findEligibleMethods took ${(performance.now() - eligibleCheckStart).toFixed(2)} ms`, 16
+                    `findEligibleMethods took ${(performance.now() - eligibleCheckStart).toFixed(2)} ms`,
+                    16,
                 );
 
                 consola.success("Payment Methods Eligible check:");
@@ -146,14 +148,10 @@ export default function PayLater() {
 
     return (
         <div className="relative w-full min-h-[120px] flex items-center justify-center overflow-hidden rounded-2xl border border-dashed border-slate-200 bg-slate-50/70">
-            {isInitializing && (
-                <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-950/40 backdrop-blur-sm">
-                    <div className="flex items-center gap-3 rounded-full border border-white/15 bg-slate-900/85 px-4 py-2 text-sm text-white shadow-lg shadow-slate-950/25">
-                        <Spinner className="size-4 text-white" />
-                        <span>Checking PayLater Eligibility…</span>
-                    </div>
-                </div>
-            )}
+            <EligibilityOverlay
+                isVisible={isInitializing}
+                message="Checking PayLater Eligibility…"
+            />
 
             <paypal-pay-later-button
                 id="pay-later"

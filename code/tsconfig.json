@@ -30,6 +30,6 @@
         "**/*.tsx",
         ".next/types/**/*.ts",
         ".next/dev/types/**/*.ts"
-    ],
+, "app/jsv6-test-cases/advanced/vault-save-payment/ButtonSavePaymentMethod.tsx"    ],
     "exclude": ["node_modules"]
 }

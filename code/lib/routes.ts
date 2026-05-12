@@ -241,6 +241,24 @@ export const routes: RouteMetadata[] = [
     panelIcon: "ArrowRight",
     workStage: 1,
   },
+
+  {
+    path: "/jsv6-test-cases/advanced/vault-save-payment",
+    title: "SavePayment",
+    description: "Save Payment Without Purchase" ,
+    group: "Advanced",
+    panelIcon: "Button",
+    workStage: 4, 
+  },
+
+   {
+    path: "/jsv6-test-cases/advanced/vault-save-with-purchase",
+    title: "VaultWithPurchase",
+    description: "Save Payment With Purchase" ,
+    group: "Advanced",
+    panelIcon: "Button",
+    workStage: 4, 
+  },
   
   // APM group
   {
