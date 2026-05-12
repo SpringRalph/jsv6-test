@@ -34,7 +34,7 @@ export const routes: RouteMetadata[] = [
     panelIcon: "Code",
     workStage: 4,
   },
- 
+
   {
     path: "/jsv6-test-cases/buttons/bcdc",
     title: "BCDC(PayPal Guest Payment)",
@@ -83,15 +83,15 @@ export const routes: RouteMetadata[] = [
     panelIcon: "RefreshCcw",
     workStage: 1,
   },
-  
+
   // PLM (Pay Later Messaging) group
-   {
+  {
     path: "/jsv6-test-cases/PLM/pay-later",
     title: "Pay Later",
     description: "Test Pay Later and installment options",
     group: "PayLater",
     panelIcon: "Clock",
-    workStage: 4, 
+    workStage: 4,
   },
 
   {
@@ -100,16 +100,16 @@ export const routes: RouteMetadata[] = [
     description: "Test Integrate Pay Later with Custom Button",
     group: "PayLater",
     panelIcon: "Clock",
-    workStage: 4, 
+    workStage: 4,
   },
 
-   {
+  {
     path: "/jsv6-test-cases/PLM/pay-later-witheligiblecheck",
     title: "Pay Later with Eligible Check",
     description: "Test Pay Later with eligibility validation before render",
     group: "PayLater",
     panelIcon: "Clock",
-    workStage: 4, 
+    workStage: 4,
   },
 
   {
@@ -118,7 +118,7 @@ export const routes: RouteMetadata[] = [
     description: "Test Pay Later with eligibility validation from server side before render",
     group: "PayLater",
     panelIcon: "Clock",
-    workStage: 2, 
+    workStage: 2,
   },
 
   {
@@ -145,7 +145,7 @@ export const routes: RouteMetadata[] = [
     panelIcon: "BarChart2",
     workStage: 2,
   },
-  
+
   // Browser Display group
   {
     path: "/jsv6-test-cases/browser-display/redirect",
@@ -206,7 +206,7 @@ export const routes: RouteMetadata[] = [
     panelIcon: "Smartphone",
     workStage: 4,
   },
-  
+
   // Advanced group
   {
     path: "/jsv6-test-cases/advanced/googlePay",
@@ -245,21 +245,30 @@ export const routes: RouteMetadata[] = [
   {
     path: "/jsv6-test-cases/advanced/vault-save-payment",
     title: "SavePayment",
-    description: "Save Payment Without Purchase" ,
+    description: "Save Payment Without Purchase",
     group: "Advanced",
     panelIcon: "Button",
-    workStage: 4, 
+    workStage: 4,
   },
 
-   {
+  {
     path: "/jsv6-test-cases/advanced/vault-save-with-purchase",
     title: "VaultWithPurchase",
-    description: "Save Payment With Purchase" ,
+    description: "Save Payment With Purchase",
     group: "Advanced",
     panelIcon: "Button",
-    workStage: 4, 
+    workStage: 4,
   },
-  
+
+  {
+    path: "/jsv6-test-cases/advanced/vault-recurring",
+    title: "Vault Recurring",
+    description: "Recurring Vault Payment",
+    group: "Advanced",
+    panelIcon: "Button",
+    workStage: 4,
+  },
+
   // APM group
   {
     path: "/jsv6-test-cases/APM/bancontact",
@@ -285,7 +294,7 @@ export const routes: RouteMetadata[] = [
     panelIcon: "Mobile",
     workStage: 4,
   },
- 
+
   {
     path: "/jsv6-test-cases/APM/eps",
     title: "eps",

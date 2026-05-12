@@ -88,6 +88,11 @@ export async function createOrderWithVault(): Promise<any> {
 }
 
 
+export async function createOrderWithVaultId(): Promise<any> {
+	return createOrderAPIFactory("/api/paypal/order/create/create-order-paypal-with-vault-id", "paypal")();
+}
+
+
 export async function customFindEligibleMethods(findEligibleMethodsPayload: any) {
 	try {
 		const response = await fetch("/api/paypal/find-eligible-methods", {
