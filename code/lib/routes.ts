@@ -8,7 +8,6 @@ export interface RouteMetadata {
 }
 
 
-
 export const routes: RouteMetadata[] = [
   // Buttons group
   {
@@ -140,8 +139,8 @@ export const routes: RouteMetadata[] = [
   },
   {
     path: "/jsv6-test-cases/PLM/BNPLMessaging-Analytics",
-    title: "Analytize Pay Later Messaging",
-    description: "Analytize PayPal Pay Later Messaging Learn More",
+    title: "Analyze Pay Later Messaging",
+    description: "Analyze PayPal Pay Later Messaging Learn More",
     group: "PayLater",
     panelIcon: "BarChart2",
     workStage: 2,
