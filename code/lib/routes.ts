@@ -15,7 +15,7 @@ export const routes: RouteMetadata[] = [
     title: "Basic Buttons",
     description: "Test basic PayPal button integration with default settings",
     group: "Buttons",
-    panelIcon: "Button",
+    panelIcon: "MousePointerClick",
     workStage: 4, // 完成
   },
   {
@@ -40,7 +40,7 @@ export const routes: RouteMetadata[] = [
     title: "BCDC(PayPal Guest Payment)",
     description: "Test BCDC/Guest Payment Checkout",
     group: "Buttons",
-    panelIcon: "User",
+    panelIcon: "UserCheck",
     workStage: 4, // 完成
   },
   {
@@ -56,7 +56,7 @@ export const routes: RouteMetadata[] = [
     title: "Venmo",
     description: "Test Venmo Button",
     group: "Buttons",
-    panelIcon: "DollarSign",
+    panelIcon: "Send",
     workStage: 4,
   },
   {
@@ -64,7 +64,7 @@ export const routes: RouteMetadata[] = [
     title: "Wallet and BCDC",
     description: "Button collection(without PayLater)",
     group: "Buttons",
-    panelIcon: "GripHorizontal",
+    panelIcon: "Wallet",
     workStage: 4,
   },
   {
@@ -80,7 +80,7 @@ export const routes: RouteMetadata[] = [
     title: "Subscription",
     description: "Show bSubscription",
     group: "Buttons",
-    panelIcon: "RefreshCcw",
+    panelIcon: "CalendarClock",
     workStage: 1,
   },
 
@@ -90,7 +90,7 @@ export const routes: RouteMetadata[] = [
     title: "Pay Later",
     description: "Test Pay Later and installment options",
     group: "PayLater",
-    panelIcon: "Clock",
+    panelIcon: "Landmark",
     workStage: 4,
   },
 
@@ -99,7 +99,7 @@ export const routes: RouteMetadata[] = [
     title: "Pay Later with Custom Button",
     description: "Test Integrate Pay Later with Custom Button",
     group: "PayLater",
-    panelIcon: "Clock",
+    panelIcon: "PenLine",
     workStage: 4,
   },
 
@@ -108,7 +108,7 @@ export const routes: RouteMetadata[] = [
     title: "Pay Later with Eligible Check",
     description: "Test Pay Later with eligibility validation before render",
     group: "PayLater",
-    panelIcon: "Clock",
+    panelIcon: "BadgeCheck",
     workStage: 4,
   },
 
@@ -117,7 +117,7 @@ export const routes: RouteMetadata[] = [
     title: "Pay Later with Eligible Check from server side",
     description: "Test Pay Later with eligibility validation from server side before render",
     group: "PayLater",
-    panelIcon: "Clock",
+    panelIcon: "ServerCog",
     workStage: 2,
   },
 
@@ -152,7 +152,7 @@ export const routes: RouteMetadata[] = [
     title: "Redirect",
     description: "Browser Redirect",
     group: "Browser",
-    panelIcon: "RefreshCcw",
+    panelIcon: "CornerUpRight",
     workStage: 2,
   },
   {
@@ -160,7 +160,7 @@ export const routes: RouteMetadata[] = [
     title: "Payment Handler",
     description: "Use Browser Payment Handler",
     group: "Browser",
-    panelIcon: "Wallet",
+    panelIcon: "HandCoins",
     workStage: 4, // 完成
   },
   {
@@ -194,7 +194,7 @@ export const routes: RouteMetadata[] = [
     title: "Simple Redirect Case",
     description: "Browser Redirect",
     group: "Browser",
-    panelIcon: "RefreshCcw",
+    panelIcon: "ExternalLink",
     workStage: 4,
   },
 
@@ -203,7 +203,7 @@ export const routes: RouteMetadata[] = [
     title: "Simple Direct App Switch",
     description: "Test Browser Direct App Switch behavior",
     group: "Browser",
-    panelIcon: "Smartphone",
+    panelIcon: "TabletSmartphone",
     workStage: 4,
   },
 
@@ -213,7 +213,7 @@ export const routes: RouteMetadata[] = [
     title: "Google Pay",
     description: "Test Google Pay integration for custom checkout",
     group: "Advanced",
-    panelIcon: "Google",
+    panelIcon: "GooglePay",
     workStage: 4,
   },
   {
@@ -221,7 +221,7 @@ export const routes: RouteMetadata[] = [
     title: "Apple Pay",
     description: "Test Apple Pay integration for custom checkout",
     group: "Advanced",
-    panelIcon: "Apple",
+    panelIcon: "ApplePay",
     workStage: 4,
   },
   {
@@ -238,7 +238,7 @@ export const routes: RouteMetadata[] = [
     title: "Fastlane",
     description: "Test Fastlane integration for custom checkout",
     group: "Advanced",
-    panelIcon: "ArrowRight",
+    panelIcon: "FastForward",
     workStage: 1,
   },
 
@@ -247,7 +247,7 @@ export const routes: RouteMetadata[] = [
     title: "SavePayment",
     description: "Save Payment Without Purchase",
     group: "Advanced",
-    panelIcon: "Button",
+    panelIcon: "BookmarkCheck",
     workStage: 4,
   },
 
@@ -256,7 +256,7 @@ export const routes: RouteMetadata[] = [
     title: "VaultWithPurchase",
     description: "Save Payment With Purchase",
     group: "Advanced",
-    panelIcon: "Button",
+    panelIcon: "ShoppingCart",
     workStage: 4,
   },
 
@@ -265,7 +265,7 @@ export const routes: RouteMetadata[] = [
     title: "Vault Recurring",
     description: "Recurring Vault Payment",
     group: "Advanced",
-    panelIcon: "Button",
+    panelIcon: "Repeat2",
     workStage: 4,
   },
 
@@ -275,7 +275,7 @@ export const routes: RouteMetadata[] = [
     title: "Bancontact",
     description: "Test APM -- Bancontact",
     group: "APM",
-    panelIcon: "EuroSign",
+    panelIcon: "Euro",
     workStage: 4,
   },
   {
@@ -291,7 +291,7 @@ export const routes: RouteMetadata[] = [
     title: "BliK",
     description: "Test APM -- BliK",
     group: "APM",
-    panelIcon: "Mobile",
+    panelIcon: "Smartphone",
     workStage: 4,
   },
 

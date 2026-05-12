@@ -1,11 +1,14 @@
-import { 
+import {
   Loader2Icon, AlertTriangleIcon, CheckIcon, LightbulbIcon,
-  Palette, Code, Clock, User, Layers, DollarSign,
-  LayoutGrid, RefreshCcw, MessageSquare, Zap, BarChart2,
+  Palette, Code, User, Layers,
+  LayoutGrid, MessageSquare, Zap, BarChart2,
   Wallet, Shield, Smartphone, CheckCircle2,
-  CreditCard, Euro, Banknote, Smartphone as Mobile, Building, CircleDollarSign,
-  ArrowRight,
-  GripHorizontal
+  CreditCard, Euro, Banknote, Building, CircleDollarSign,
+  MousePointerClick, UserCheck, Send, CalendarClock,
+  Landmark, PenLine, BadgeCheck, ServerCog,
+  CornerUpRight, HandCoins, ExternalLink, TabletSmartphone,
+  FastForward,
+  BookmarkCheck, ShoppingCart, Repeat2,
 } from 'lucide-react';
 
 // 定义工作状态的样式配置
@@ -50,30 +53,53 @@ export const workStageConfig = {
 // 渲染面板图标的辅助函数
 export const renderPanelIcon = (panelIcon?: string): React.ReactNode => {
   const iconMap: Record<string, React.ReactNode> = {
-    Button: <ArrowRight className="w-5 h-5" />,
+    // Buttons group
+    MousePointerClick: <MousePointerClick className="w-5 h-5" />,
     Palette: <Palette className="w-5 h-5" />,
     Code: <Code className="w-5 h-5" />,
-    Clock: <Clock className="w-5 h-5" />,
-    User: <User className="w-5 h-5" />,
+    UserCheck: <UserCheck className="w-5 h-5" />,
     Layers: <Layers className="w-5 h-5" />,
-    DollarSign: <DollarSign className="w-5 h-5" />,
+    Send: <Send className="w-5 h-5" />,
+    Wallet: <Wallet className="w-5 h-5" />,
     LayoutGrid: <LayoutGrid className="w-5 h-5" />,
-    GripHorizontal: <GripHorizontal className="w-5 h-5" />,
-    RefreshCcw: <RefreshCcw className="w-5 h-5" />,
+    CalendarClock: <CalendarClock className="w-5 h-5" />,
+
+    // PayLater group
+    Landmark: <Landmark className="w-5 h-5" />,
+    PenLine: <PenLine className="w-5 h-5" />,
+    BadgeCheck: <BadgeCheck className="w-5 h-5" />,
+    ServerCog: <ServerCog className="w-5 h-5" />,
     MessageSquare: <MessageSquare className="w-5 h-5" />,
     Zap: <Zap className="w-5 h-5" />,
     BarChart2: <BarChart2 className="w-5 h-5" />,
-    Wallet: <Wallet className="w-5 h-5" />,
+
+    // Browser group
+    CornerUpRight: <CornerUpRight className="w-5 h-5" />,
+    HandCoins: <HandCoins className="w-5 h-5" />,
     Shield: <Shield className="w-5 h-5" />,
     Smartphone: <Smartphone className="w-5 h-5" />,
     CheckCircle2: <CheckCircle2 className="w-5 h-5" />,
+    ExternalLink: <ExternalLink className="w-5 h-5" />,
+    TabletSmartphone: <TabletSmartphone className="w-5 h-5" />,
+
+    // Advanced group
+    GooglePay: <img src="/payment-area-icon/google.svg" alt="Google Pay" className="w-5 h-5" />,
+    ApplePay: <img src="/payment-area-icon/apple-fill.svg" alt="Apple Pay" className="w-5 h-5" />,
     CreditCard: <CreditCard className="w-5 h-5" />,
-    EuroSign: <Euro className="w-5 h-5" />,
+    FastForward: <FastForward className="w-5 h-5" />,
+    BookmarkCheck: <BookmarkCheck className="w-5 h-5" />,
+    ShoppingCart: <ShoppingCart className="w-5 h-5" />,
+    Repeat2: <Repeat2 className="w-5 h-5" />,
+
+    // APM group
     Euro: <Euro className="w-5 h-5" />,
     Banknote: <Banknote className="w-5 h-5" />,
-    Mobile: <Mobile className="w-5 h-5" />,
     Building: <Building className="w-5 h-5" />,
-    CircleDollarSign: <CircleDollarSign className="w-5 h-5" />
+    CircleDollarSign: <CircleDollarSign className="w-5 h-5" />,
+
+    // Legacy aliases
+    User: <User className="w-5 h-5" />,
+    EuroSign: <Euro className="w-5 h-5" />,
   };
 
   return panelIcon && iconMap[panelIcon] ? iconMap[panelIcon] : "▶️";
