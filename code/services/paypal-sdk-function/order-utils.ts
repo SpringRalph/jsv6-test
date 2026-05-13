@@ -15,7 +15,7 @@ function readPersistedCartFromStorage(): any | null {
 }
 
 
-export function createOrderAPIFactory(APIEndPoint: string, payment_source: string) {
+export function createOrderAPIFactory(APIEndPoint: string, payment_source: string, extra?: Record<string, unknown>) {
 
     return async (): Promise<{ orderId: string }> => {
         if (typeof window === "undefined") throw new Error("createOrder must be called in browser");
@@ -26,6 +26,7 @@ export function createOrderAPIFactory(APIEndPoint: string, payment_source: strin
         payload["paymentDetail"]["endpoint"]["return_url"] = window.location.href;
         payload["paymentDetail"]["endpoint"]["cancel_url"] = window.location.href;
         payload["paymentDetail"]["payment_source"] = payment_source;
+        if (extra) Object.assign(payload["paymentDetail"], extra);
 
         const res = await fetch(APIEndPoint, {
             method: "POST",

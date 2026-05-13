@@ -1,0 +1,16 @@
+# Cloudflare Workers / Pages 配置
+# 部署前请将 <YOUR_DATABASE_NAME> 和 <YOUR_DATABASE_ID> 替换为实际值
+
+name = "jsv6-test"
+compatibility_date = "2024-09-23"
+
+# D1 数据库绑定
+# 创建步骤（在有网的机器上执行）:
+#   1. wrangler d1 create jsv6-vault-db
+#   2. 将输出的 database_id 填入下方
+#   3. wrangler d1 execute jsv6-vault-db --file=db/migrations/0001_create_vault_payment_methods.sql
+
+[[d1_databases]]
+binding = "DB"
+database_name = "jsv6-vault-db"
+database_id   = "<YOUR_DATABASE_ID>"

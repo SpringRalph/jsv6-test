@@ -33,12 +33,18 @@ export default function ButtonBasic() {
         const paypalButton = document.querySelector("#paypal-btn")!;
         paypalButton.removeAttribute("hidden");
 
-        const createOrderPromise = createOrderWithVaultId();
-
         paypalButton.addEventListener("click", async () => {
             try {
+                const vaultRes = await fetch("/api/vault/active");
+                if (!vaultRes.ok) {
+                    toast.error("No active vault method found. Please set one in Vault Manager.");
+                    return;
+                }
+                const { method } = await vaultRes.json();
+                const createOrderPromise = createOrderWithVaultId(method.vault_id);
+
                 await paypalPaymentSession.start(
-                    { presentationMode: "auto" }, // Auto-detects best presentation mode
+                    { presentationMode: "auto" },
                     createOrderPromise,
                 );
             } catch (error) {
