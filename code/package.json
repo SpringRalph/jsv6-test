@@ -5,6 +5,7 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
+    "dev:cf": "wrangler dev",
     "mock": "cross-env NEXT_PUBLIC_VAULT_MOCK=true next dev",
     "lint": "eslint .",
     "start": "next start"
