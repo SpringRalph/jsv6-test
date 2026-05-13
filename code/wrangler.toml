@@ -13,4 +13,4 @@ compatibility_date = "2024-09-23"
 [[d1_databases]]
 binding = "DB"
 database_name = "jsv6-vault-db"
-database_id   = "<YOUR_DATABASE_ID>"
+database_id   = "c45f8a3a-fc4d-4d63-8c9b-c5a1fe44e311"
