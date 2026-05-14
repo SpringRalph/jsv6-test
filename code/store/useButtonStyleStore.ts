@@ -3,7 +3,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 
 // Bump this version whenever the shape of ButtonStyleState changes.
 // The migrate function below will reset to defaults on version mismatch.
-const STORE_VERSION = 1;
+const STORE_VERSION = 2;
 
 export type ButtonColor =
     | "paypal-gold"
@@ -33,7 +33,6 @@ export interface ButtonStyleState {
     color: ButtonColor;
     type: ButtonType;
     borderRadiusPreset: BorderRadiusPreset;
-    markBorderRadius: number;
     width: number;
     height: number;
 }
@@ -50,7 +49,6 @@ const defaultState: ButtonStyleState = {
     color: "paypal-gold",
     type: "pay",
     borderRadiusPreset: "pill",
-    markBorderRadius: 20,
     width: 350,
     height: 45,
 };

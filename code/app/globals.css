@@ -142,8 +142,6 @@
     --paypal-button-border-radius: 55px;
     /* 0px */
     /* --paypal-button-border-radius: var(--paypal-border-radius-none); */
-
-    --paypal-mark-border-radius: 20px;
 }
 
 .card-field {

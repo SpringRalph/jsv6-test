@@ -24,7 +24,7 @@ export default function ButtonStyling() {
     const [isApplying, setIsApplying] = useState(false);
     const btnRef = useRef<HTMLElement | null>(null);
 
-    const { color, type, borderRadiusPreset, markBorderRadius, width, height } =
+    const { color, type, borderRadiusPreset, width, height } =
         useButtonStyleStore();
 
     // Applies current store values to the <paypal-button> DOM element
@@ -38,13 +38,9 @@ export default function ButtonStyling() {
             "--paypal-button-border-radius",
             BORDER_RADIUS_MAP[borderRadiusPreset]
         );
-        (el as HTMLElement).style.setProperty(
-            "--paypal-mark-border-radius",
-            `${markBorderRadius}px`
-        );
         (el as HTMLElement).style.width = `${width}px`;
         (el as HTMLElement).style.height = `${height}px`;
-    }, [color, type, borderRadiusPreset, markBorderRadius, width, height]);
+    }, [color, type, borderRadiusPreset, width, height]);
 
     async function setupPayPalButton(sdkInstance: AppSdkInstance) {
         const paypalPaymentSession =

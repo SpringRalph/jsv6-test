@@ -107,7 +107,6 @@ export default function StyleControlPanel({
         color,
         type,
         borderRadiusPreset,
-        markBorderRadius,
         width,
         height,
         setProp,
@@ -187,24 +186,6 @@ export default function StyleControlPanel({
                         </OptionChip>
                     ))}
                 </div>
-            </div>
-
-            {/* Mark Border Radius */}
-            <div>
-                <SectionLabel>
-                    Mark Border Radius —{" "}
-                    <span className="normal-case font-normal text-foreground">
-                        {markBorderRadius}px
-                    </span>
-                </SectionLabel>
-                <input
-                    type="range"
-                    min={0}
-                    max={30}
-                    value={markBorderRadius}
-                    onChange={(e) => setProp("markBorderRadius", Number(e.target.value))}
-                    className="w-full cursor-pointer accent-primary"
-                />
             </div>
 
             {/* Width */}
