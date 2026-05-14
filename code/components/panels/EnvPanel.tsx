@@ -1,4 +1,5 @@
 "use client";
+import * as AlertDialog from "@radix-ui/react-alert-dialog";
 
 import { useState } from "react";
 import { useEnvStore } from "@/store/useEnvStore";
@@ -59,6 +60,7 @@ export function EnvPanel() {
   const [localLiveClientId, setLocalLiveClientId] = useState(liveClientId);
   const [localLiveSecret, setLocalLiveSecret] = useState(liveSecret);
   const [saved, setSaved] = useState(false);
+  const [showLiveConfirm, setShowLiveConfirm] = useState(false);
 
   const activeLocalClientId = isSandbox ? localClientId : localLiveClientId;
   const activeLocalSecret = isSandbox ? localSecret : localLiveSecret;
@@ -66,10 +68,19 @@ export function EnvPanel() {
   const setActiveLocalSecret = isSandbox ? setLocalSecret : setLocalLiveSecret;
 
   const handleEnvToggle = (newEnv: PayPalEnv) => {
-    if (newEnv !== env) {
-      unloadPayPalWebSdk();
+    if (newEnv === env) return;
+    if (newEnv === "live") {
+      setShowLiveConfirm(true);
+      return;
     }
+    unloadPayPalWebSdk();
     setEnv(newEnv);
+  };
+
+  const confirmSwitchToLive = () => {
+    setShowLiveConfirm(false);
+    unloadPayPalWebSdk();
+    setEnv("live");
   };
 
   const handleSave = () => {
@@ -108,6 +119,7 @@ export function EnvPanel() {
   const secretOptions = isSandbox ? SANDBOX_SECRET_OPTIONS : LIVE_SECRET_OPTIONS;
 
   return (
+    <>
     <Card className="p-6 border-2 border-blue-200 dark:border-blue-800 shadow-lg relative overflow-hidden">
       <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-blue-500/10 to-transparent rounded-full blur-3xl -z-10" />
 
@@ -202,5 +214,38 @@ export function EnvPanel() {
         </div>
       </div>
     </Card>
+      {/* Live environment confirmation dialog */}
+      <AlertDialog.Root open={showLiveConfirm} onOpenChange={setShowLiveConfirm}>
+        <AlertDialog.Portal>
+          <AlertDialog.Overlay className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+          <AlertDialog.Content className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-xl border border-amber-200 bg-white p-6 shadow-2xl dark:border-amber-800 dark:bg-zinc-900 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
+            <div className="mb-4 flex items-center gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100 text-2xl dark:bg-amber-900/40">⚠️</span>
+              <AlertDialog.Title className="text-lg font-semibold text-amber-800 dark:text-amber-300">
+                Switch to Live Environment
+              </AlertDialog.Title>
+            </div>
+            <AlertDialog.Description className="mb-6 text-sm text-muted-foreground leading-relaxed">
+              You are now in <span className="font-semibold text-amber-700 dark:text-amber-400">Live Environment</span>. Some features behavior would be different because of the scope of your account!
+            </AlertDialog.Description>
+            <div className="flex justify-end gap-3">
+              <AlertDialog.Cancel asChild>
+                <button className="rounded-lg border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-muted transition-colors">
+                  Cancel
+                </button>
+              </AlertDialog.Cancel>
+              <AlertDialog.Action asChild>
+                <button
+                  onClick={confirmSwitchToLive}
+                  className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-700 transition-colors shadow-sm"
+                >
+                  I understand, switch to Live
+                </button>
+              </AlertDialog.Action>
+            </div>
+          </AlertDialog.Content>
+        </AlertDialog.Portal>
+      </AlertDialog.Root>
+    </>
   );
 }
