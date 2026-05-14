@@ -2,6 +2,7 @@ import type React from "react";
 import type { Metadata } from "next";
 import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
+import { EnvBody } from "@/components/layout/EnvBody";
 import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
@@ -20,11 +21,11 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-            <body>
+            <EnvBody>
                 <Navbar />
                 <main className="min-h-screen">{children}</main>
                 <Toaster position="top-center" />
-            </body>
+            </EnvBody>
         </html>
     );
 }
