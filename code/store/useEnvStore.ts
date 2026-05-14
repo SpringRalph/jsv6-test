@@ -16,15 +16,19 @@ interface EnvStore extends EnvState {
   activeSecret: () => string
 }
 
-const LIVE_CLIENT_ID = "AZXvmryZOBQvyeBosxJoMsNbNCYVNGWx5KyArJPYz2O2sEGAOla9s6cI40RVFXHg9oEInNzyQIKzI6tW"
-const LIVE_SECRET = "EAx19qrwczQSJeSzQ5FjlzAUAjgd7LJcneDH9k93ZocGWaF4k_oYcX1k8-AvSrJkMvdlncdIUYZSxtf0"
+export const LIVE_CLIENT_ID_C2 = "AZXvmryZOBQvyeBosxJoMsNbNCYVNGWx5KyArJPYz2O2sEGAOla9s6cI40RVFXHg9oEInNzyQIKzI6tW"
+export const LIVE_SECRET_C2 = "EAx19qrwczQSJeSzQ5FjlzAUAjgd7LJcneDH9k93ZocGWaF4k_oYcX1k8-AvSrJkMvdlncdIUYZSxtf0"
+
+export const SANDBOX_CLIENT_ID_C2 = "ATW2maVlMXBh67xRprsLYttNFXVCDO7MhEUE_VId1zbwqSSfYfIAC8mtdLaLRwA4nZpTzGBZPws7Kf-Z";
+export const SANDBOX_SECRET_ID_C2 = "ELYFWy2PauSftn1lFaTkqsUd2sDu_gPrOi3cGOGj_6JyORnlG46cp16oBnLLmpBBQuhxQIKIiOIwCu_D";
+
 
 const envDefaults: EnvState = {
   env: "sandbox",
   clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? "",
   secret: process.env.NEXT_PUBLIC_PAYPAL_SECRET ?? "",
-  liveClientId: LIVE_CLIENT_ID,
-  liveSecret: LIVE_SECRET,
+  liveClientId: LIVE_CLIENT_ID_C2,
+  liveSecret: LIVE_SECRET_C2,
 }
 
 export const useEnvStore = create<EnvStore>()(

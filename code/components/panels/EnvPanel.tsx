@@ -17,7 +17,7 @@ const SANDBOX_CLIENT_ID_OPTIONS: CredentialOption[] = [
     value: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? "",
   },
   {
-    label: "US Acct C2",
+    label: "C2 Acct",
     value: SANDBOX_CLIENT_ID_C2,
   },
 ];
@@ -28,7 +28,7 @@ const SANDBOX_SECRET_OPTIONS: CredentialOption[] = [
     value: process.env.NEXT_PUBLIC_PAYPAL_SECRET ?? "",
   },
   {
-    label: "US Acct C2",
+    label: "C2 Acct",
     value: SANDBOX_SECRET_ID_C2,
   },
 ];
