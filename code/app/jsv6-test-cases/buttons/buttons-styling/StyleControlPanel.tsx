@@ -50,30 +50,41 @@ function OptionChip({
             type="button"
             onClick={onClick}
             className={cn(
-                // base
                 "cursor-pointer select-none",
                 "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md",
                 "text-xs font-semibold border",
-                // 3-D lift effect via box-shadow
                 "transition-all duration-100 ease-out",
                 selected
                     ? [
-                          "bg-primary text-primary-foreground border-primary/80",
-                          // pressed-in look: top highlight gone, bottom shadow collapsed
-                          "shadow-[inset_0_1px_3px_rgba(0,0,0,0.25)]",
+                          // Clearly selected: deep indigo fill + strong inset + ring
+                          "bg-indigo-600 text-white border-indigo-700",
+                          "ring-2 ring-indigo-400 ring-offset-1",
+                          "shadow-[inset_0_2px_4px_rgba(0,0,0,0.30)]",
                           "translate-y-px",
                       ]
                     : [
                           "bg-white text-foreground border-border",
-                          // raised: bright top edge + dark bottom edge + drop shadow
                           "shadow-[0_1px_0_0_rgba(0,0,0,0.08),0_2px_4px_rgba(0,0,0,0.10),inset_0_1px_0_rgba(255,255,255,0.9)]",
                           "hover:shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_4px_8px_rgba(0,0,0,0.14),inset_0_1px_0_rgba(255,255,255,0.95)]",
-                          "hover:-translate-y-0.5",
-                          "active:shadow-[inset_0_1px_3px_rgba(0,0,0,0.18)]",
-                          "active:translate-y-px",
+                          "hover:-translate-y-0.5 hover:border-indigo-300",
+                          "active:shadow-[inset_0_1px_3px_rgba(0,0,0,0.18)] active:translate-y-px",
                       ]
             )}
         >
+            {/* Selected tick */}
+            {selected && (
+                <svg
+                    className="w-3 h-3 shrink-0"
+                    viewBox="0 0 12 12"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2.5}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                >
+                    <polyline points="2,6 5,9 10,3" />
+                </svg>
+            )}
             {children}
         </button>
     );
