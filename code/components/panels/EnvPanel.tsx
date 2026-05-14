@@ -66,6 +66,9 @@ export function EnvPanel() {
   const setActiveLocalSecret = isSandbox ? setLocalSecret : setLocalLiveSecret;
 
   const handleEnvToggle = (newEnv: PayPalEnv) => {
+    if (newEnv !== env) {
+      unloadPayPalWebSdk();
+    }
     setEnv(newEnv);
   };
 
