@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/Card";
 import { VaultManagerDialog } from "@/components/panels/VaultManagerDialog";
 import { CredentialCombobox, type CredentialOption } from "@/components/ui/CredentialCombobox";
 import { unloadPayPalWebSdk } from "@/lib/paypalScript";
+import { AlertTriangle } from "lucide-react";
 import type { PayPalEnv } from "@/types/env";
 
 const SANDBOX_CLIENT_ID_OPTIONS: CredentialOption[] = [
@@ -220,7 +221,7 @@ export function EnvPanel() {
           <AlertDialog.Overlay className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
           <AlertDialog.Content className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-xl border border-amber-200 bg-white p-6 shadow-2xl dark:border-amber-800 dark:bg-zinc-900 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
             <div className="mb-4 flex items-center gap-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/40"><span className="text-xl leading-none">⚠️</span></span>
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/40"><AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400" strokeWidth={2} /></span>
               <AlertDialog.Title className="text-lg font-semibold text-amber-800 dark:text-amber-300">
                 Switch to Live Environment
               </AlertDialog.Title>
