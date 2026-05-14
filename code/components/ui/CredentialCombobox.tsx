@@ -100,7 +100,7 @@ export function CredentialCombobox({
         align="start"
         sideOffset={6}
       >
-        <Command className="bg-transparent">
+        <Command className="bg-transparent" shouldFilter={false}>
           <div className="border-b border-zinc-100 dark:border-zinc-800">
             <CommandInput
               placeholder="Search or type value…"
