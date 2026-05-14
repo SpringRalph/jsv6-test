@@ -2,7 +2,7 @@
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 
 import { useState } from "react";
-import { useEnvStore } from "@/store/useEnvStore";
+import { LIVE_CLIENT_ID_C2, LIVE_SECRET_C2, SANDBOX_CLIENT_ID_C2, SANDBOX_SECRET_ID_C2, useEnvStore } from "@/store/useEnvStore";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { VaultManagerDialog } from "@/components/panels/VaultManagerDialog";
@@ -13,29 +13,37 @@ import type { PayPalEnv } from "@/types/env";
 
 const SANDBOX_CLIENT_ID_OPTIONS: CredentialOption[] = [
   {
-    label: "Default (env var)",
+    label: "US Acct",
     value: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? "",
+  },
+  {
+    label: "US Acct C2",
+    value: SANDBOX_CLIENT_ID_C2,
   },
 ];
 
 const SANDBOX_SECRET_OPTIONS: CredentialOption[] = [
   {
-    label: "Default (env var)",
+    label: "US Acct",
     value: process.env.NEXT_PUBLIC_PAYPAL_SECRET ?? "",
+  },
+  {
+    label: "US Acct C2",
+    value: SANDBOX_SECRET_ID_C2,
   },
 ];
 
 const LIVE_CLIENT_ID_OPTIONS: CredentialOption[] = [
   {
     label: "Live Test Account",
-    value: "AZXvmryZOBQvyeBosxJoMsNbNCYVNGWx5KyArJPYz2O2sEGAOla9s6cI40RVFXHg9oEInNzyQIKzI6tW",
+    value: LIVE_CLIENT_ID_C2,
   },
 ];
 
 const LIVE_SECRET_OPTIONS: CredentialOption[] = [
   {
     label: "Live Test Account",
-    value: "EAx19qrwczQSJeSzQ5FjlzAUAjgd7LJcneDH9k93ZocGWaF4k_oYcX1k8-AvSrJkMvdlncdIUYZSxtf0",
+    value: LIVE_SECRET_C2,
   },
 ];
 
