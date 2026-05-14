@@ -50,12 +50,28 @@ function OptionChip({
             type="button"
             onClick={onClick}
             className={cn(
+                // base
                 "cursor-pointer select-none",
                 "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md",
-                "text-xs font-medium border transition-colors duration-150",
+                "text-xs font-semibold border",
+                // 3-D lift effect via box-shadow
+                "transition-all duration-100 ease-out",
                 selected
-                    ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                    : "bg-background text-foreground border-border hover:bg-muted hover:border-muted-foreground"
+                    ? [
+                          "bg-primary text-primary-foreground border-primary/80",
+                          // pressed-in look: top highlight gone, bottom shadow collapsed
+                          "shadow-[inset_0_1px_3px_rgba(0,0,0,0.25)]",
+                          "translate-y-px",
+                      ]
+                    : [
+                          "bg-white text-foreground border-border",
+                          // raised: bright top edge + dark bottom edge + drop shadow
+                          "shadow-[0_1px_0_0_rgba(0,0,0,0.08),0_2px_4px_rgba(0,0,0,0.10),inset_0_1px_0_rgba(255,255,255,0.9)]",
+                          "hover:shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_4px_8px_rgba(0,0,0,0.14),inset_0_1px_0_rgba(255,255,255,0.95)]",
+                          "hover:-translate-y-0.5",
+                          "active:shadow-[inset_0_1px_3px_rgba(0,0,0,0.18)]",
+                          "active:translate-y-px",
+                      ]
             )}
         >
             {children}
@@ -94,9 +110,17 @@ export default function StyleControlPanel({
                 <button
                     type="button"
                     onClick={reset}
-                    className="cursor-pointer text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors"
+                    className={cn(
+                        "cursor-pointer select-none text-xs font-medium px-2.5 py-1 rounded-md border",
+                        "text-muted-foreground border-border bg-white",
+                        "shadow-[0_1px_0_0_rgba(0,0,0,0.08),0_2px_4px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.9)]",
+                        "hover:shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_4px_8px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.95)]",
+                        "hover:-translate-y-0.5 hover:text-foreground",
+                        "active:translate-y-px active:shadow-[inset_0_1px_3px_rgba(0,0,0,0.15)]",
+                        "transition-all duration-100"
+                    )}
                 >
-                    Reset defaults
+                    ↺ Reset
                 </button>
             </div>
 
@@ -215,15 +239,24 @@ export default function StyleControlPanel({
                 onClick={onApply}
                 disabled={!isButtonReady}
                 className={cn(
-                    "w-full py-2.5 rounded-lg text-sm font-semibold transition-all duration-150",
+                    "w-full py-2.5 rounded-lg text-sm font-semibold",
+                    "transition-all duration-100 ease-out",
                     isButtonReady
-                        ? "cursor-pointer bg-primary text-primary-foreground hover:opacity-90 active:scale-[0.98]"
-                        : "cursor-not-allowed bg-muted text-muted-foreground"
+                        ? [
+                              "cursor-pointer",
+                              "bg-primary text-primary-foreground border border-primary/80",
+                              "shadow-[0_2px_0_0_rgba(0,0,0,0.18),0_4px_10px_rgba(59,130,246,0.30),inset_0_1px_0_rgba(255,255,255,0.15)]",
+                              "hover:shadow-[0_3px_0_0_rgba(0,0,0,0.20),0_6px_16px_rgba(59,130,246,0.40),inset_0_1px_0_rgba(255,255,255,0.15)]",
+                              "hover:-translate-y-0.5",
+                              "active:translate-y-px active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.20)]",
+                          ]
+                        : [
+                              "cursor-not-allowed",
+                              "bg-muted text-muted-foreground border border-border",
+                          ]
                 )}
             >
-                {isButtonReady
-                    ? "✓  Apply Styles"
-                    : "Waiting for PayPal button to render…"}
+                {isButtonReady ? "✓  Apply Styles" : "Waiting for PayPal button to render…"}
             </button>
         </div>
     );
