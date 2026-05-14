@@ -3,13 +3,12 @@ import { persist, createJSONStorage } from "zustand/middleware";
 
 // Bump this version whenever the shape of ButtonStyleState changes.
 // The migrate function below will reset to defaults on version mismatch.
-const STORE_VERSION = 2;
+const STORE_VERSION = 3;
 
 export type ButtonColor =
     | "paypal-gold"
     | "paypal-white"
     | "paypal-black"
-    | "paypal-silver"
     | "paypal-blue";
 
 export type ButtonType =

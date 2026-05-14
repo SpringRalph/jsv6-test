@@ -15,11 +15,10 @@ interface StyleControlPanelProps {
 }
 
 const COLOR_OPTIONS: { value: ButtonColor; label: string; swatch: string }[] = [
-    { value: "paypal-gold",   label: "Gold",   swatch: "#FFC439" },
-    { value: "paypal-white",  label: "White",  swatch: "#FFFFFF" },
-    { value: "paypal-black",  label: "Black",  swatch: "#2C2E2F" },
-    { value: "paypal-silver", label: "Silver", swatch: "#EEEEEE" },
-    { value: "paypal-blue",   label: "Blue",   swatch: "#003087" },
+    { value: "paypal-gold",  label: "Gold",  swatch: "#FFC439" },
+    { value: "paypal-white", label: "White", swatch: "#FFFFFF" },
+    { value: "paypal-black", label: "Black", swatch: "#2C2E2F" },
+    { value: "paypal-blue",  label: "Blue",  swatch: "#003087" },
 ];
 
 const TYPE_OPTIONS: { value: ButtonType; label: string }[] = [
