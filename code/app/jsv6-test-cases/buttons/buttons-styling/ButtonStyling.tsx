@@ -1,6 +1,5 @@
 "use client";
 
-import Gist from "react-gist";
 import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
 import {
     createOrder,
@@ -126,14 +125,6 @@ export default function ButtonStyling() {
                     hidden
                     className="paypal-button-styled paypal-gold"
                 />
-            </div>
-
-            {/* Gist reference */}
-            <div>
-                <h2 className="text-sm font-semibold mb-2">
-                    PayPal JS V6 Style Reference (Gist)
-                </h2>
-                <Gist id="597f3ffc03b89a3f4876dd5d4a5011e0" />
             </div>
 
             {/* Style controls */}

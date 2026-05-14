@@ -63,11 +63,12 @@ function OptionChip({
                           "translate-y-px",
                       ]
                     : [
-                          "bg-white text-foreground border-border",
-                          "shadow-[0_1px_0_0_rgba(0,0,0,0.08),0_2px_4px_rgba(0,0,0,0.10),inset_0_1px_0_rgba(255,255,255,0.9)]",
-                          "hover:shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_4px_8px_rgba(0,0,0,0.14),inset_0_1px_0_rgba(255,255,255,0.95)]",
-                          "hover:-translate-y-0.5 hover:border-indigo-300",
-                          "active:shadow-[inset_0_1px_3px_rgba(0,0,0,0.18)] active:translate-y-px",
+                          "bg-slate-100 text-foreground border-slate-200",
+                          "shadow-[0_1px_0_0_rgba(0,0,0,0.06),0_2px_4px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.80)]",
+                          "hover:bg-slate-50 hover:border-indigo-300",
+                          "hover:shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_4px_8px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.90)]",
+                          "hover:-translate-y-0.5",
+                          "active:shadow-[inset_0_1px_3px_rgba(0,0,0,0.15)] active:translate-y-px",
                       ]
             )}
         >
@@ -123,10 +124,11 @@ export default function StyleControlPanel({
                     onClick={reset}
                     className={cn(
                         "cursor-pointer select-none text-xs font-medium px-2.5 py-1 rounded-md border",
-                        "text-muted-foreground border-border bg-white",
-                        "shadow-[0_1px_0_0_rgba(0,0,0,0.08),0_2px_4px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.9)]",
-                        "hover:shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_4px_8px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.95)]",
-                        "hover:-translate-y-0.5 hover:text-foreground",
+                        "text-muted-foreground border-slate-200 bg-slate-100",
+                        "shadow-[0_1px_0_0_rgba(0,0,0,0.06),0_2px_4px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.80)]",
+                        "hover:bg-slate-50 hover:border-indigo-300 hover:text-foreground",
+                        "hover:shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_4px_8px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.90)]",
+                        "hover:-translate-y-0.5",
                         "active:translate-y-px active:shadow-[inset_0_1px_3px_rgba(0,0,0,0.15)]",
                         "transition-all duration-100"
                     )}
@@ -255,15 +257,16 @@ export default function StyleControlPanel({
                     isButtonReady
                         ? [
                               "cursor-pointer",
-                              "bg-primary text-primary-foreground border border-primary/80",
-                              "shadow-[0_2px_0_0_rgba(0,0,0,0.18),0_4px_10px_rgba(59,130,246,0.30),inset_0_1px_0_rgba(255,255,255,0.15)]",
-                              "hover:shadow-[0_3px_0_0_rgba(0,0,0,0.20),0_6px_16px_rgba(59,130,246,0.40),inset_0_1px_0_rgba(255,255,255,0.15)]",
+                              "bg-indigo-600 text-white border border-indigo-700",
+                              "shadow-[0_2px_0_0_rgba(0,0,0,0.20),0_4px_12px_rgba(99,102,241,0.35),inset_0_1px_0_rgba(255,255,255,0.15)]",
+                              "hover:bg-indigo-500 hover:border-indigo-600",
+                              "hover:shadow-[0_3px_0_0_rgba(0,0,0,0.22),0_6px_18px_rgba(99,102,241,0.45),inset_0_1px_0_rgba(255,255,255,0.18)]",
                               "hover:-translate-y-0.5",
-                              "active:translate-y-px active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.20)]",
+                              "active:translate-y-px active:shadow-[inset_0_2px_5px_rgba(0,0,0,0.25)]",
                           ]
                         : [
                               "cursor-not-allowed",
-                              "bg-muted text-muted-foreground border border-border",
+                              "bg-slate-200 text-slate-400 border border-slate-300",
                           ]
                 )}
             >
