@@ -33,6 +33,16 @@ const SANDBOX_SECRET_OPTIONS: CredentialOption[] = [
   },
 ];
 
+
+// Maps client-id value → paired secret value for auto-linking
+const SANDBOX_CREDENTIAL_PAIRS: Record<string, string> = {
+  [process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? ""]: process.env.NEXT_PUBLIC_PAYPAL_SECRET ?? "",
+  [SANDBOX_CLIENT_ID_C2]: SANDBOX_SECRET_ID_C2,
+};
+
+const LIVE_CREDENTIAL_PAIRS: Record<string, string> = {
+  [LIVE_CLIENT_ID_C2]: LIVE_SECRET_C2,
+};
 const LIVE_CLIENT_ID_OPTIONS: CredentialOption[] = [
   {
     label: "Live Test Account",
@@ -75,6 +85,15 @@ export function EnvPanel() {
   const activeLocalSecret = isSandbox ? localSecret : localLiveSecret;
   const setActiveLocalClientId = isSandbox ? setLocalClientId : setLocalLiveClientId;
   const setActiveLocalSecret = isSandbox ? setLocalSecret : setLocalLiveSecret;
+
+  const handleClientIdChange = (newClientId: string) => {
+    setActiveLocalClientId(newClientId);
+    const pairs = isSandbox ? SANDBOX_CREDENTIAL_PAIRS : LIVE_CREDENTIAL_PAIRS;
+    const pairedSecret = pairs[newClientId];
+    if (pairedSecret !== undefined) {
+      setActiveLocalSecret(pairedSecret);
+    }
+  };
 
   const handleEnvToggle = (newEnv: PayPalEnv) => {
     if (newEnv === env) return;
@@ -179,7 +198,7 @@ export function EnvPanel() {
           </label>
           <CredentialCombobox
             value={activeLocalClientId}
-            onChange={setActiveLocalClientId}
+            onChange={handleClientIdChange}
             options={clientIdOptions}
             placeholder="Select or enter Client ID"
             inputType="text"
