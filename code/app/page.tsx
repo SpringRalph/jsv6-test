@@ -93,7 +93,7 @@ export default function HomePage() {
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-2xl blur-3xl -z-10" />
                     <div className="relative bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 p-8 rounded-2xl border-2 border-blue-200 dark:border-blue-800 shadow-lg">
                         <div className="flex items-center gap-3 mb-3">
-                            <span className="text-5xl">💳</span>
+                            <span className="flex items-center justify-center w-12 h-12 shrink-0 text-5xl leading-none">💳</span>
                             <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                                 A unified testing environment for PayPal
                                 JavaScript SDK v6 examples
