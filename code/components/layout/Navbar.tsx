@@ -4,10 +4,12 @@ import { useEnvStore } from "@/store/useEnvStore"
 import { maskClientId } from "@/lib/storage"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { Wallet } from "lucide-react"
 
 export function Navbar() {
-  const { clientId, env } = useEnvStore()
+  const { env, activeClientId } = useEnvStore()
   const isLive = env === "live"
+  const currentClientId = activeClientId()
 
   return (
     <nav
@@ -18,7 +20,6 @@ export function Navbar() {
           : "border-border bg-card",
       )}
     >
-      {/* background gradient overlay */}
       <div
         className={cn(
           "absolute inset-0 -z-10",
@@ -30,11 +31,22 @@ export function Navbar() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <Link href="/" className="flex items-center space-x-2 group">
-            <span className="text-3xl group-hover:scale-110 transition-transform">💳</span>
+
+          {/* Logo + title */}
+          <Link href="/" className="flex items-center gap-2.5 group">
             <span
               className={cn(
-                "text-xl font-bold bg-clip-text text-transparent",
+                "flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-transform group-hover:scale-110",
+                isLive
+                  ? "bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-amber-300/50 shadow-md"
+                  : "bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-blue-300/50 shadow-md",
+              )}
+            >
+              <Wallet className="w-4.5 h-4.5" strokeWidth={2} />
+            </span>
+            <span
+              className={cn(
+                "text-xl font-bold leading-none bg-clip-text text-transparent",
                 isLive
                   ? "bg-gradient-to-r from-amber-600 to-orange-600"
                   : "bg-gradient-to-r from-blue-600 to-purple-600",
@@ -44,10 +56,11 @@ export function Navbar() {
             </span>
           </Link>
 
-          <div className="flex items-center space-x-3">
+          {/* Right side */}
+          <div className="flex items-center gap-3">
             {isLive && (
               <div className="flex items-center gap-1.5 rounded-full bg-amber-500 px-3 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-sm">
-                <span className="relative flex h-2 w-2">
+                <span className="relative flex h-2 w-2 shrink-0">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
                 </span>
@@ -55,16 +68,29 @@ export function Navbar() {
               </div>
             )}
 
-            {clientId && (
-              <div className={cn(
-                "text-sm px-4 py-2 rounded-full border flex items-center gap-2",
-                isLive
-                  ? "bg-amber-100/60 border-amber-300 dark:bg-amber-900/30 dark:border-amber-700"
-                  : "bg-muted/50 border-border",
-              )}>
-                <span className="text-base">🔑</span>
-                <span className="text-muted-foreground">Client ID:</span>
-                <span className="font-mono font-semibold text-primary">{maskClientId(clientId)}</span>
+            {currentClientId && (
+              <div
+                className={cn(
+                  "flex items-center gap-2 text-sm px-3.5 py-1.5 rounded-full border",
+                  isLive
+                    ? "bg-amber-100/60 border-amber-300 dark:bg-amber-900/30 dark:border-amber-700"
+                    : "bg-muted/50 border-border",
+                )}
+              >
+                <span
+                  className={cn(
+                    "text-[10px] font-semibold uppercase tracking-widest px-1.5 py-0.5 rounded",
+                    isLive
+                      ? "bg-amber-500 text-white"
+                      : "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300",
+                  )}
+                >
+                  {isLive ? "LIVE" : "SBX"}
+                </span>
+                <span className="text-muted-foreground text-xs">Client ID:</span>
+                <span className="font-mono font-semibold text-primary text-xs tracking-tight">
+                  {maskClientId(currentClientId)}
+                </span>
               </div>
             )}
           </div>
