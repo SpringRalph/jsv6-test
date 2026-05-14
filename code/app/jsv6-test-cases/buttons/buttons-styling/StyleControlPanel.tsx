@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { cn } from "@/lib/utils";
 import {
     useButtonStyleStore,
     ButtonColor,
@@ -13,27 +14,62 @@ interface StyleControlPanelProps {
     onApply: () => void;
 }
 
-const COLOR_OPTIONS: { value: ButtonColor; label: string; bg: string }[] = [
-    { value: "paypal-gold", label: "Gold", bg: "#FFC439" },
-    { value: "paypal-white", label: "White", bg: "#FFFFFF" },
-    { value: "paypal-black", label: "Black", bg: "#2C2E2F" },
-    { value: "paypal-silver", label: "Silver", bg: "#EEEEEE" },
-    { value: "paypal-blue", label: "Blue", bg: "#003087" },
+const COLOR_OPTIONS: { value: ButtonColor; label: string; swatch: string }[] = [
+    { value: "paypal-gold",   label: "Gold",   swatch: "#FFC439" },
+    { value: "paypal-white",  label: "White",  swatch: "#FFFFFF" },
+    { value: "paypal-black",  label: "Black",  swatch: "#2C2E2F" },
+    { value: "paypal-silver", label: "Silver", swatch: "#EEEEEE" },
+    { value: "paypal-blue",   label: "Blue",   swatch: "#003087" },
 ];
 
 const TYPE_OPTIONS: { value: ButtonType; label: string }[] = [
-    { value: "pay", label: "Pay" },
-    { value: "buy-now", label: "Buy Now" },
-    { value: "checkout", label: "Checkout" },
-    { value: "donate", label: "Donate" },
+    { value: "pay",       label: "Pay"       },
+    { value: "buy-now",   label: "Buy Now"   },
+    { value: "checkout",  label: "Checkout"  },
+    { value: "donate",    label: "Donate"    },
     { value: "subscribe", label: "Subscribe" },
 ];
 
 const RADIUS_OPTIONS: { value: BorderRadiusPreset; label: string }[] = [
-    { value: "none", label: "None (0px)" },
-    { value: "sm", label: "Small (4px)" },
-    { value: "pill", label: "Pill (55px)" },
+    { value: "none", label: "None · 0px"  },
+    { value: "sm",   label: "Small · 4px" },
+    { value: "pill", label: "Pill · 55px" },
 ];
+
+function OptionChip({
+    selected,
+    onClick,
+    children,
+}: {
+    selected: boolean;
+    onClick: () => void;
+    children: React.ReactNode;
+}) {
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            className={cn(
+                "cursor-pointer select-none",
+                "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md",
+                "text-xs font-medium border transition-colors duration-150",
+                selected
+                    ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                    : "bg-background text-foreground border-border hover:bg-muted hover:border-muted-foreground"
+            )}
+        >
+            {children}
+        </button>
+    );
+}
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+    return (
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">
+            {children}
+        </p>
+    );
+}
 
 export default function StyleControlPanel({
     isButtonReady,
@@ -51,163 +87,143 @@ export default function StyleControlPanel({
     } = useButtonStyleStore();
 
     return (
-        <div className="border rounded-lg p-4 bg-card space-y-5">
+        <div className="rounded-xl border border-border bg-card p-5 space-y-5 shadow-sm">
+            {/* Header */}
             <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-sm">Style Controls</h3>
+                <span className="text-sm font-semibold">Style Controls</span>
                 <button
+                    type="button"
                     onClick={reset}
-                    className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2"
+                    className="cursor-pointer text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors"
                 >
                     Reset defaults
                 </button>
             </div>
 
             {/* Color */}
-            <div className="space-y-2">
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Color
-                </label>
+            <div>
+                <SectionLabel>Color</SectionLabel>
                 <div className="flex flex-wrap gap-2">
                     {COLOR_OPTIONS.map((opt) => (
-                        <button
+                        <OptionChip
                             key={opt.value}
+                            selected={color === opt.value}
                             onClick={() => setProp("color", opt.value)}
-                            title={opt.label}
-                            className={`
-                                flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-xs font-medium transition-all
-                                ${color === opt.value
-                                    ? "border-primary ring-1 ring-primary"
-                                    : "border-border hover:border-muted-foreground"
-                                }
-                            `}
                         >
                             <span
-                                className="w-3 h-3 rounded-full border border-border/50 shrink-0"
-                                style={{ backgroundColor: opt.bg }}
+                                className="w-3 h-3 rounded-full border border-black/10 shrink-0"
+                                style={{ backgroundColor: opt.swatch }}
                             />
                             {opt.label}
-                        </button>
+                        </OptionChip>
                     ))}
                 </div>
             </div>
 
             {/* Type */}
-            <div className="space-y-2">
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Button Type
-                </label>
+            <div>
+                <SectionLabel>Button Type</SectionLabel>
                 <div className="flex flex-wrap gap-2">
                     {TYPE_OPTIONS.map((opt) => (
-                        <button
+                        <OptionChip
                             key={opt.value}
+                            selected={type === opt.value}
                             onClick={() => setProp("type", opt.value)}
-                            className={`
-                                px-2.5 py-1 rounded-md border text-xs font-medium transition-all
-                                ${type === opt.value
-                                    ? "border-primary bg-primary/5 ring-1 ring-primary text-primary"
-                                    : "border-border hover:border-muted-foreground"
-                                }
-                            `}
                         >
                             {opt.label}
-                        </button>
+                        </OptionChip>
                     ))}
                 </div>
             </div>
 
             {/* Border Radius */}
-            <div className="space-y-2">
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Border Radius
-                </label>
+            <div>
+                <SectionLabel>Border Radius</SectionLabel>
                 <div className="flex flex-wrap gap-2">
                     {RADIUS_OPTIONS.map((opt) => (
-                        <button
+                        <OptionChip
                             key={opt.value}
+                            selected={borderRadiusPreset === opt.value}
                             onClick={() => setProp("borderRadiusPreset", opt.value)}
-                            className={`
-                                px-2.5 py-1 rounded-md border text-xs font-medium transition-all
-                                ${borderRadiusPreset === opt.value
-                                    ? "border-primary bg-primary/5 ring-1 ring-primary text-primary"
-                                    : "border-border hover:border-muted-foreground"
-                                }
-                            `}
                         >
                             {opt.label}
-                        </button>
+                        </OptionChip>
                     ))}
                 </div>
             </div>
 
             {/* Mark Border Radius */}
-            <div className="space-y-2">
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Mark Border Radius{" "}
+            <div>
+                <SectionLabel>
+                    Mark Border Radius —{" "}
                     <span className="normal-case font-normal text-foreground">
                         {markBorderRadius}px
                     </span>
-                </label>
+                </SectionLabel>
                 <input
                     type="range"
                     min={0}
                     max={30}
                     value={markBorderRadius}
-                    onChange={(e) =>
-                        setProp("markBorderRadius", Number(e.target.value))
-                    }
-                    className="w-full accent-primary"
+                    onChange={(e) => setProp("markBorderRadius", Number(e.target.value))}
+                    className="w-full cursor-pointer accent-primary"
                 />
             </div>
 
             {/* Width */}
-            <div className="space-y-2">
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Width{" "}
+            <div>
+                <SectionLabel>
+                    Width —{" "}
                     <span className="normal-case font-normal text-foreground">
                         {width}px
                     </span>
-                </label>
+                </SectionLabel>
                 <input
                     type="range"
                     min={150}
                     max={500}
                     value={width}
                     onChange={(e) => setProp("width", Number(e.target.value))}
-                    className="w-full accent-primary"
+                    className="w-full cursor-pointer accent-primary"
                 />
             </div>
 
             {/* Height */}
-            <div className="space-y-2">
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Height{" "}
+            <div>
+                <SectionLabel>
+                    Height —{" "}
                     <span className="normal-case font-normal text-foreground">
                         {height}px
                     </span>
-                </label>
+                </SectionLabel>
                 <input
                     type="range"
                     min={35}
                     max={55}
                     value={height}
                     onChange={(e) => setProp("height", Number(e.target.value))}
-                    className="w-full accent-primary"
+                    className="w-full cursor-pointer accent-primary"
                 />
             </div>
 
+            {/* Divider */}
+            <div className="border-t border-border" />
+
             {/* Apply Button */}
             <button
+                type="button"
                 onClick={onApply}
                 disabled={!isButtonReady}
-                className={`
-                    w-full py-2 rounded-md text-sm font-semibold transition-all
-                    ${isButtonReady
-                        ? "bg-primary text-primary-foreground hover:opacity-90 active:scale-[0.98]"
-                        : "bg-muted text-muted-foreground cursor-not-allowed"
-                    }
-                `}
+                className={cn(
+                    "w-full py-2.5 rounded-lg text-sm font-semibold transition-all duration-150",
+                    isButtonReady
+                        ? "cursor-pointer bg-primary text-primary-foreground hover:opacity-90 active:scale-[0.98]"
+                        : "cursor-not-allowed bg-muted text-muted-foreground"
+                )}
             >
-                {isButtonReady ? "Apply Styles" : "Waiting for button to render…"}
+                {isButtonReady
+                    ? "✓  Apply Styles"
+                    : "Waiting for PayPal button to render…"}
             </button>
         </div>
     );
