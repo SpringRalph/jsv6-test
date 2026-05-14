@@ -1,4 +1,4 @@
-import { buildBasicAuthHeader, getPayPalConfig } from "@/services/paypal-server-side-function/server-function";
+import { buildBasicAuthHeader, getPayPalConfig, getPayPalConfigFromRequest } from "@/services/paypal-server-side-function/server-function";
 import { NextResponse } from "next/server";
 import consola from "consola";
 
@@ -14,7 +14,7 @@ type Item = {
 export async function POST(req: Request) {
     consola.info("[/api/paypal/create-order] HTTP POST received");
     try {
-        const { clientId, clientSecret, base } = getPayPalConfig();
+        const { clientId, clientSecret, base } = getPayPalConfigFromRequest(req);
         consola.debug("------[1]------")
         const basic = buildBasicAuthHeader(clientId, clientSecret);
 

@@ -25,3 +25,11 @@ export function getPayPalConfig(override?: PayPalConfigOverride) {
 export function buildBasicAuthHeader(clientId: string, clientSecret: string) {
     return `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`;
 }
+export function getPayPalConfigFromRequest(req: Request) {
+    const h = req.headers;
+    const overrideClientId = h.get("x-paypal-client-id") || undefined;
+    const overrideSecret = h.get("x-paypal-secret") || undefined;
+    const overrideEnvRaw = h.get("x-paypal-env") || undefined;
+    const overrideEnv = overrideEnvRaw === "live" ? "production" : overrideEnvRaw;
+    return getPayPalConfig({ clientId: overrideClientId, clientSecret: overrideSecret, env: overrideEnv });
+}
