@@ -3,96 +3,201 @@
 import { useState } from "react";
 import { useEnvStore } from "@/store/useEnvStore";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
 import { Card } from "@/components/ui/Card";
 import { VaultManagerDialog } from "@/components/panels/VaultManagerDialog";
+import { CredentialCombobox, type CredentialOption } from "@/components/ui/CredentialCombobox";
+import { unloadPayPalWebSdk } from "@/lib/paypalScript";
+import type { PayPalEnv } from "@/types/env";
+
+const SANDBOX_CLIENT_ID_OPTIONS: CredentialOption[] = [
+  {
+    label: "Default (env var)",
+    value: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? "",
+  },
+];
+
+const SANDBOX_SECRET_OPTIONS: CredentialOption[] = [
+  {
+    label: "Default (env var)",
+    value: process.env.NEXT_PUBLIC_PAYPAL_SECRET ?? "",
+  },
+];
+
+const LIVE_CLIENT_ID_OPTIONS: CredentialOption[] = [
+  {
+    label: "Live Test Account",
+    value: "AZXvmryZOBQvyeBosxJoMsNbNCYVNGWx5KyArJPYz2O2sEGAOla9s6cI40RVFXHg9oEInNzyQIKzI6tW",
+  },
+];
+
+const LIVE_SECRET_OPTIONS: CredentialOption[] = [
+  {
+    label: "Live Test Account",
+    value: "EAx19qrwczQSJeSzQ5FjlzAUAjgd7LJcneDH9k93ZocGWaF4k_oYcX1k8-AvSrJkMvdlncdIUYZSxtf0",
+  },
+];
 
 export function EnvPanel() {
-    const { clientId, secret, setClientId, setSecret, reset } = useEnvStore();
-    const [localClientId, setLocalClientId] = useState(clientId);
-    const [localSecret, setLocalSecret] = useState(secret);
-    const [saved, setSaved] = useState(false);
+  const {
+    env,
+    clientId,
+    secret,
+    liveClientId,
+    liveSecret,
+    setEnv,
+    setClientId,
+    setSecret,
+    setLiveClientId,
+    setLiveSecret,
+    reset,
+  } = useEnvStore();
 
-    const handleSave = () => {
-        setClientId(localClientId);
-        setSecret(localSecret);
-        setSaved(true);
-        setTimeout(() => setSaved(false), 2000);
-    };
+  const isSandbox = env === "sandbox";
 
-    const handleReset = () => {
-        reset();
-        setLocalClientId("");
-        setLocalSecret("");
-    };
+  const [localClientId, setLocalClientId] = useState(clientId);
+  const [localSecret, setLocalSecret] = useState(secret);
+  const [localLiveClientId, setLocalLiveClientId] = useState(liveClientId);
+  const [localLiveSecret, setLocalLiveSecret] = useState(liveSecret);
+  const [saved, setSaved] = useState(false);
 
-    return (
-        <Card className="p-6 border-2 border-blue-200 dark:border-blue-800 shadow-lg relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-blue-500/10 to-transparent rounded-full blur-3xl -z-10" />
+  const activeLocalClientId = isSandbox ? localClientId : localLiveClientId;
+  const activeLocalSecret = isSandbox ? localSecret : localLiveSecret;
+  const setActiveLocalClientId = isSandbox ? setLocalClientId : setLocalLiveClientId;
+  const setActiveLocalSecret = isSandbox ? setLocalSecret : setLocalLiveSecret;
 
-            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                <span className="text-2xl">⚙️</span>
-                Environment Configuration
-            </h2>
-            <div className="space-y-4">
-                <div>
-                    <label
-                        htmlFor="clientId"
-                        className="block text-sm font-medium mb-2 flex items-center gap-2"
-                    >
-                        <span className="text-lg">🔑</span>
-                        PayPal Client ID
-                    </label>
-                    <Input
-                        id="clientId"
-                        type="text"
-                        value={localClientId}
-                        onChange={(e) => setLocalClientId(e.target.value)}
-                        placeholder="Enter your PayPal Client ID"
-                        className="border-2"
-                    />
-                </div>
+  const handleEnvToggle = (newEnv: PayPalEnv) => {
+    setEnv(newEnv);
+  };
 
-                <div>
-                    <label
-                        htmlFor="secret"
-                        className="block text-sm font-medium mb-2 flex items-center gap-2"
-                    >
-                        <span className="text-lg">🔐</span>
-                        PayPal Secret
-                    </label>
-                    <Input
-                        id="secret"
-                        type="password"
-                        value={localSecret}
-                        onChange={(e) => setLocalSecret(e.target.value)}
-                        placeholder="Enter your PayPal Secret"
-                        className="border-2"
-                    />
-                </div>
+  const handleSave = () => {
+    const prevClientId = isSandbox ? clientId : liveClientId;
+    const prevSecret = isSandbox ? secret : liveSecret;
+    const changed =
+      activeLocalClientId !== prevClientId ||
+      activeLocalSecret !== prevSecret;
 
-                <div className="flex items-center flex-wrap gap-3">
-                    <Button
-                        onClick={handleSave}
-                        className="shadow-md hover:shadow-lg transition-shadow"
-                    >
-                        💾 Save Configuration
-                    </Button>
-                    <Button
-                        onClick={handleReset}
-                        variant="secondary"
-                        className="shadow-md hover:shadow-lg transition-shadow"
-                    >
-                        🔄 Reset
-                    </Button>
-                    <VaultManagerDialog />
-                    {saved && (
-                        <span className="text-sm text-green-600 dark:text-green-400 font-medium flex items-center gap-1 animate-in fade-in slide-in-from-left-2">
-                            ✅ Saved successfully
-                        </span>
-                    )}
-                </div>
-            </div>
-        </Card>
-    );
+    if (isSandbox) {
+      setClientId(localClientId);
+      setSecret(localSecret);
+    } else {
+      setLiveClientId(localLiveClientId);
+      setLiveSecret(localLiveSecret);
+    }
+
+    if (changed) {
+      unloadPayPalWebSdk();
+    }
+
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleReset = () => {
+    reset();
+    setLocalClientId(process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? "");
+    setLocalSecret(process.env.NEXT_PUBLIC_PAYPAL_SECRET ?? "");
+    setLocalLiveClientId("AZXvmryZOBQvyeBosxJoMsNbNCYVNGWx5KyArJPYz2O2sEGAOla9s6cI40RVFXHg9oEInNzyQIKzI6tW");
+    setLocalLiveSecret("EAx19qrwczQSJeSzQ5FjlzAUAjgd7LJcneDH9k93ZocGWaF4k_oYcX1k8-AvSrJkMvdlncdIUYZSxtf0");
+    unloadPayPalWebSdk();
+  };
+
+  const clientIdOptions = isSandbox ? SANDBOX_CLIENT_ID_OPTIONS : LIVE_CLIENT_ID_OPTIONS;
+  const secretOptions = isSandbox ? SANDBOX_SECRET_OPTIONS : LIVE_SECRET_OPTIONS;
+
+  return (
+    <Card className="p-6 border-2 border-blue-200 dark:border-blue-800 shadow-lg relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-blue-500/10 to-transparent rounded-full blur-3xl -z-10" />
+
+      <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+        <span className="text-2xl">⚙️</span>
+        Environment Configuration
+      </h2>
+
+      {/* Environment toggle */}
+      <div className="mb-5">
+        <p className="text-sm font-medium mb-2">Environment</p>
+        <div className="inline-flex rounded-lg border border-border overflow-hidden text-sm">
+          <button
+            type="button"
+            onClick={() => handleEnvToggle("sandbox")}
+            className={`px-4 py-1.5 transition-colors ${
+              isSandbox
+                ? "bg-blue-600 text-white font-semibold"
+                : "bg-background text-muted-foreground hover:bg-muted"
+            }`}
+          >
+            Sandbox
+          </button>
+          <button
+            type="button"
+            onClick={() => handleEnvToggle("live")}
+            className={`px-4 py-1.5 transition-colors ${
+              !isSandbox
+                ? "bg-green-600 text-white font-semibold"
+                : "bg-background text-muted-foreground hover:bg-muted"
+            }`}
+          >
+            Live
+          </button>
+        </div>
+        {!isSandbox && (
+          <p className="mt-1.5 text-xs text-amber-600 dark:text-amber-400 font-medium">
+            ⚠️ Live environment — real transactions may occur
+          </p>
+        )}
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <label htmlFor="clientId" className="block text-sm font-medium mb-2 flex items-center gap-2">
+            <span className="text-lg">🔑</span>
+            PayPal Client ID
+          </label>
+          <CredentialCombobox
+            value={activeLocalClientId}
+            onChange={setActiveLocalClientId}
+            options={clientIdOptions}
+            placeholder="Select or enter Client ID"
+            inputType="text"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="secret" className="block text-sm font-medium mb-2 flex items-center gap-2">
+            <span className="text-lg">🔐</span>
+            PayPal Secret
+          </label>
+          <CredentialCombobox
+            value={activeLocalSecret}
+            onChange={setActiveLocalSecret}
+            options={secretOptions}
+            placeholder="Select or enter Secret"
+            inputType="password"
+          />
+        </div>
+
+        <div className="flex items-center flex-wrap gap-3">
+          <Button
+            onClick={handleSave}
+            className="shadow-md hover:shadow-lg transition-shadow"
+          >
+            💾 Save Configuration
+          </Button>
+          <Button
+            onClick={handleReset}
+            variant="secondary"
+            className="shadow-md hover:shadow-lg transition-shadow"
+          >
+            🔄 Reset
+          </Button>
+          <VaultManagerDialog />
+          {saved && (
+            <span className="text-sm text-green-600 dark:text-green-400 font-medium flex items-center gap-1 animate-in fade-in slide-in-from-left-2">
+              ✅ Saved — SDK reloading
+            </span>
+          )}
+        </div>
+      </div>
+    </Card>
+  );
 }

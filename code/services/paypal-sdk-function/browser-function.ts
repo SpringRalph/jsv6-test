@@ -1,12 +1,24 @@
 import toast from "react-hot-toast";
 import consola from "consola";
 import { createOrderAPIFactory, getOrderConfig } from "./order-utils";
+import { useEnvStore } from "@/store/useEnvStore";
 
 
 export async function getBrowserSafeClientToken(): Promise<string> {
 	if (typeof window === "undefined") throw new Error("getBrowserSafeClientToken must be called in browser");
 
-	const res = await fetch("/api/paypal/client-token");
+	const store = useEnvStore.getState();
+	const clientId = store.activeClientId();
+	const secret = store.activeSecret();
+	const env = store.env;
+
+	const res = await fetch("/api/paypal/client-token", {
+		headers: {
+			"x-paypal-client-id": clientId,
+			"x-paypal-secret": secret,
+			"x-paypal-env": env,
+		},
+	});
 	if (!res.ok) {
 		const text = await res.text();
 		throw new Error(`Failed to fetch client token: ${text}`);

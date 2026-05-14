@@ -1,13 +1,23 @@
 import { buildBasicAuthHeader, getPayPalConfig } from "@/services/paypal-server-side-function/server-function";
 import consola from "consola";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = 'edge';
 
 const CACHE_TTL = 10 * 60 * 1000;
-let cachedClientToken: string | null = null;
-let cachedAt = 0;
-let fetchingPromise: Promise<string> | null = null;
+
+interface CacheEntry {
+  token: string
+  cachedAt: number
+  fetchingPromise: Promise<string> | null
+}
+
+// Cache keyed by "clientId::env" to support multiple credential sets
+const tokenCache = new Map<string, CacheEntry>();
+
+function getCacheKey(clientId: string, env: string): string {
+  return `${clientId}::${env}`;
+}
 
 // export async function GET() {
 //     console.log("  --[/api/paypal/client-token]: HTTP REQUEST received")
@@ -47,69 +57,83 @@ let fetchingPromise: Promise<string> | null = null;
 // }
 
 
-async function fetchClientTokenFromPayPal(): Promise<string> {
-	if (fetchingPromise) return fetchingPromise;
+async function fetchClientTokenFromPayPal(
+  clientId: string,
+  clientSecret: string,
+  env: string,
+  base: string,
+  cacheKey: string,
+): Promise<string> {
+  const entry = tokenCache.get(cacheKey);
+  if (entry?.fetchingPromise) return entry.fetchingPromise;
 
-	fetchingPromise = (async () => {
-		const { clientId, clientSecret, base } = getPayPalConfig();
-		const form = new URLSearchParams();
-		form.append("grant_type", "client_credentials");
-		// 如果你确实需要 response_type，请保留；否则基本的 client_credentials 即可
-		form.append("response_type", "client_token");
+  const fetchingPromise = (async () => {
+    const form = new URLSearchParams();
+    form.append("grant_type", "client_credentials");
+    form.append("response_type", "client_token");
 
-		const auth = buildBasicAuthHeader(clientId, clientSecret);
-		const tokenRes = await fetch(`${base}/v1/oauth2/token`, {
-			method: "POST",
-			headers: {
-				Authorization: auth,
-				"Content-Type": "application/x-www-form-urlencoded",
-			},
-			body: form.toString(),
-		});
+    const auth = buildBasicAuthHeader(clientId, clientSecret);
+    const tokenRes = await fetch(`${base}/v1/oauth2/token`, {
+      method: "POST",
+      headers: {
+        Authorization: auth,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: form.toString(),
+    });
 
-		if (!tokenRes.ok) {
-			const text = await tokenRes.text().catch(() => "");
-			throw new Error(`failed to obtain access token: ${tokenRes.status} ${text}`);
-		}
+    if (!tokenRes.ok) {
+      const text = await tokenRes.text().catch(() => "");
+      throw new Error(`failed to obtain access token: ${tokenRes.status} ${text}`);
+    }
 
-		const tokenJson = await tokenRes.json();
-		const accessToken = tokenJson.access_token;
-		if (!accessToken) throw new Error("no access token returned from PayPal");
+    const tokenJson = await tokenRes.json();
+    const accessToken = tokenJson.access_token;
+    if (!accessToken) throw new Error("no access token returned from PayPal");
 
-		// 更新缓存
-		cachedClientToken = accessToken;
-		cachedAt = Date.now();
+    tokenCache.set(cacheKey, { token: accessToken, cachedAt: Date.now(), fetchingPromise: null });
+    consola.debug("[/api/paypal/client-token] fetched new token, env:", env);
+    return accessToken;
+  })();
 
-		consola.debug("[/api/paypal/client-token] fetched new token and cached it");
+  tokenCache.set(cacheKey, { token: "", cachedAt: 0, fetchingPromise });
 
-		fetchingPromise = null;
-		return accessToken;
-	})();
-
-	try {
-		return await fetchingPromise;
-	} catch (err) {
-		// 出错时清理状态，避免永久挂起
-		fetchingPromise = null;
-		throw err;
-	}
+  try {
+    return await fetchingPromise;
+  } catch (err) {
+    tokenCache.delete(cacheKey);
+    throw err;
+  }
 }
 
-export async function GET() {
-	consola.info("  --[/api/paypal/client-token]: HTTP REQUEST received");
+export async function GET(req: NextRequest) {
+  consola.info("  --[/api/paypal/client-token]: HTTP REQUEST received");
 
-	try {
-		// 如果缓存未过期，直接返回缓存值
-		if (cachedClientToken && Date.now() - cachedAt < CACHE_TTL) {
-			consola.debug("[/api/paypal/client-token] returning cached token");
-			return NextResponse.json({ clientToken: cachedClientToken });
-		}
+  try {
+    const overrideClientId = req.headers.get("x-paypal-client-id") || undefined;
+    const overrideSecret = req.headers.get("x-paypal-secret") || undefined;
+    // store uses "sandbox" | "live"; map "live" → "production" for PayPal API
+    const overrideEnvRaw = req.headers.get("x-paypal-env") || undefined;
+    const overrideEnv = overrideEnvRaw === "live" ? "production" : overrideEnvRaw;
 
-		// 否则去 PayPal 拉取（并在并发情况下复用同一个 promise）
-		const token = await fetchClientTokenFromPayPal();
-		return NextResponse.json({ clientToken: token });
-	} catch (err: any) {
-		consola.error("[/api/paypal/client-token] error fetching token", err);
-		return NextResponse.json({ error: "internal error", details: String(err) }, { status: 500 });
-	}
+    const { clientId, clientSecret, env, base } = getPayPalConfig({
+      clientId: overrideClientId,
+      clientSecret: overrideSecret,
+      env: overrideEnv,
+    });
+
+    const cacheKey = getCacheKey(clientId, env);
+    const entry = tokenCache.get(cacheKey);
+
+    if (entry && !entry.fetchingPromise && entry.token && Date.now() - entry.cachedAt < CACHE_TTL) {
+      consola.debug("[/api/paypal/client-token] returning cached token for env:", env);
+      return NextResponse.json({ clientToken: entry.token });
+    }
+
+    const token = await fetchClientTokenFromPayPal(clientId, clientSecret, env, base, cacheKey);
+    return NextResponse.json({ clientToken: token });
+  } catch (err: any) {
+    consola.error("[/api/paypal/client-token] error fetching token", err);
+    return NextResponse.json({ error: "internal error", details: String(err) }, { status: 500 });
+  }
 }
