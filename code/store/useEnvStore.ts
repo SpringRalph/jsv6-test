@@ -14,6 +14,8 @@ interface EnvStore extends EnvState {
   // returns active credentials based on current env
   activeClientId: () => string
   activeSecret: () => string
+  sdkReloadToken: number
+  bumpSdkReloadToken: () => void
 }
 
 export const LIVE_CLIENT_ID_C2 = "AZXvmryZOBQvyeBosxJoMsNbNCYVNGWx5KyArJPYz2O2sEGAOla9s6cI40RVFXHg9oEInNzyQIKzI6tW"
@@ -43,6 +45,8 @@ export const useEnvStore = create<EnvStore>()(
       reset: () => set(envDefaults),
       activeClientId: () => get().env === "live" ? get().liveClientId : get().clientId,
       activeSecret: () => get().env === "live" ? get().liveSecret : get().secret,
+      sdkReloadToken: 0,
+      bumpSdkReloadToken: () => set((s) => ({ sdkReloadToken: s.sdkReloadToken + 1 })),
     }),
     {
       name: "pp-v6-env",

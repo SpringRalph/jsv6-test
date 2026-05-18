@@ -70,6 +70,7 @@ export function EnvPanel() {
     setLiveClientId,
     setLiveSecret,
     reset,
+    bumpSdkReloadToken,
   } = useEnvStore();
 
   const isSandbox = env === "sandbox";
@@ -128,6 +129,7 @@ export function EnvPanel() {
 
     if (changed) {
       unloadPayPalWebSdk();
+      bumpSdkReloadToken();
     }
 
     setSaved(true);
@@ -141,6 +143,7 @@ export function EnvPanel() {
     setLocalLiveClientId("AZXvmryZOBQvyeBosxJoMsNbNCYVNGWx5KyArJPYz2O2sEGAOla9s6cI40RVFXHg9oEInNzyQIKzI6tW");
     setLocalLiveSecret("EAx19qrwczQSJeSzQ5FjlzAUAjgd7LJcneDH9k93ZocGWaF4k_oYcX1k8-AvSrJkMvdlncdIUYZSxtf0");
     unloadPayPalWebSdk();
+    bumpSdkReloadToken();
   };
 
   const clientIdOptions = isSandbox ? SANDBOX_CLIENT_ID_OPTIONS : LIVE_CLIENT_ID_OPTIONS;

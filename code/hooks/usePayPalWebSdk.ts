@@ -6,6 +6,7 @@ export { PAYPALSDKURL };
 
 export function usePayPalWebSdk(srcType?: PAYPALSDKURL) {
   const env = useEnvStore((state) => state.env);
+  const sdkReloadToken = useEnvStore((state) => state.sdkReloadToken);
 
   // If caller doesn't specify, derive from store env
   const resolvedSrcType = srcType ?? (env === "live" ? PAYPALSDKURL.PRODUCTION_SRC : PAYPALSDKURL.SANDBOX_SRC);
@@ -37,7 +38,7 @@ export function usePayPalWebSdk(srcType?: PAYPALSDKURL) {
     return () => {
       cancelled = true;
     };
-  }, [resolvedSrcType]);
+  }, [resolvedSrcType, sdkReloadToken]);
 
   return { ready, loading, error };
 }
