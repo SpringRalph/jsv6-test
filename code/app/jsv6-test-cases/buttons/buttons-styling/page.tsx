@@ -4,6 +4,7 @@ import { CartSummary } from "@/components/panels/CartSummary";
 import { PaymentPlaceholder } from "@/components/panels/PaymentPlaceholder";
 import Link from "next/link";
 import ButtonStyling from "./ButtonStyling";
+import GistPanel from "./GistPanel";
 import Image from "next/image";
 
 
@@ -29,6 +30,7 @@ export default function ButtonsStylingPage() {
                     <div className="space-y-6">
                         <ProductPanel />
                         <CartSummary />
+                        <GistPanel />
                     </div>
                     <div>
                         <PaymentPlaceholder

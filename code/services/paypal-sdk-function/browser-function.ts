@@ -1,12 +1,15 @@
 import toast from "react-hot-toast";
 import consola from "consola";
 import { createOrderAPIFactory, getOrderConfig } from "./order-utils";
+import { getPayPalHeaders } from "./paypal-headers";
 
 
 export async function getBrowserSafeClientToken(): Promise<string> {
 	if (typeof window === "undefined") throw new Error("getBrowserSafeClientToken must be called in browser");
 
-	const res = await fetch("/api/paypal/client-token");
+	const res = await fetch("/api/paypal/client-token", {
+		headers: getPayPalHeaders(),
+	});
 	if (!res.ok) {
 		const text = await res.text();
 		throw new Error(`Failed to fetch client token: ${text}`);
@@ -99,18 +102,16 @@ export async function customFindEligibleMethods(findEligibleMethodsPayload: any)
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
+				...getPayPalHeaders(),
 			},
 			body: JSON.stringify(findEligibleMethodsPayload),
 		});
 		const jsonResponse = await response.json();
 		consola.log(jsonResponse);
 		consola.info("Custom Eligibility API call is successful")
-
-
 		return jsonResponse;
 	} catch (error) {
 		consola.error("Custom Eligibility API failed")
-
 	}
 }
 
@@ -120,16 +121,13 @@ export async function createVaultSetupToken() {
 			method: "GET",
 			headers: {
 				"Content-Type": "application/json",
+				...getPayPalHeaders(),
 			},
-
 		});
 		const jsonResponse = await response.json();
 		const id = jsonResponse["setUpTokenId"]
-
 		consola.log(jsonResponse);
 		consola.info("Vault Setup Token API call is successful")
-
-
 		return { vaultSetupToken: id };
 	} catch (error) {
 		consola.error("Vault Setup Token API failed")
@@ -145,13 +143,12 @@ export async function createPaymentToken(vaultSetupTokenId: string) {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
+					...getPayPalHeaders(),
 				},
 				body: JSON.stringify({ vaultSetupTokenId }),
 			},
 		);
-		const data = await response.json();
-
-		return data;
+		return await response.json();
 	} catch (error) {
 		consola.error("Vault Setup Token API failed")
 		throw error;
@@ -162,9 +159,7 @@ export async function createPaymentToken(vaultSetupTokenId: string) {
 export async function captureOrder(orderIdObj: { orderId: string }): Promise<any> {
 	if (typeof window === "undefined") throw new Error("captureOrder must be called in browser");
 
-
 	consola.log("[captureOrder] OrderIdObj:", JSON.stringify(orderIdObj, null, "  "))
-	// debugger;
 	const orderId = String(orderIdObj.orderId);
 	if (!orderId) throw new Error("orderId is required to capture order");
 	consola.log("[captureOrder] OrderID:", orderId)
@@ -172,7 +167,10 @@ export async function captureOrder(orderIdObj: { orderId: string }): Promise<any
 	try {
 		const res = await fetch("/api/paypal/order/capture/capture-order", {
 			method: "POST",
-			headers: { "Content-Type": "application/json" },
+			headers: {
+				"Content-Type": "application/json",
+				...getPayPalHeaders(),
+			},
 			body: JSON.stringify({ orderId }),
 		});
 
@@ -182,13 +180,11 @@ export async function captureOrder(orderIdObj: { orderId: string }): Promise<any
 				try { return JSON.parse(text); } catch { return text; }
 			})();
 			const err = new Error(`capture failed: ${res.status} ${JSON.stringify(details)}`);
-			// 调用失败通知
 			handlePaymentError(err);
 			throw err;
 		}
 
 		const json = text ? JSON.parse(text) : {};
-		// 成功：调用成功处理器并返回结果
 		try {
 			handlePaymentSuccess(json);
 		} catch {
@@ -196,7 +192,6 @@ export async function captureOrder(orderIdObj: { orderId: string }): Promise<any
 		}
 		return json;
 	} catch (err: any) {
-		// 网络或其它异常时调用错误处理器
 		try { handlePaymentError(err); } catch { }
 		throw err;
 	}

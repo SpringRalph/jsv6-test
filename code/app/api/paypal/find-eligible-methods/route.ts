@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
 
-import { buildBasicAuthHeader, getPayPalConfig } from "@/services/paypal-server-side-function/server-function";
+import { buildBasicAuthHeader, getPayPalConfig, getPayPalConfigFromRequest } from "@/services/paypal-server-side-function/server-function";
 import consola from "consola";
 import { NextResponse } from "next/server";
 
@@ -72,7 +72,7 @@ export async function POST({
     body: FindEligibleMethodsRequest;
     userAgent?: string;
 }) {
-    const { clientId, clientSecret, base } = getPayPalConfig();
+    const { clientId, clientSecret, base } = getPayPalConfigFromRequest(req);
     consola.debug("------[1]------")
     const basic = buildBasicAuthHeader(clientId, clientSecret);
 

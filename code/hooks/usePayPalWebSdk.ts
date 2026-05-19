@@ -1,19 +1,27 @@
 import { useEffect, useState } from "react";
-import { loadPayPalWebSdk, isPayPalWebSdkLoaded, getPayPalWebSdkSrc, PAYPALSDKURL } from "@/lib/paypalScript";
+import { loadPayPalWebSdk, isPayPalWebSdkLoaded, PAYPALSDKURL } from "@/lib/paypalScript";
+import { useEnvStore } from "@/store/useEnvStore";
 
 export { PAYPALSDKURL };
 
-export function usePayPalWebSdk(srcType: PAYPALSDKURL = PAYPALSDKURL.SANDBOX_SRC) {
+export function usePayPalWebSdk(srcType?: PAYPALSDKURL) {
+  const env = useEnvStore((state) => state.env);
+  const sdkReloadToken = useEnvStore((state) => state.sdkReloadToken);
+
+  // If caller doesn't specify, derive from store env
+  const resolvedSrcType = srcType ?? (env === "live" ? PAYPALSDKURL.PRODUCTION_SRC : PAYPALSDKURL.SANDBOX_SRC);
+
   const [ready, setReady] = useState(isPayPalWebSdkLoaded());
   const [loading, setLoading] = useState(!isPayPalWebSdkLoaded());
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     let cancelled = false;
+    setReady(false);
     setLoading(true);
     setError(null);
 
-    loadPayPalWebSdk(srcType)
+    loadPayPalWebSdk(resolvedSrcType)
       .then(() => {
         if (!cancelled) {
           setReady(true);
@@ -30,7 +38,7 @@ export function usePayPalWebSdk(srcType: PAYPALSDKURL = PAYPALSDKURL.SANDBOX_SRC
     return () => {
       cancelled = true;
     };
-  }, [srcType]);
+  }, [resolvedSrcType, sdkReloadToken]);
 
   return { ready, loading, error };
 }

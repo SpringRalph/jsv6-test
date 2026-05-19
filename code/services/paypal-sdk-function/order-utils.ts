@@ -1,4 +1,5 @@
 "use client"
+import { getPayPalHeaders } from "./paypal-headers";
 import consola from "consola";
 import { CART_STORAGE_KEY, useCartStore } from "@/store/useCartStore";
 
@@ -32,6 +33,7 @@ export function createOrderAPIFactory(APIEndPoint: string, payment_source: strin
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                ...getPayPalHeaders(),
             },
             body: JSON.stringify(payload),
         });

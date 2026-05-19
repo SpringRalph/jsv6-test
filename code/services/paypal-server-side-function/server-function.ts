@@ -1,19 +1,20 @@
 export type PayPalEnv = "sandbox" | "production";
 
-export function getPayPalConfig() {
-    // 优先使用服务端环境变量（不要暴露 secret 到前端）
-    const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID
-    const clientSecret = process.env.NEXT_PUBLIC_PAYPAL_SECRET
-    const env = ((process.env.PAYPAL_ENV ?? "sandbox") as string).toLowerCase() as PayPalEnv;
+interface PayPalConfigOverride {
+  clientId?: string
+  clientSecret?: string
+  env?: string
+}
 
-    // console.log("clientId:",clientId)
-    // console.log("Secret:",clientSecret)
-    // console.log("env:",env)
+export function getPayPalConfig(override?: PayPalConfigOverride) {
+    const clientId = override?.clientId || process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID
+    const clientSecret = override?.clientSecret || process.env.NEXT_PUBLIC_PAYPAL_SECRET
+    const envRaw = override?.env || process.env.PAYPAL_ENV || "sandbox"
+    const env = envRaw.toLowerCase() as PayPalEnv;
 
     if (!clientId || !clientSecret) {
         throw new Error("Missing PayPal credentials: set PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET");
     }
-
 
     const base =
         env === "production" ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com";
@@ -23,4 +24,12 @@ export function getPayPalConfig() {
 
 export function buildBasicAuthHeader(clientId: string, clientSecret: string) {
     return `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`;
+}
+export function getPayPalConfigFromRequest(req: Request) {
+    const h = req.headers;
+    const overrideClientId = h.get("x-paypal-client-id") || undefined;
+    const overrideSecret = h.get("x-paypal-secret") || undefined;
+    const overrideEnvRaw = h.get("x-paypal-env") || undefined;
+    const overrideEnv = overrideEnvRaw === "live" ? "production" : overrideEnvRaw;
+    return getPayPalConfig({ clientId: overrideClientId, clientSecret: overrideSecret, env: overrideEnv });
 }
