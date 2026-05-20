@@ -29,7 +29,9 @@ export default function PayLaterMessageLive() {
                     pageType: "checkout",
                 });
 
-                sdkInstance.createPayPalMessages();
+                sdkInstance.createPayPalMessages({
+                    buyerCountry: "US"
+                });
 
                 if (cancelled) {
                     if (sdkInstance?.destroy) sdkInstance.destroy();
