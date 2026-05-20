@@ -130,6 +130,14 @@ export const routes: RouteMetadata[] = [
     workStage: 4,
   },
   {
+    path: "/jsv6-test-cases/PLM/BNPLMessaging-live",
+    title: "Pay Later Messaging (Live)",
+    description: "Test PayPal Pay Later Messaging in Live environment — auto-switches to Live on entry and restores original env on exit",
+    group: "PayLater",
+    panelIcon: "Flame",
+    workStage: 4,
+  },
+  {
     path: "/jsv6-test-cases/PLM/BNPLMessaging-dynamic",
     title: "Dynamic Pay Later Messaging",
     description: "Dynamically render PayPal Pay Later Messaging components",
