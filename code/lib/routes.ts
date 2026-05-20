@@ -78,10 +78,10 @@ export const routes: RouteMetadata[] = [
   {
     path: "/jsv6-test-cases/buttons/subscriptions",
     title: "Subscription",
-    description: "Show bSubscription",
+    description: "Show Subscription",
     group: "Buttons",
     panelIcon: "CalendarClock",
-    workStage: 1,
+    workStage: 4,
   },
 
   // PLM (Pay Later Messaging) group
