@@ -7,6 +7,7 @@ interface PaymentPlaceholderProps {
     children?: ReactNode;
     placeHolder?: ReactNode;
     paymentAreaIcon?: ReactNode;
+    paymentAreaClassName?: string;
 }
 
 export function PaymentPlaceholder({
@@ -14,6 +15,7 @@ export function PaymentPlaceholder({
     children,
     placeHolder,
     paymentAreaIcon,
+    paymentAreaClassName,
 }: PaymentPlaceholderProps) {
     return (
         <Card className="p-6 border-2 border-orange-200 dark:border-orange-800 shadow-lg relative overflow-hidden">
@@ -23,7 +25,7 @@ export function PaymentPlaceholder({
                 <span className="text-2xl">💳</span>
                 Payment Area
             </h2>
-            <div className="bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-orange-950/30 dark:to-yellow-950/30 rounded-xl p-8 text-center space-y-4 border-2 border-dashed border-orange-300 dark:border-orange-700">
+            <div className={paymentAreaClassName ?? "bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-orange-950/30 dark:to-yellow-950/30 rounded-xl p-8 text-center space-y-4 border-2 border-dashed border-orange-300 dark:border-orange-700"}>
                 <div className="relative inline-block">
                     <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-yellow-400 rounded-full blur-xl opacity-30 animate-pulse" />
                     <div className="relative text-7xl animate-bounce-slow">

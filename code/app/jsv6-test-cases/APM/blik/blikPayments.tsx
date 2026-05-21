@@ -11,12 +11,14 @@ import {
     paymentSessionOptions,
 } from "@/services/paypal-sdk-function/paypalSharedObject";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import consola from "consola";
+import { EligibilityOverlay } from "@/components/ui/EligibilityOverlay";
 
 export default function blikPayments() {
     const { ready, loading, error } = usePayPalWebSdk();
+    const [isInitializing, setIsInitializing] = useState(false);
 
     function setupPaymentFields(blikCheckout: any) {
         // Create payment field for full name with optional prefill
@@ -99,6 +101,8 @@ export default function blikPayments() {
 
         if (!ready) return;
 
+        setIsInitializing(true);
+
         (async () => {
             try {
                 const clientToken = await getBrowserSafeClientToken();
@@ -119,41 +123,28 @@ export default function blikPayments() {
                     pageType: "checkout",
                 });
 
-                const blikSession =
-                    //@ts-ignore
-                    sdkInstance.createBlikOneTimePaymentSession(
-                        paymentSessionOptions
-                    );
+                const paymentMethods = await sdkInstance.findEligibleMethods({
+                    currencyCode: "PLN",
+                });
 
-                if (!true) {
-                    // ####################### 进行eligibility check ###############################
-
-                    // Check if blik is eligible
-                    const paymentMethods =
-                        await sdkInstance.findEligibleMethods({
-                            currencyCode: "PLN",
-                        });
-
-                    if (paymentMethods.isEligible("blik")) {
-                        // Setup payment fields
-                        setupPaymentFields(blikSession);
-                        setupBlikButtonHandler(blikSession);
-                    }
-
-                    // ############################################################################
-                } else {
-                    // Setup payment fields
+                if (paymentMethods.isEligible("blik")) {
+                    const blikSession =
+                        //@ts-ignore
+                        sdkInstance.createBlikOneTimePaymentSession(
+                            paymentSessionOptions
+                        );
                     setupPaymentFields(blikSession);
                     setupBlikButtonHandler(blikSession);
                 }
 
                 if (cancelled) {
-                    // 如果实例需要销毁，按需处理
                     if (sdkInstance?.destroy) sdkInstance.destroy();
                     return;
                 }
             } catch (e) {
                 if (!cancelled) consola.error("PayPal init error:", e);
+            } finally {
+                if (!cancelled) setIsInitializing(false);
             }
         })();
 
@@ -166,7 +157,8 @@ export default function blikPayments() {
     if (error) return <div>PayPal SDK加载失败: {error.message}</div>;
 
     return (
-        <div className="w-full flex items-center justify-center flex-col">
+        <div className="relative w-full flex items-center justify-center flex-col">
+            <EligibilityOverlay isVisible={isInitializing} message="Checking Blik Eligibility…" />
             <div id="blik-full-name" className=" h-[60] w-full"></div>
             <div id="blik-email" className=" h-[60] w-full"></div>
             <blik-button

@@ -66,7 +66,7 @@ export async function createPLNOrder(): Promise<any> {
 	return createOrderAPIFactory("/api/paypal/order/create/create-order-PLN", "paypal")();
 }
 
-export async function createPayPalOverAllOrder(url: string): Promise<any> {
+export async function createOrderOverallPayPal(url: string): Promise<any> {
 	return createOrderAPIFactory(url, "paypal")();
 }
 

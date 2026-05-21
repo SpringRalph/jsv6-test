@@ -11,12 +11,14 @@ import {
     paymentSessionOptions,
 } from "@/services/paypal-sdk-function/paypalSharedObject";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import consola from "consola";
+import { EligibilityOverlay } from "@/components/ui/EligibilityOverlay";
 
 export default function p24Payments() {
     const { ready, loading, error } = usePayPalWebSdk();
+    const [isInitializing, setIsInitializing] = useState(false);
 
     function setupPaymentFields(p24Checkout: any) {
         // Create payment field for full name with optional prefill
@@ -99,6 +101,8 @@ export default function p24Payments() {
 
         if (!ready) return;
 
+        setIsInitializing(true);
+
         (async () => {
             try {
                 const clientToken = await getBrowserSafeClientToken();
@@ -119,41 +123,28 @@ export default function p24Payments() {
                     pageType: "checkout",
                 });
 
-                const p24Session =
-                    //@ts-ignore
-                    sdkInstance.createP24OneTimePaymentSession(
-                        paymentSessionOptions
-                    );
+                const paymentMethods = await sdkInstance.findEligibleMethods({
+                    currencyCode: "PLN",
+                });
 
-                if (!true) {
-                    // ####################### 进行eligibility check ###############################
-
-                    // Check if p24 is eligible
-                    const paymentMethods =
-                        await sdkInstance.findEligibleMethods({
-                            currencyCode: "PLN",
-                        });
-
-                    if (paymentMethods.isEligible("p24")) {
-                        // Setup payment fields
-                        setupPaymentFields(p24Session);
-                        setupP24ButtonHandler(p24Session);
-                    }
-
-                    // ############################################################################
-                } else {
-                    // Setup payment fields
+                if (paymentMethods.isEligible("p24")) {
+                    const p24Session =
+                        //@ts-ignore
+                        sdkInstance.createP24OneTimePaymentSession(
+                            paymentSessionOptions
+                        );
                     setupPaymentFields(p24Session);
                     setupP24ButtonHandler(p24Session);
                 }
 
                 if (cancelled) {
-                    // 如果实例需要销毁，按需处理
                     if (sdkInstance?.destroy) sdkInstance.destroy();
                     return;
                 }
             } catch (e) {
                 if (!cancelled) consola.error("PayPal init error:", e);
+            } finally {
+                if (!cancelled) setIsInitializing(false);
             }
         })();
 
@@ -166,7 +157,8 @@ export default function p24Payments() {
     if (error) return <div>PayPal SDK加载失败: {error.message}</div>;
 
     return (
-        <div className="w-full flex items-center justify-center flex-col">
+        <div className="relative w-full flex items-center justify-center flex-col">
+            <EligibilityOverlay isVisible={isInitializing} message="Checking P24 Eligibility…" />
             <div id="p24-full-name" className=" h-[60] w-full"></div>
             <div id="p24-email" className=" h-[60] w-full"></div>
             <p24-button

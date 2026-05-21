@@ -3,7 +3,7 @@
 import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
 import {
     createOrderBCDC,
-    createPayPalOverAllOrder,
+    createOrderOverallPayPal,
     getBrowserSafeClientToken,
     handlePaymentError,
 } from "@/services/paypal-sdk-function/browser-function";
@@ -37,7 +37,7 @@ export default function BCDC(props: BCDCProps) {
         // get the promise reference by invoking createOrder()
         // do not await this async function since it can cause transient activation issues
 
-        const createOrderPromise = props.bcdcEndPoint? createPayPalOverAllOrder(props.bcdcEndPoint) : createOrderBCDC();
+        const createOrderPromise = props.bcdcEndPoint? createOrderOverallPayPal(props.bcdcEndPoint) : createOrderBCDC();
 
         bcdcButton.addEventListener("click", async () => {
             try {

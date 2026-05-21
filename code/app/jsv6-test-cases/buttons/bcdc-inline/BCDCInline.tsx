@@ -3,7 +3,7 @@
 import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
 import {
     createOrderBCDC,
-    createPayPalOverAllOrder,
+    createOrderOverallPayPal,
     getBrowserSafeClientToken,
     handlePaymentError,
 } from "@/services/paypal-sdk-function/browser-function";
@@ -89,11 +89,11 @@ export default function BCDCInline() {
                 // get the promise reference by invoking createOrder()
                 // do not await this async function since it can cause transient activation issues
                 
-                // const createOrderPromise = createOrderBCDC();
-                const createOrderPromise = createPayPalOverAllOrder("/api/paypal/create-order-bcdc-2");
+                
+                const createOrderPromise = createOrderOverallPayPal("/api/paypal/order/create/create-order-bcdc-with-more-info");
 
 
-                //因为进行eligibilty check有的时候会出现bug, 所以通过flag来控制是否进行eligibilty check
+                //因为进行eligibility check有的时候会出现bug, 所以通过flag来控制是否进行eligibilty check
                 // if (!true) {
                 if (true) {
                     // ####################### 进行eligibility check ###############################

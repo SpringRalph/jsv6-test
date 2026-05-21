@@ -11,12 +11,14 @@ import {
     paymentSessionOptions,
 } from "@/services/paypal-sdk-function/paypalSharedObject";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import consola from "consola";
+import { EligibilityOverlay } from "@/components/ui/EligibilityOverlay";
 
 export default function BancontactPayments() {
     const { ready, loading, error } = usePayPalWebSdk();
+    const [isInitializing, setIsInitializing] = useState(false);
 
     function setupPaymentFields(bancontactCheckout: any) {
         // Create payment field for full name with optional prefill
@@ -86,6 +88,8 @@ export default function BancontactPayments() {
 
         if (!ready) return;
 
+        setIsInitializing(true);
+
         (async () => {
             try {
                 const clientToken = await getBrowserSafeClientToken();
@@ -106,41 +110,28 @@ export default function BancontactPayments() {
                     pageType: "checkout",
                 });
 
-                const bancontactSession =
-                    //@ts-ignore
-                    sdkInstance.createBancontactOneTimePaymentSession(
-                        paymentSessionOptions
-                    );
+                const paymentMethods = await sdkInstance.findEligibleMethods({
+                    currencyCode: "EUR",
+                });
 
-                if (!true) {
-                    // ####################### 进行eligibility check ###############################
-
-                    // Check if Bancontact is eligible
-                    const paymentMethods =
-                        await sdkInstance.findEligibleMethods({
-                            currencyCode: "EUR",
-                        });
-
-                    if (paymentMethods.isEligible("bancontact")) {
-                        // Setup payment fields
-                        setupPaymentFields(bancontactSession);
-                        setupBancontactButtonHandler(bancontactSession);
-                    }
-
-                    // ############################################################################
-                } else {
-                    // Setup payment fields
+                if (paymentMethods.isEligible("bancontact")) {
+                    const bancontactSession =
+                        //@ts-ignore
+                        sdkInstance.createBancontactOneTimePaymentSession(
+                            paymentSessionOptions
+                        );
                     setupPaymentFields(bancontactSession);
                     setupBancontactButtonHandler(bancontactSession);
                 }
 
                 if (cancelled) {
-                    // 如果实例需要销毁，按需处理
                     if (sdkInstance?.destroy) sdkInstance.destroy();
                     return;
                 }
             } catch (e) {
                 if (!cancelled) consola.error("PayPal init error:", e);
+            } finally {
+                if (!cancelled) setIsInitializing(false);
             }
         })();
 
@@ -153,8 +144,8 @@ export default function BancontactPayments() {
     if (error) return <div>PayPal SDK加载失败: {error.message}</div>;
 
     return (
-        <div className="w-full flex items-center justify-center flex-col">
-        
+        <div className="relative w-full flex items-center justify-center flex-col">
+            <EligibilityOverlay isVisible={isInitializing} message="Checking Bancontact Eligibility…" />
             <div id="bancontact-full-name" className=" h-[60] w-full"></div>
             <bancontact-button
                 id="bancontact-button"

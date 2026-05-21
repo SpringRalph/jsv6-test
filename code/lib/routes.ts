@@ -134,7 +134,7 @@ export const routes: RouteMetadata[] = [
     title: "Pay Later Messaging (Live)",
     description: "Test PayPal Pay Later Messaging in Live environment — auto-switches to Live on entry and restores original env on exit",
     group: "PayLater",
-    panelIcon: "Flame",
+    panelIcon: "MessageSquare",
     workStage: 4,
   },
   {

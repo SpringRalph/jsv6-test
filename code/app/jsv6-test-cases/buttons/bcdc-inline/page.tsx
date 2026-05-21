@@ -35,7 +35,7 @@ export default function ButtonsBasicPage() {
             <CartSummary />
           </div>
           <div>
-            <PaymentPlaceholder scenario="BCDC-Inline" children={<BCDCInline/>} />
+            <PaymentPlaceholder scenario="BCDC-Inline" paymentAreaClassName="bg-white rounded-xl p-8 text-center space-y-4 border-2 border-dashed border-orange-300 dark:border-orange-700" children={<BCDCInline/>} />
           </div>
         </div>
       </div>
