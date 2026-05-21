@@ -132,12 +132,14 @@ export function EnvPanel() {
         }
         unloadPayPalWebSdk();
         setEnv(newEnv);
+        bumpSdkReloadToken();
     };
 
     const confirmSwitchToLive = () => {
         setShowLiveConfirm(false);
         unloadPayPalWebSdk();
         setEnv("live");
+        bumpSdkReloadToken();
     };
 
     const handleSave = () => {
