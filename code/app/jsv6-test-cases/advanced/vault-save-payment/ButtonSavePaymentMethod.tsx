@@ -1,11 +1,11 @@
 "use client";
 
 import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
+import { useSdkInitOptions } from "@/hooks/useSdkInitOptions";
 import {
     createOrder,
     createPaymentToken,
     createVaultSetupToken,
-    getBrowserSafeClientToken,
     handlePaymentError,
 } from "@/services/paypal-sdk-function/browser-function";
 import { AppSdkInstance } from "@/services/paypal-sdk-function/paypalSharedObject";
@@ -17,6 +17,7 @@ import { EligibilityOverlay } from "@/components/ui/EligibilityOverlay";
 
 export default function ButtonBasic() {
     const { ready, loading, error } = usePayPalWebSdk();
+    const { getInitOptions } = useSdkInitOptions();
     const [isInitializing, setIsInitializing] = useState(false);
 
     // Setup standard PayPal button
@@ -85,7 +86,7 @@ export default function ButtonBasic() {
 
         (async () => {
             try {
-                const clientToken = await getBrowserSafeClientToken();
+                const initOptions = await getInitOptions();
                 if (cancelled) return;
 
                 const paypal = (window as any).paypal;
@@ -93,11 +94,11 @@ export default function ButtonBasic() {
                     "PayPal SDK ready:",
                     paypal,
                     "clientToken:",
-                    clientToken,
+                    initOptions,
                 );
 
                 const sdkInstance = await paypal?.createInstance?.({
-                    clientToken,
+                    ...initOptions,
                     components: ["paypal-payments"],
                     pageType: "checkout",
                 });

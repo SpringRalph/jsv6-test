@@ -1,10 +1,10 @@
 "use client";
 
 import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
+import { useSdkInitOptions } from "@/hooks/useSdkInitOptions";
 import {
     createOrderBCDC,
     createOrderOverallPayPal,
-    getBrowserSafeClientToken,
     handlePaymentError,
 } from "@/services/paypal-sdk-function/browser-function";
 import {
@@ -22,7 +22,7 @@ interface BCDCProps {
 
 export default function BCDC(props: BCDCProps) {
     const { ready, loading, error } = usePayPalWebSdk();
-
+    const { getInitOptions } = useSdkInitOptions();
 
     // Setup standard PayPal button
     async function setupBCDCButton(sdkInstance: AppSdkInstance) {
@@ -60,19 +60,19 @@ export default function BCDC(props: BCDCProps) {
 
         (async () => {
             try {
-                const clientToken = await getBrowserSafeClientToken();
+                const initOptions = await getInitOptions();
                 if (cancelled) return;
 
                 const paypal = (window as any).paypal;
                 consola.log(
                     "PayPal SDK ready:",
                     paypal,
-                    "clientToken:",
-                    clientToken
+                    "initOptions:",
+                    initOptions
                 );
 
                 const sdkInstance = await paypal?.createInstance?.({
-                    clientToken,
+                    ...initOptions,
                     //这里是BCDC和普通的最大不同
                     components: ["paypal-guest-payments"],
                     pageType: "checkout",  

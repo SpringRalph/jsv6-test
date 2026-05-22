@@ -2,9 +2,7 @@
 
 import { useCustomScript } from "@/hooks/useCustomScript";
 import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
-import {
-    getBrowserSafeClientToken,
-} from "@/services/paypal-sdk-function/browser-function";
+import { useSdkInitOptions } from "@/hooks/useSdkInitOptions";
 
 import React, { useEffect } from "react";
 import { setupGooglePayButton } from "./GoolgePayFunction";
@@ -12,6 +10,7 @@ import consola from "consola";
 
 export default function ButtonBasic() {
     const { ready, loading, error } = usePayPalWebSdk();
+    const { getInitOptions } = useSdkInitOptions();
     const {ready: googlePayReady, loading: googlePayLoading, error: googlePayError} = useCustomScript("https://pay.google.com/gp/p/js/pay.js");
 
 
@@ -23,7 +22,7 @@ export default function ButtonBasic() {
 
         (async () => {
             try {
-                const clientToken = await getBrowserSafeClientToken();
+                const initOptions = await getInitOptions();
                 if (cancelled) return;
 
                 const paypal = (window as any).paypal;
@@ -31,11 +30,11 @@ export default function ButtonBasic() {
                     "PayPal SDK ready:",
                     paypal,
                     "clientToken:",
-                    clientToken
+                    initOptions
                 );
 
                 const sdkInstance = await paypal?.createInstance?.({
-                    clientToken,
+                    ...initOptions,
                     components: ["googlepay-payments"],
                     pageType: "checkout",
                 });

@@ -1,10 +1,10 @@
 "use client";
 
 import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
+import { useSdkInitOptions } from "@/hooks/useSdkInitOptions";
 import {
     captureOrder,
     createOrderACDC,
-    getBrowserSafeClientToken,
     handlePaymentError,
 } from "@/services/paypal-sdk-function/browser-function";
 import {
@@ -17,6 +17,7 @@ import consola from "consola";
 
 export default function CardFields() {
     const { ready, loading, error } = usePayPalWebSdk();
+    const { getInitOptions } = useSdkInitOptions();
 
     // Setup card fields
     async function setupCardFields(sdkInstance: AppSdkInstance) {
@@ -112,7 +113,7 @@ export default function CardFields() {
 
         (async () => {
             try {
-                const clientToken = await getBrowserSafeClientToken();
+                const initOptions = await getInitOptions();
                 if (cancelled) return;
 
                 const paypal = (window as any).paypal;
@@ -120,11 +121,11 @@ export default function CardFields() {
                     "PayPal SDK ready:",
                     paypal,
                     "clientToken:",
-                    clientToken
+                    initOptions
                 );
 
                 const sdkInstance = await paypal?.createInstance?.({
-                    clientToken,
+                    ...initOptions,
                     components: ["card-fields"],
                 });
 

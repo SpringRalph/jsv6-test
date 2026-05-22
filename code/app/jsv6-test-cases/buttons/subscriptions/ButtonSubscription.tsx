@@ -1,7 +1,8 @@
 "use client";
 
 import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
-import { getBrowserSafeClientToken, handlePaymentCancellation, handlePaymentError } from "@/services/paypal-sdk-function/browser-function";
+import { useSdkInitOptions } from "@/hooks/useSdkInitOptions";
+import { handlePaymentCancellation, handlePaymentError } from "@/services/paypal-sdk-function/browser-function";
 import { getPayPalHeaders } from "@/services/paypal-sdk-function/paypal-headers";
 import React, { useEffect, useRef, useState } from "react";
 import consola from "consola";
@@ -34,6 +35,7 @@ interface ButtonSubscriptionProps {
 
 export default function ButtonSubscription({ defaultPlanId = "" }: ButtonSubscriptionProps) {
     const { ready, loading, error } = usePayPalWebSdk();
+    const { getInitOptions } = useSdkInitOptions();
     const setupDoneRef = useRef(false);
     const [planId, setPlanId] = useState(defaultPlanId);
     const planIdRef = useRef(planId);
@@ -85,14 +87,14 @@ export default function ButtonSubscription({ defaultPlanId = "" }: ButtonSubscri
 
         (async () => {
             try {
-                const clientToken = await getBrowserSafeClientToken();
+                const initOptions = await getInitOptions();
                 if (cancelled) return;
 
                 const paypal = (window as any).paypal;
-                consola.log("PayPal SDK ready, clientToken:", clientToken);
+                consola.log("PayPal SDK ready, initOptions:", initOptions);
 
                 const sdkInstance = await paypal?.createInstance?.({
-                    clientToken,
+                    ...initOptions,
                     components: ["paypal-subscriptions"],
                     pageType: "checkout",
                 });

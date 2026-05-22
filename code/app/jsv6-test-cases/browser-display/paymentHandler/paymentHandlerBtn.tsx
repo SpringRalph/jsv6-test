@@ -1,9 +1,9 @@
 "use client";
 
 import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
+import { useSdkInitOptions } from "@/hooks/useSdkInitOptions";
 import {
     createOrder,
-    getBrowserSafeClientToken,
     handlePaymentError,
 } from "@/services/paypal-sdk-function/browser-function";
 import {
@@ -16,6 +16,7 @@ import consola from "consola";
 
 export default function PaymentHandlerBtn() {
     const { ready, loading, error } = usePayPalWebSdk();
+    const { getInitOptions } = useSdkInitOptions();
 
     // Setup standard PayPal button
     async function setupPayPalButton(sdkInstance: AppSdkInstance) {
@@ -61,19 +62,19 @@ export default function PaymentHandlerBtn() {
 
         (async () => {
             try {
-                const clientToken = await getBrowserSafeClientToken();
+                const initOptions = await getInitOptions();
                 if (cancelled) return;
 
                 const paypal = (window as any).paypal;
                 consola.log(
                     "PayPal SDK ready:",
                     paypal,
-                    "clientToken:",
-                    clientToken
+                    "initOptions:",
+                    initOptions
                 );
 
                 const sdkInstance = await paypal?.createInstance?.({
-                    clientToken,
+                    ...initOptions,
                     components: ["paypal-payments"],
                     pageType: "checkout",
                 });

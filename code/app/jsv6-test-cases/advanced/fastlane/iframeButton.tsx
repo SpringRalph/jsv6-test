@@ -1,10 +1,10 @@
 "use client";
 
 import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
+import { useSdkInitOptions } from "@/hooks/useSdkInitOptions";
 import {
     createOrder,
     createOrderRedirect,
-    getBrowserSafeClientToken,
     handlePaymentError,
 } from "@/services/paypal-sdk-function/browser-function";
 import {
@@ -17,6 +17,7 @@ import consola from "consola";
 
 export default function Redirect() {
     const { ready, loading, error } = usePayPalWebSdk();
+    const { getInitOptions } = useSdkInitOptions();
 
     // Setup standard PayPal button
     async function setupPayPalButton(paypalPaymentSession: any) {
@@ -57,7 +58,7 @@ export default function Redirect() {
 
         (async () => {
             try {
-                const clientToken = await getBrowserSafeClientToken();
+                const initOptions = await getInitOptions();
                 if (cancelled) return;
 
                 const paypal = (window as any).paypal;
@@ -65,11 +66,11 @@ export default function Redirect() {
                 //     "[Redirect]PayPal SDK ready:",
                 //     paypal,
                 //     "clientToken:",
-                //     clientToken
+                //     initOptions
                 // );
 
                 const sdkInstance = await paypal?.createInstance?.({
-                    clientToken,
+                    ...initOptions,
                     components: ["paypal-payments"],
                     pageType: "checkout",
                 });

@@ -1,13 +1,14 @@
 "use client";
 
 import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
-import { getBrowserSafeClientToken } from "@/services/paypal-sdk-function/browser-function";
+import { useSdkInitOptions } from "@/hooks/useSdkInitOptions";
 import { useCartTotal } from "@/store/useCartStore";
 import React, { useEffect } from "react";
 import consola from "consola";
 
 export default function PayLaterMessageLive() {
     const { ready, loading, error } = usePayPalWebSdk();
+    const { getInitOptions } = useSdkInitOptions();
     const total = useCartTotal();
 
     useEffect(() => {
@@ -17,14 +18,14 @@ export default function PayLaterMessageLive() {
 
         (async () => {
             try {
-                const clientToken = await getBrowserSafeClientToken();
+                const initOptions = await getInitOptions();
                 if (cancelled) return;
 
                 const paypal = (window as any).paypal;
-                consola.log("PayPal SDK ready (live):", paypal, "clientToken:", clientToken);
+                consola.log("PayPal SDK ready (live):", paypal, "clientToken:", initOptions);
 
                 const sdkInstance = await paypal?.createInstance?.({
-                    clientToken,
+                    ...initOptions,
                     components: ["paypal-messages"],
                     pageType: "checkout",
                 });

@@ -1,9 +1,9 @@
 "use client";
 
 import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
+import { useSdkInitOptions } from "@/hooks/useSdkInitOptions";
 import {
     createEUROrder,
-    getBrowserSafeClientToken,
     handlePaymentError,
 } from "@/services/paypal-sdk-function/browser-function";
 import {
@@ -18,6 +18,7 @@ import { EligibilityOverlay } from "@/components/ui/EligibilityOverlay";
 
 export default function epsPayments() {
     const { ready, loading, error } = usePayPalWebSdk();
+    const { getInitOptions } = useSdkInitOptions();
     const [isInitializing, setIsInitializing] = useState(false);
 
     function setupPaymentFields(epsCheckout: any) {
@@ -92,19 +93,19 @@ export default function epsPayments() {
 
         (async () => {
             try {
-                const clientToken = await getBrowserSafeClientToken();
+                const initOptions = await getInitOptions();
                 if (cancelled) return;
 
                 const paypal = (window as any).paypal;
                 consola.log(
                     "PayPal SDK ready:",
                     paypal,
-                    "clientToken:",
-                    clientToken
+                    "initOptions:",
+                    initOptions
                 );
 
                 const sdkInstance = await paypal?.createInstance?.({
-                    clientToken,
+                    ...initOptions,
                     testBuyerCountry: "AT", // Austria for eps testing
                     components: ["eps-payments"],
                     pageType: "checkout",

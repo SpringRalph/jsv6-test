@@ -1,9 +1,9 @@
 "use client";
 
 import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
+import { useSdkInitOptions } from "@/hooks/useSdkInitOptions";
 import {
     createOrder,
-    getBrowserSafeClientToken,
 } from "@/services/paypal-sdk-function/browser-function";
 import {
     AppSdkInstance,
@@ -18,6 +18,7 @@ import { EligibilityOverlay } from "@/components/ui/EligibilityOverlay";
 
 export default function PayLater() {
     const { ready, loading, error } = usePayPalWebSdk();
+    const { getInitOptions } = useSdkInitOptions();
     const [isInitializing, setIsInitializing] = useState(false);
 
     async function setupPayLaterButton(
@@ -65,7 +66,7 @@ export default function PayLater() {
 
         (async () => {
             try {
-                const clientToken = await getBrowserSafeClientToken();
+                const initOptions = await getInitOptions();
                 if (cancelled) return;
 
                 const paypal = (window as any).paypal;
@@ -73,11 +74,11 @@ export default function PayLater() {
                     "PayPal SDK ready:",
                     paypal,
                     "clientToken:",
-                    clientToken,
+                    initOptions,
                 );
 
                 const sdkInstance = await paypal?.createInstance?.({
-                    clientToken,
+                    ...initOptions,
                     components: ["paypal-payments"],
                     pageType: "checkout",
                     testBuyerCountry: "US",

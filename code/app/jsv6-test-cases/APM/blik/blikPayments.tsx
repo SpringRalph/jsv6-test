@@ -1,9 +1,9 @@
 "use client";
 
 import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
+import { useSdkInitOptions } from "@/hooks/useSdkInitOptions";
 import {
     createPLNOrder,
-    getBrowserSafeClientToken,
     handlePaymentError,
 } from "@/services/paypal-sdk-function/browser-function";
 import {
@@ -18,6 +18,7 @@ import { EligibilityOverlay } from "@/components/ui/EligibilityOverlay";
 
 export default function blikPayments() {
     const { ready, loading, error } = usePayPalWebSdk();
+    const { getInitOptions } = useSdkInitOptions();
     const [isInitializing, setIsInitializing] = useState(false);
 
     function setupPaymentFields(blikCheckout: any) {
@@ -105,19 +106,19 @@ export default function blikPayments() {
 
         (async () => {
             try {
-                const clientToken = await getBrowserSafeClientToken();
+                const initOptions = await getInitOptions();
                 if (cancelled) return;
 
                 const paypal = (window as any).paypal;
                 consola.log(
                     "PayPal SDK ready:",
                     paypal,
-                    "clientToken:",
-                    clientToken
+                    "initOptions:",
+                    initOptions
                 );
 
                 const sdkInstance = await paypal?.createInstance?.({
-                    clientToken,
+                    ...initOptions,
                     testBuyerCountry: "PL", // Poland for blik testing
                     components: ["blik-payments"],
                     pageType: "checkout",

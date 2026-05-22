@@ -1,10 +1,10 @@
 "use client";
 
 import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
+import { useSdkInitOptions } from "@/hooks/useSdkInitOptions";
 import {
     createOrder,
     handlePaymentError,
-    getBrowserSafeClientToken,
 } from "@/services/paypal-sdk-function/browser-function";
 import {
     AppSdkInstance,
@@ -20,6 +20,7 @@ import StyleControlPanel from "./StyleControlPanel";
 
 export default function ButtonStyling() {
     const { ready, loading, error } = usePayPalWebSdk();
+    const { getInitOptions } = useSdkInitOptions();
     const [isButtonReady, setIsButtonReady] = useState(false);
     const [isApplying, setIsApplying] = useState(false);
     const btnRef = useRef<HTMLElement | null>(null);
@@ -74,12 +75,12 @@ export default function ButtonStyling() {
 
         (async () => {
             try {
-                const clientToken = await getBrowserSafeClientToken();
+                const initOptions = await getInitOptions();
                 if (cancelled) return;
 
                 const paypal = (window as any).paypal;
                 const sdkInstance = await paypal?.createInstance?.({
-                    clientToken,
+                    ...initOptions,
                     components: ["paypal-payments"],
                     pageType: "checkout",
                 });

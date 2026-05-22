@@ -1,9 +1,9 @@
 "use client";
 
 import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
+import { useSdkInitOptions } from "@/hooks/useSdkInitOptions";
 import {
     createPLNOrder,
-    getBrowserSafeClientToken,
     handlePaymentError,
 } from "@/services/paypal-sdk-function/browser-function";
 import {
@@ -18,6 +18,7 @@ import { EligibilityOverlay } from "@/components/ui/EligibilityOverlay";
 
 export default function p24Payments() {
     const { ready, loading, error } = usePayPalWebSdk();
+    const { getInitOptions } = useSdkInitOptions();
     const [isInitializing, setIsInitializing] = useState(false);
 
     function setupPaymentFields(p24Checkout: any) {
@@ -105,19 +106,19 @@ export default function p24Payments() {
 
         (async () => {
             try {
-                const clientToken = await getBrowserSafeClientToken();
+                const initOptions = await getInitOptions();
                 if (cancelled) return;
 
                 const paypal = (window as any).paypal;
                 consola.log(
                     "PayPal SDK ready:",
                     paypal,
-                    "clientToken:",
-                    clientToken
+                    "initOptions:",
+                    initOptions
                 );
 
                 const sdkInstance = await paypal?.createInstance?.({
-                    clientToken,
+                    ...initOptions,
                     testBuyerCountry: "PL", // Poland for p24 testing
                     components: ["p24-payments"],
                     pageType: "checkout",
