@@ -2,10 +2,11 @@
 
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
-import type { EnvState, PayPalEnv } from "@/types/env"
+import type { EnvState, PayPalEnv, AuthMode } from "@/types/env"
 
 interface EnvStore extends EnvState {
   setEnv: (env: PayPalEnv) => void
+  setAuthMode: (mode: AuthMode) => void
   setClientId: (clientId: string) => void
   setSecret: (secret: string) => void
   setLiveClientId: (clientId: string) => void
@@ -27,6 +28,7 @@ export const SANDBOX_SECRET_ID_C2 = "ELYFWy2PauSftn1lFaTkqsUd2sDu_gPrOi3cGOGj_6J
 
 const envDefaults: EnvState = {
   env: "sandbox",
+  authMode: "clientToken",
   clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? "",
   secret: process.env.NEXT_PUBLIC_PAYPAL_SECRET ?? "",
   liveClientId: LIVE_CLIENT_ID_C2,
@@ -38,6 +40,7 @@ export const useEnvStore = create<EnvStore>()(
     (set, get) => ({
       ...envDefaults,
       setEnv: (env) => set({ env }),
+      setAuthMode: (authMode) => set({ authMode }),
       setClientId: (clientId) => set({ clientId }),
       setSecret: (secret) => set({ secret }),
       setLiveClientId: (liveClientId) => set({ liveClientId }),
