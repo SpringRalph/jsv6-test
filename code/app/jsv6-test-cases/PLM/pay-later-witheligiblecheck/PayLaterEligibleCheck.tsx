@@ -2,9 +2,7 @@
 
 import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
 import { useSdkInitOptions } from "@/hooks/useSdkInitOptions";
-import {
-    createOrder,
-} from "@/services/paypal-sdk-function/browser-function";
+import { createOrder } from "@/services/paypal-sdk-function/browser-function";
 import {
     AppSdkInstance,
     paymentSessionOptions,
@@ -15,6 +13,8 @@ import { type FindEligibleMethodsGetDetails } from "@paypal/paypal-js/sdk-v6";
 import consola from "consola";
 import { ColorConsoleHelper } from "@/lib/colorConsoleHelper";
 import { EligibilityOverlay } from "@/components/ui/EligibilityOverlay";
+
+
 
 export default function PayLater() {
     const { ready, loading, error } = usePayPalWebSdk();
@@ -102,7 +102,11 @@ export default function PayLater() {
                         const details = isEligible
                             ? paymentMethods.getDetails(code)
                             : null;
-                        return { code, isEligible, details };
+                        return {
+                            code,
+                            isEligible,
+                            detail: JSON.stringify(details),
+                        };
                     }),
                 );
 
@@ -135,7 +139,6 @@ export default function PayLater() {
 
         return () => {
             cancelled = true;
-           
         };
     }, [ready]);
 

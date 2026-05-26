@@ -38,9 +38,7 @@ export default function IdealPayments() {
         });
 
         // Mount the field to the container
-        document
-            .querySelector("#ideal-full-name")!
-            .appendChild(fullNameField);
+        document.querySelector("#ideal-full-name")!.appendChild(fullNameField);
     }
 
     // Setup standard iDeal button
@@ -48,7 +46,6 @@ export default function IdealPayments() {
         const idealButton = document.querySelector("#ideal-button")!;
         idealButton.removeAttribute("hidden");
 
-      
         idealButton.addEventListener("click", async () => {
             try {
                 consola.log("Validating payment fields...");
@@ -58,7 +55,7 @@ export default function IdealPayments() {
 
                 if (isValid) {
                     consola.log(
-                        "Validation successful, starting payment flow..."
+                        "Validation successful, starting payment flow...",
                     );
 
                     // get the promise reference by invoking createOrder()
@@ -68,12 +65,12 @@ export default function IdealPayments() {
                     // Start payment flow with popup mode
                     await idealSession.start(
                         { presentationMode: "popup" },
-                        createOrderPromise
+                        createOrderPromise,
                     );
                 } else {
                     consola.error("Validation failed");
                     toast.error(
-                        "Please fill in all required fields correctly."
+                        "Please fill in all required fields correctly.",
                     );
                 }
             } catch (error) {
@@ -101,7 +98,7 @@ export default function IdealPayments() {
                     "PayPal SDK ready:",
                     paypal,
                     "initOptions:",
-                    initOptions
+                    initOptions,
                 );
 
                 const sdkInstance = await paypal?.createInstance?.({
@@ -115,11 +112,12 @@ export default function IdealPayments() {
                     currencyCode: "EUR",
                 });
 
+
                 if (paymentMethods.isEligible("ideal")) {
                     const idealSession =
                         //@ts-ignore
                         sdkInstance.createIdealOneTimePaymentSession(
-                            paymentSessionOptions
+                            paymentSessionOptions,
                         );
                     setupPaymentFields(idealSession);
                     setupIdealButtonHandler(idealSession);
@@ -146,7 +144,10 @@ export default function IdealPayments() {
 
     return (
         <div className="relative w-full flex items-center justify-center flex-col">
-            <EligibilityOverlay isVisible={isInitializing} message="Checking iDeal Eligibility…" />
+            <EligibilityOverlay
+                isVisible={isInitializing}
+                message="Checking iDeal Eligibility…"
+            />
             <div id="ideal-full-name" className=" h-[60] w-full"></div>
             <ideal-button
                 id="ideal-button"

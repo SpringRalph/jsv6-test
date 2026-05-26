@@ -22,6 +22,14 @@ interface EnvStore extends EnvState {
 export const LIVE_CLIENT_ID_C2 = "AZXvmryZOBQvyeBosxJoMsNbNCYVNGWx5KyArJPYz2O2sEGAOla9s6cI40RVFXHg9oEInNzyQIKzI6tW"
 export const LIVE_SECRET_C2 = "EAx19qrwczQSJeSzQ5FjlzAUAjgd7LJcneDH9k93ZocGWaF4k_oYcX1k8-AvSrJkMvdlncdIUYZSxtf0"
 
+
+/**
+ * Application Name: C2-JSv6 Test APP
+ * Email Id: p-test-cn-v6-2025@test.com
+ * Account Number: 5314333912581353572
+ * pwd: Qq111222333
+ */
+
 export const SANDBOX_CLIENT_ID_C2 = "ATW2maVlMXBh67xRprsLYttNFXVCDO7MhEUE_VId1zbwqSSfYfIAC8mtdLaLRwA4nZpTzGBZPws7Kf-Z";
 export const SANDBOX_SECRET_ID_C2 = "ELYFWy2PauSftn1lFaTkqsUd2sDu_gPrOi3cGOGj_6JyORnlG46cp16oBnLLmpBBQuhxQIKIiOIwCu_D";
 
