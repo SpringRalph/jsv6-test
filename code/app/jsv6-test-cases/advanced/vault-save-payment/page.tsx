@@ -5,6 +5,7 @@ import { PaymentPlaceholder } from "@/components/panels/PaymentPlaceholder";
 import Link from "next/link";
 import PayPalButton from "./ButtonSavePaymentMethod";
 import Image from 'next/image';
+import { BookmarkPlus } from "lucide-react";
 
 export default function SavePaymentMethodPage() {
     return (
@@ -25,7 +26,7 @@ export default function SavePaymentMethodPage() {
 
                     <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 p-6 rounded-2xl border-2 border-blue-200 dark:border-blue-800">
                         <h1 className="text-3xl font-bold mb-2 flex items-center gap-3">
-                            <span className="text-4xl">🔘</span>
+                            <BookmarkPlus className="size-8 text-blue-500" />
                             Save Payment Method(Vault)
                         </h1>
                         <p className="text-muted-foreground flex items-center gap-2">

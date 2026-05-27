@@ -4,6 +4,7 @@ import { CartSummary } from "@/components/panels/CartSummary"
 import { PaymentPlaceholder } from "@/components/panels/PaymentPlaceholder"
 import Link from "next/link"
 import BCDCInline from "./BCDCInlineAutoStart"
+import { Zap } from "lucide-react"
 
 export default function ButtonsBasicPage() {
   return (
@@ -19,8 +20,8 @@ export default function ButtonsBasicPage() {
 
           <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 p-6 rounded-2xl border-2 border-blue-200 dark:border-blue-800">
             <h1 className="text-3xl font-bold mb-2 flex items-center gap-3">
-              <span className="text-4xl">🔘</span>
-              BCDC-Inline
+              <Zap className="size-8 text-blue-500" />
+              BCDC-Auto-Rendering (Inline) Test Case
             </h1>
             <p className="text-muted-foreground flex items-center gap-2">
               <span className="text-lg">📝</span>

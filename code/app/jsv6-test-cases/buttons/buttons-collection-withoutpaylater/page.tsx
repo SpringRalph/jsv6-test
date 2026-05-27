@@ -5,6 +5,7 @@ import { PaymentPlaceholder } from "@/components/panels/PaymentPlaceholder";
 import Link from "next/link";
 import ButtonCollection from "./ButtonCollectionwithoutPaylater";
 import Image from "next/image";
+import { LayoutGrid } from "lucide-react";
 
 export default function ButtonsBasicPage() {
     return (
@@ -25,7 +26,7 @@ export default function ButtonsBasicPage() {
 
                     <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 p-6 rounded-2xl border-2 border-blue-200 dark:border-blue-800">
                         <h1 className="text-3xl font-bold mb-2 flex items-center gap-3">
-                            <span className="text-4xl">🔘</span>
+                            <LayoutGrid className="size-8 text-blue-500" />
                             Button Collection(Without PayLater)
                         </h1>
                         <p className="text-muted-foreground flex items-center gap-2">
