@@ -5,6 +5,7 @@ import { useSdkInitOptions } from "@/hooks/useSdkInitOptions";
 import {
     captureOrder,
     createOrderACDC,
+    getOrderDetail,
     handlePaymentError,
 } from "@/services/paypal-sdk-function/browser-function";
 import {
@@ -88,9 +89,16 @@ export default function CardFields() {
             switch (state) {
                 case "succeeded": {
                     const { orderId, liabilityShift } = data;
-                    
+
                     // 3DS may or may not have occurred; Use liabilityShift
                     // to determine if the payment should be captured
+
+                    // Capture 前先 GET 一次 order，便于排查 3DS 结果 / authentication_result
+                    const orderDetail = await getOrderDetail({ orderId });
+                    consola.log(
+                        "[ACDC Get Order Before Capture]:",
+                        JSON.stringify(orderDetail, null, 2),
+                    );
 
                     const capture = await captureOrder({ orderId });
 

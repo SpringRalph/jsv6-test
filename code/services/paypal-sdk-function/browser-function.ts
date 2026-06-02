@@ -30,8 +30,38 @@ export function handlePaymentSuccess(orderData?: any): void {
 }
 
 
-export async function getOrderDetail() {
+/**
+ * 在 captureOrder 之前调用，拿到 PayPal v2 order 的最新状态。
+ * 主要用于 ACDC + 3DS 流程：根据 payment_source.card.authentication_result
+ * (liability_shift / enrollment_status / authentication_status) 判断是否继续 capture。
+ */
+export async function getOrderDetail(orderIdObj: { orderId: string }): Promise<any> {
+	if (typeof window === "undefined") throw new Error("getOrderDetail must be called in browser");
 
+	const orderId = String(orderIdObj.orderId);
+	if (!orderId) throw new Error("orderId is required to get order detail");
+	consola.log("[getOrderDetail] OrderID:", orderId);
+
+	const res = await fetch("/api/paypal/order/get/get-order", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			...getPayPalHeaders(),
+		},
+		body: JSON.stringify({ orderId }),
+	});
+
+	const text = await res.text().catch(() => "");
+	if (!res.ok) {
+		const details = (() => {
+			try { return JSON.parse(text); } catch { return text; }
+		})();
+		const err = new Error(`get order failed: ${res.status} ${JSON.stringify(details)}`);
+		try { handlePaymentError(err); } catch { }
+		throw err;
+	}
+
+	return text ? JSON.parse(text) : {};
 }
 
 // 交易失败：错误通知
