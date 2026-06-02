@@ -14,6 +14,7 @@ import {
 
 import { useEffect } from "react";
 import consola from "consola";
+import toast from "react-hot-toast";
 
 export default function CardFields() {
     const { ready, loading, error } = usePayPalWebSdk();
@@ -24,7 +25,7 @@ export default function CardFields() {
         const cardSession =
             //@ts-ignore
             sdkInstance.createCardFieldsOneTimePaymentSession(
-                paymentSessionOptions
+                paymentSessionOptions,
             );
 
         const numberField = cardSession.createCardFieldsComponent({
@@ -76,10 +77,20 @@ export default function CardFields() {
             switch (state) {
                 case "succeeded": {
                     const { orderId, liabilityShift } = data;
+                    toast(`Liability Shift: ${liabilityShift}`, {
+                        icon: "🔺",
+                        style: {
+                            borderRadius: "10px",
+                            background: "#333",
+                            color: "#fff",
+                        },
+                    });
                     // 3DS may or may not have occurred; Use liabilityShift
                     // to determine if the payment should be captured
 
                     const capture = await captureOrder({ orderId });
+                    JSON.stringify("Capture Result:");
+                    JSON.stringify(capture, null, "  ");
                     // TODO: show success UI, redirect, etc.
                     break;
                 }
@@ -121,7 +132,7 @@ export default function CardFields() {
                     "PayPal SDK ready:",
                     paypal,
                     "clientToken:",
-                    initOptions
+                    initOptions,
                 );
 
                 const sdkInstance = await paypal?.createInstance?.({
