@@ -12,13 +12,22 @@ import {
     paymentSessionOptions,
 } from "@/services/paypal-sdk-function/paypalSharedObject";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import consola from "consola";
 import toast from "react-hot-toast";
+import CardCopyInfo from "@/components/ui/CardCopyInfo";
+import { Spinner } from "@/components/ui/spinner";
+
+const SANDBOX_TEST_CARD = {
+    cardNo: "4111111111111111",
+    cardDate: "12/2027",
+    cardCvv: "123",
+} as const;
 
 export default function CardFields() {
     const { ready, loading, error } = usePayPalWebSdk();
     const { getInitOptions } = useSdkInitOptions();
+    const [isPaying, setIsPaying] = useState(false);
 
     // Setup card fields
     async function setupCardFields(sdkInstance: AppSdkInstance) {
@@ -58,6 +67,8 @@ export default function CardFields() {
     }
 
     async function onPayClick(cardSession: any) {
+        // 防止重复点击 + 在 createOrder / submit / captureOrder 期间盖住整个屏幕
+        setIsPaying(true);
         try {
             // get the promise reference by invoking createOrder()
             // do not await this async function since it can cause transient activation issues
@@ -72,11 +83,18 @@ export default function CardFields() {
                 }, // supply what your business needs
             });
 
-            debugger;
+            // debugger;
 
             switch (state) {
                 case "succeeded": {
                     const { orderId, liabilityShift } = data;
+                    
+                    // 3DS may or may not have occurred; Use liabilityShift
+                    // to determine if the payment should be captured
+
+                    const capture = await captureOrder({ orderId });
+
+                    // debugger;
                     toast(`Liability Shift: ${liabilityShift}`, {
                         icon: "🔺",
                         style: {
@@ -85,12 +103,7 @@ export default function CardFields() {
                             color: "#fff",
                         },
                     });
-                    // 3DS may or may not have occurred; Use liabilityShift
-                    // to determine if the payment should be captured
-
-                    const capture = await captureOrder({ orderId });
-                    JSON.stringify("Capture Result:");
-                    JSON.stringify(capture, null, "  ");
+                    
                     // TODO: show success UI, redirect, etc.
                     break;
                 }
@@ -113,6 +126,9 @@ export default function CardFields() {
         } catch (err) {
             consola.error("Payment flow error", err);
             // TODO: Show generic error and allow retry
+        } finally {
+            // captureOrder 完成 / 报错 / canceled / failed —— 任何分支都解除遮罩
+            setIsPaying(false);
         }
     }
 
@@ -179,13 +195,40 @@ export default function CardFields() {
     if (error) return <div>PayPal SDK加载失败: {error.message}</div>;
 
     return (
-        <div className="w-full min-h-[60px] flex flex-col gap-1">
-            <div className="card-field" id="paypal-card-fields-number"></div>
-            <div className="card-field" id="paypal-card-fields-expiry"></div>
-            <div className="card-field" id="paypal-card-fields-cvv"></div>
-            <button id="pay-button" className="acdc-pay-button">
-                Pay
-            </button>
+        <div className="w-full min-h-[60px] flex flex-col gap-4">
+            <CardCopyInfo
+                cardNo={SANDBOX_TEST_CARD.cardNo}
+                cardDate={SANDBOX_TEST_CARD.cardDate}
+                cardCvv={SANDBOX_TEST_CARD.cardCvv}
+            />
+
+            <div className="flex flex-col gap-1">
+                <div
+                    className="card-field"
+                    id="paypal-card-fields-number"
+                ></div>
+                <div
+                    className="card-field"
+                    id="paypal-card-fields-expiry"
+                ></div>
+                <div className="card-field" id="paypal-card-fields-cvv"></div>
+                <button id="pay-button" className="acdc-pay-button">
+                    Pay
+                </button>
+            </div>
+
+            {isPaying && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 backdrop-blur-sm"
+                    aria-live="polite"
+                    aria-busy="true"
+                >
+                    <div className="flex items-center gap-3 rounded-full border border-white/15 bg-slate-900/85 px-5 py-3 text-sm text-white shadow-lg shadow-slate-950/30">
+                        <Spinner className="size-4 text-white" />
+                        <span>Processing payment…</span>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
