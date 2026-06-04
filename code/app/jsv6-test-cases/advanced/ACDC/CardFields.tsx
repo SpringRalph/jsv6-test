@@ -19,7 +19,6 @@ import toast from "react-hot-toast";
 import CardCopyInfo from "@/components/ui/CardCopyInfo";
 import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 
 const SANDBOX_TEST_CARD = {
     cardNo: "4012000077777777",
@@ -215,15 +214,15 @@ export default function CardFields() {
                 cardCvv={SANDBOX_TEST_CARD.cardCvv}
             />
 
-            <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-4 py-2.5 dark:border-slate-700 dark:bg-slate-900">
+            <label
+                htmlFor="acdc-overlay-toggle"
+                className="flex cursor-pointer items-center justify-between rounded-lg border border-slate-300 bg-slate-200 px-4 py-3 transition-colors hover:bg-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:hover:bg-slate-600"
+            >
                 <div className="flex flex-col">
-                    <Label
-                        htmlFor="acdc-overlay-toggle"
-                        className="text-sm font-medium"
-                    >
+                    <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
                         Loading Overlay
-                    </Label>
-                    <span className="text-xs text-muted-foreground">
+                    </span>
+                    <span className="text-xs text-slate-600 dark:text-slate-300">
                         关闭后支付期间不显示遮罩 (3DS / 其他弹窗场景需关闭)
                     </span>
                 </div>
@@ -231,8 +230,9 @@ export default function CardFields() {
                     id="acdc-overlay-toggle"
                     checked={overlayEnabled}
                     onCheckedChange={setOverlayEnabled}
+                    className="data-[state=unchecked]:bg-slate-400 dark:data-[state=unchecked]:bg-slate-500"
                 />
-            </div>
+            </label>
 
             <div className="flex flex-col gap-1">
                 <div
