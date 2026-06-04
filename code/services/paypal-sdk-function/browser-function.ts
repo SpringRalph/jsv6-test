@@ -220,6 +220,8 @@ export async function captureOrder(orderIdObj: { orderId: string }): Promise<any
 		} catch {
 			// ignore UI handler errors
 		}
+		JSON.stringify("<Capture Result>:");
+		JSON.stringify(json, null, "  ");
 		return json;
 	} catch (err: any) {
 		try { handlePaymentError(err); } catch { }

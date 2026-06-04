@@ -20,7 +20,7 @@ import CardCopyInfo from "@/components/ui/CardCopyInfo";
 import { Spinner } from "@/components/ui/spinner";
 
 const SANDBOX_TEST_CARD = {
-    cardNo: "4111111111111111",
+    cardNo: "4012000077777777",
     cardDate: "12/2027",
     cardCvv: "123",
 } as const;
