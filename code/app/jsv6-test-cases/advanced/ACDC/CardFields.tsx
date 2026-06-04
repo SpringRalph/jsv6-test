@@ -18,6 +18,8 @@ import consola from "consola";
 import toast from "react-hot-toast";
 import CardCopyInfo from "@/components/ui/CardCopyInfo";
 import { Spinner } from "@/components/ui/spinner";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 const SANDBOX_TEST_CARD = {
     cardNo: "4012000077777777",
@@ -29,6 +31,9 @@ export default function CardFields() {
     const { ready, loading, error } = usePayPalWebSdk();
     const { getInitOptions } = useSdkInitOptions();
     const [isPaying, setIsPaying] = useState(false);
+    // 控制支付期间是否覆盖全屏 loading 遮罩。
+    // 当本次支付会触发其他弹窗 (如 3DS challenge) 时需关闭, 否则遮罩会盖住弹窗导致无法交互。
+    const [overlayEnabled, setOverlayEnabled] = useState(true);
 
     // Setup card fields
     async function setupCardFields(sdkInstance: AppSdkInstance) {
@@ -210,6 +215,25 @@ export default function CardFields() {
                 cardCvv={SANDBOX_TEST_CARD.cardCvv}
             />
 
+            <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-4 py-2.5 dark:border-slate-700 dark:bg-slate-900">
+                <div className="flex flex-col">
+                    <Label
+                        htmlFor="acdc-overlay-toggle"
+                        className="text-sm font-medium"
+                    >
+                        Loading Overlay
+                    </Label>
+                    <span className="text-xs text-muted-foreground">
+                        关闭后支付期间不显示遮罩 (3DS / 其他弹窗场景需关闭)
+                    </span>
+                </div>
+                <Switch
+                    id="acdc-overlay-toggle"
+                    checked={overlayEnabled}
+                    onCheckedChange={setOverlayEnabled}
+                />
+            </div>
+
             <div className="flex flex-col gap-1">
                 <div
                     className="card-field"
@@ -225,7 +249,7 @@ export default function CardFields() {
                 </button>
             </div>
 
-            {isPaying && (
+            {isPaying && overlayEnabled && (
                 <div
                     className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 backdrop-blur-sm"
                     aria-live="polite"
