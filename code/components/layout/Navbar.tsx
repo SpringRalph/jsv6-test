@@ -5,11 +5,19 @@ import { maskClientId } from "@/lib/storage"
 import Link from "next/link"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
+import { useEffect, useState } from "react"
 
 export function Navbar() {
   const { env, activeClientId } = useEnvStore()
-  const isLive = env === "live"
-  const currentClientId = activeClientId()
+  // 延迟到客户端挂载后再读 persist 出来的值。
+  // 否则 SSR 用 envDefaults (process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID),
+  // 而首次客户端渲染读的是 localStorage 里 zustand-persist 复水后的值,
+  // 二者不一致 -> React hydration mismatch。
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+
+  const isLive = mounted && env === "live"
+  const currentClientId = mounted ? activeClientId() : ""
 
   return (
     <nav
