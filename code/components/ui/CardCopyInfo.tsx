@@ -7,7 +7,8 @@ import { cn } from "@/lib/utils";
 interface CardCopyInfoProps {
     cardNo: string;
     cardDate: string;
-    cardCvv: string;
+    cardCvv?: string;
+    title?: string;
 }
 
 function CopyButton({
@@ -71,13 +72,14 @@ export default function CardCopyInfo({
     cardNo,
     cardDate,
     cardCvv,
+    title,
 }: CardCopyInfoProps) {
     return (
         <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-5 shadow-xl shadow-slate-900/20">
             <div className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-5 rounded bg-amber-400 shadow-sm" />
                 <span className="text-white font-semibold text-sm tracking-wide">
-                    Test Card
+                    {title || "Test Card"}
                 </span>
                 <span className="ml-auto text-xs text-slate-400 font-mono">
                     SANDBOX ONLY

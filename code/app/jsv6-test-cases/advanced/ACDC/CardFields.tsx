@@ -21,8 +21,14 @@ import CardCopyInfo from "@/components/ui/CardCopyInfo";
 import { Spinner } from "@/components/ui/spinner";
 import { Checkbox } from "@/components/ui/checkbox";
 
-const SANDBOX_TEST_CARD = {
+const Three_DS_NO_CARD = {
     cardNo: "4012000077777777",
+    cardDate: "12/2027",
+    cardCvv: "123",
+} as const;
+
+const Three_DS_POSSIBLE_CARD = {
+    cardNo: "4012000033330026",
     cardDate: "12/2027",
     cardCvv: "123",
 } as const;
@@ -31,15 +37,17 @@ export default function CardFields() {
     const { ready, loading, error } = usePayPalWebSdk();
     const { getInitOptions } = useSdkInitOptions();
     const [isPaying, setIsPaying] = useState(false);
-    // 控制支付期间是否覆盖全屏 loading 遮罩。
-    // 当本次支付会触发其他弹窗 (如 3DS challenge) 时需关闭, 否则遮罩会盖住弹窗导致无法交互。
+    // 是否走 3DS 强制端点 (createOrderACDCWith3DS, 后端注入 SCA_ALWAYS)
+    const [use3DS, setUse3DS] = useState(false);
+    // 控制支付期间是否覆盖全屏 loading 遮罩。3DS 会弹 challenge 窗, 遮罩会挡住, 所以
+    // 勾选 3DS 时自动关闭 overlay; 用户仍可手动重新打开。
     const [overlayEnabled, setOverlayEnabled] = useState(true);
-    // 镜像 overlayEnabled 到 ref, 让 setupCardFields 里 addEventListener 注册的 click handler
-    // 能读到最新值 (该 handler 闭包冻结在首次注册时, 直接读 state 会永远是 true)
-    const overlayEnabledRef = useRef(overlayEnabled);
+    // 镜像 use3DS 到 ref, 让 setupCardFields 里 addEventListener 注册的 click handler
+    // 能读到最新值 (该 handler 闭包冻结在首次注册时, 直接读 state 会永远是初始值)
+    const use3DSRef = useRef(use3DS);
     useEffect(() => {
-        overlayEnabledRef.current = overlayEnabled;
-    }, [overlayEnabled]);
+        use3DSRef.current = use3DS;
+    }, [use3DS]);
 
     // Setup card fields
     async function setupCardFields(sdkInstance: AppSdkInstance) {
@@ -85,12 +93,12 @@ export default function CardFields() {
             // get the promise reference by invoking createOrder()
             // do not await this async function since it can cause transient activation issues
             let orderPromise;
-            const overlayOn = overlayEnabledRef.current;
-            console.log("Current overlayEnabled:", overlayOn);
-            if (overlayOn) {
-                orderPromise = await createOrderACDC();
-            } else {
+            const with3DS = use3DSRef.current;
+            console.log("Use 3DS endpoint:", with3DS);
+            if (with3DS) {
                 orderPromise = await createOrderACDCWith3DS();
+            } else {
+                orderPromise = await createOrderACDC();
             }
 
             const { orderId } = orderPromise;
@@ -233,10 +241,47 @@ export default function CardFields() {
     return (
         <div className="w-full min-h-[60px] flex flex-col gap-4">
             <CardCopyInfo
-                cardNo={SANDBOX_TEST_CARD.cardNo}
-                cardDate={SANDBOX_TEST_CARD.cardDate}
-                cardCvv={SANDBOX_TEST_CARD.cardCvv}
+                cardNo={Three_DS_NO_CARD.cardNo}
+                cardDate={Three_DS_NO_CARD.cardDate}
+                cardCvv={Three_DS_NO_CARD.cardCvv}
+                title="3D Secure - No"
             />
+
+            <CardCopyInfo
+                cardNo={Three_DS_POSSIBLE_CARD.cardNo}
+                cardDate={Three_DS_POSSIBLE_CARD.cardDate}
+                cardCvv={Three_DS_POSSIBLE_CARD.cardCvv}
+                title="3D Secure - Possible"
+            />
+
+            <label
+                htmlFor="acdc-3ds-toggle"
+                className="flex cursor-pointer items-center gap-3 rounded-lg border border-slate-300 bg-slate-200 px-4 py-3 transition-colors hover:bg-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:hover:bg-slate-600"
+            >
+                <Checkbox
+                    id="acdc-3ds-toggle"
+                    checked={use3DS}
+                    onCheckedChange={(v) => {
+                        const next = v === true;
+                        setUse3DS(next);
+                        // 勾选 3DS 时自动关闭 overlay, 否则遮罩会挡住 challenge 弹窗。
+                        // 取消勾选时不动 overlay, 让用户保留自己的偏好。
+                        if (next) setOverlayEnabled(false);
+                    }}
+                    className="size-5 border-2 border-slate-500 bg-white dark:bg-slate-900"
+                />
+                <div className="flex flex-col">
+                    <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                        Use 3DS
+                    </span>
+                    <span className="text-xs text-slate-600 dark:text-slate-300">
+                        Checked: call createOrderACDCWith3DS (backend forces
+                        SCA_ALWAYS). Unchecked: call createOrderACDC (no
+                        forced SCA). Checking this auto-disables Loading
+                        Overlay so the 3DS challenge popup is not blocked.
+                    </span>
+                </div>
+            </label>
 
             <label
                 htmlFor="acdc-overlay-toggle"
@@ -253,11 +298,9 @@ export default function CardFields() {
                         Loading Overlay
                     </span>
                     <span className="text-xs text-slate-600 dark:text-slate-300">
-                        Checked: show full-screen overlay during payment;
-                        calls the non-3DS endpoint (createOrderACDC).
-                        Unchecked: hide overlay; calls the 3DS endpoint
-                        (createOrderACDCWith3DS) — required so the 3DS
-                        challenge popup is not blocked.
+                        Checked: show full-screen overlay during payment.
+                        Disable when Use 3DS is on so the challenge popup
+                        is not blocked.
                     </span>
                 </div>
             </label>
