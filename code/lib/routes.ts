@@ -169,7 +169,7 @@ export const routes: RouteMetadata[] = [
     description: "Browser Redirect",
     group: "Browser",
     panelIcon: "CornerUpRight",
-    workStage: 2,
+    workStage: 4,
   },
   {
     path: "/jsv6-test-cases/browser-display/paymentHandler",

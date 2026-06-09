@@ -42,7 +42,7 @@ export default function ShippingCallbacksPage() {
                                 />
                             }
 
-                            placeHolder={<span>似乎有bug,也可能是react需要搞点花活</span>}
+                            placeHolder={<span>Direct UX</span>}
                         />
                     </div>
                 </div>
