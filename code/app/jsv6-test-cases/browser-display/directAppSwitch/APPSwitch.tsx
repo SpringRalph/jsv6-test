@@ -9,7 +9,7 @@ import {
 import { paymentSessionOptions } from "@/services/paypal-sdk-function/paypalSharedObject";
 import { OneTimePaymentSession } from "@paypal/paypal-js/sdk-v6";
 import { useEffect } from "react";
-import console from "console";
+
 
 // SDK v6 runtime supports "direct-app-switch" although it is not in the
 // @paypal/paypal-js v9.0.1 type union yet. Try app-switch first, then fall
