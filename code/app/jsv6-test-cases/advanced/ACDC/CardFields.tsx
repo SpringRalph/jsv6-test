@@ -5,6 +5,7 @@ import { useSdkInitOptions } from "@/hooks/useSdkInitOptions";
 import {
     captureOrder,
     createOrderACDC,
+    createOrderACDCWith3DS,
     getOrderDetail,
     handlePaymentError,
 } from "@/services/paypal-sdk-function/browser-function";
@@ -13,7 +14,7 @@ import {
     paymentSessionOptions,
 } from "@/services/paypal-sdk-function/paypalSharedObject";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import consola from "consola";
 import toast from "react-hot-toast";
 import CardCopyInfo from "@/components/ui/CardCopyInfo";
@@ -33,6 +34,12 @@ export default function CardFields() {
     // 控制支付期间是否覆盖全屏 loading 遮罩。
     // 当本次支付会触发其他弹窗 (如 3DS challenge) 时需关闭, 否则遮罩会盖住弹窗导致无法交互。
     const [overlayEnabled, setOverlayEnabled] = useState(true);
+    // 镜像 overlayEnabled 到 ref, 让 setupCardFields 里 addEventListener 注册的 click handler
+    // 能读到最新值 (该 handler 闭包冻结在首次注册时, 直接读 state 会永远是 true)
+    const overlayEnabledRef = useRef(overlayEnabled);
+    useEffect(() => {
+        overlayEnabledRef.current = overlayEnabled;
+    }, [overlayEnabled]);
 
     // Setup card fields
     async function setupCardFields(sdkInstance: AppSdkInstance) {
@@ -77,7 +84,16 @@ export default function CardFields() {
         try {
             // get the promise reference by invoking createOrder()
             // do not await this async function since it can cause transient activation issues
-            const { orderId } = await createOrderACDC();
+            let orderPromise;
+            const overlayOn = overlayEnabledRef.current;
+            console.log("Current overlayEnabled:", overlayOn);
+            if (overlayOn) {
+                orderPromise = await createOrderACDC();
+            } else {
+                orderPromise = await createOrderACDCWith3DS();
+            }
+
+            const { orderId } = orderPromise;
 
             consola.log("[ACDC Create Order]:orderId:", orderId);
             // debugger;
@@ -92,7 +108,12 @@ export default function CardFields() {
 
             switch (state) {
                 case "succeeded": {
-                    const { orderId, liabilityShift } = data;
+                    const { orderId, ...liabilityShift } = data;
+
+                    console.log(
+                        "liabilityShift:",
+                        JSON.stringify(liabilityShift, null, 2),
+                    );
 
                     // 3DS may or may not have occurred; Use liabilityShift
                     // to determine if the payment should be captured
@@ -107,15 +128,18 @@ export default function CardFields() {
                     const capture = await captureOrder({ orderId });
 
                     // debugger;
-                    toast(`Liability Shift: ${liabilityShift}`, {
-                        icon: "🔺",
-                        style: {
-                            borderRadius: "10px",
-                            background: "#333",
-                            color: "#fff",
+                    toast(
+                        `Liability Shift: ${JSON.stringify(liabilityShift, null, 2)}`,
+                        {
+                            icon: "🔺",
+                            style: {
+                                borderRadius: "10px",
+                                background: "#333",
+                                color: "#fff",
+                            },
                         },
-                    });
-                    
+                    );
+
                     // TODO: show success UI, redirect, etc.
                     break;
                 }
@@ -229,7 +253,11 @@ export default function CardFields() {
                         Loading Overlay
                     </span>
                     <span className="text-xs text-slate-600 dark:text-slate-300">
-                        勾选 = 支付期间显示全屏遮罩; 取消勾选 = 支付期间不显示遮罩 (3DS / 其他弹窗场景需取消)
+                        Checked: show full-screen overlay during payment;
+                        calls the non-3DS endpoint (createOrderACDC).
+                        Unchecked: hide overlay; calls the 3DS endpoint
+                        (createOrderACDCWith3DS) — required so the 3DS
+                        challenge popup is not blocked.
                     </span>
                 </div>
             </label>

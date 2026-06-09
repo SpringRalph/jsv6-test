@@ -12,16 +12,16 @@ type Item = {
 };
 
 export async function POST(req: Request) {
-    consola.info("[/api/paypal/create-order] HTTP POST received");
+    console.info("[/api/paypal/create-order-ACDC-With-3DS] HTTP POST received");
     try {
         const { clientId, clientSecret, base } = getPayPalConfigFromRequest(req);
-        consola.debug("------[1]------")
+        console.debug("------[1]------")
         const basic = buildBasicAuthHeader(clientId, clientSecret);
 
         const body = await req.json().catch(() => null);
-        consola.debug("------[2]------")
+        console.debug("------[2]------")
 
-        consola.debug(JSON.stringify(body, null, "  "))
+        // console.debug(JSON.stringify(body, null, "  "))
 
         if (!body) {
             return NextResponse.json({ error: "invalid request body" }, { status: 400 });
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
 
         const items: Item[] = Array.isArray(body.items) ? body.items : [];
         const totalAmount: number = Number(body.totalAmount ?? 0);
-        const currency: string = "PLN"
+        const currency: string = String(body.currency ?? "USD").toUpperCase();
         const paymentDetail = body.paymentDetail ?? {};
 
         if (items.length === 0 || totalAmount <= 0) {
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
             );
         }
 
-        consola.debug("------[3]------")
+        console.debug("------[3]------")
         // 组装 PayPal v2 order body
         const paypalItems = items.map((it) => ({
             name: it.name,
@@ -72,6 +72,11 @@ export async function POST(req: Request) {
             const cancel_url = paymentDetail["endpoint"]["cancel_url"]
             const payment_source = {
                 [paymentDetail.payment_source]: {
+                    attributes: {
+                        "verification": {
+                            "method": "SCA_ALWAYS",
+                        },
+                    },
                     "experience_context": {
                         "return_url": return_url,
                         "cancel_url": cancel_url
@@ -82,7 +87,7 @@ export async function POST(req: Request) {
         }
 
 
-        consola.debug(JSON.stringify(orderBody, null, "  "))
+        console.debug(JSON.stringify(orderBody, null, 2))
 
         const createRes = await fetch(`${base}/v2/checkout/orders`, {
             method: "POST",

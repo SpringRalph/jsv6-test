@@ -62,7 +62,7 @@ export async function POST(req: Request) {
             items: paypalItems,
         };
 
-        const orderBody = {
+        const orderBody: Record<string, any> = {
             intent: "CAPTURE",
             purchase_units: [purchaseUnit],
         };
@@ -78,7 +78,7 @@ export async function POST(req: Request) {
                     }
                 }
             };
-            Object.assign(orderBody, payment_source)
+            orderBody["payment_source"] = payment_source
         }
 
 
