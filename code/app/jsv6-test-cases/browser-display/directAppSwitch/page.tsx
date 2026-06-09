@@ -30,9 +30,9 @@ export default function ShippingCallbacksPage() {
                     </div>
                     <div>
                         <PaymentPlaceholder
-                            scenario="Live Env?"
+                            scenario="Mobile PayPal APP Switch"
                             children={<APPSwitch />}
-                            paymentAreaIcon ={
+                            paymentAreaIcon={
                                 <Image
                                     src="/payment-area-icon/paypal.svg"
                                     alt="PayPal"
@@ -40,8 +40,15 @@ export default function ShippingCallbacksPage() {
                                     height={100}
                                 />
                             }
-
-                            placeHolder={<span>似乎有bug,也可能是react需要搞点花活</span>}
+                            placeHolder={
+                                <span>
+                                    Tries{" "}
+                                    <code>direct-app-switch</code> →{" "}
+                                    <code>popup</code> → <code>modal</code>;
+                                    on return the SDK auto-calls{" "}
+                                    <code>resume()</code>.
+                                </span>
+                            }
                         />
                     </div>
                 </div>

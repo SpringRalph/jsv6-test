@@ -3,53 +3,60 @@
 import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
 import { useSdkInitOptions } from "@/hooks/useSdkInitOptions";
 import {
-    createOrder,
     createOrderRedirect,
     handlePaymentError,
 } from "@/services/paypal-sdk-function/browser-function";
-import {
-    AppSdkInstance,
-    paymentSessionOptions,
-} from "@/services/paypal-sdk-function/paypalSharedObject";
+import { paymentSessionOptions } from "@/services/paypal-sdk-function/paypalSharedObject";
 import { OneTimePaymentSession } from "@paypal/paypal-js/sdk-v6";
 import { useEffect } from "react";
-import consola from "consola";
+import console from "console";
+
+// SDK v6 runtime supports "direct-app-switch" although it is not in the
+// @paypal/paypal-js v9.0.1 type union yet. Try app-switch first, then fall
+// back to popup/modal when start() reports a recoverable error (e.g. desktop
+// browser without the PayPal app installed).
+const PRESENTATION_MODES_TO_TRY = ["direct-app-switch", "popup", "modal"] as const;
 
 export default function APPSwitch() {
     const { ready, loading, error } = usePayPalWebSdk();
     const { getInitOptions } = useSdkInitOptions();
 
-    // Setup standard PayPal button
-    async function setupPayPalButton(paypalPaymentSession: any) {
-        const paypalButton = document.querySelector("#paypal-btn")!;
+    function setupPayPalButton(paypalPaymentSession: OneTimePaymentSession) {
+        const paypalButton = document.querySelector("#paypal-btn");
+        if (!paypalButton) return;
         paypalButton.removeAttribute("hidden");
 
         paypalButton.addEventListener("click", async () => {
-            try {
-                const { redirectURL } = await paypalPaymentSession.start(
-                    {
-                        presentationMode: "direct-app-switch",
-                        
-                    },
-                    createOrderRedirect()
-                );
-                debugger;
-                if (redirectURL) {
-                    consola.log(`redirectURL: ${redirectURL}`);
-                    window.location.assign(redirectURL);
+            // Create the order ONCE per click and reuse the same promise
+            // across every presentation-mode fallback attempt — matches the
+            // reference HTML so switching modes does not spawn duplicate orders.
+            const createOrderPromise = createOrderRedirect();
+
+            for (const presentationMode of PRESENTATION_MODES_TO_TRY) {
+                try {
+                    await paypalPaymentSession.start(
+                        { presentationMode } as any,
+                        createOrderPromise
+                    );
+                    break;
+                } catch (err: any) {
+                    console.warn(
+                        `[APPSwitch] presentationMode "${presentationMode}" failed:`,
+                        err
+                    );
+                    if (err?.isRecoverable) {
+                        continue;
+                    }
+                    handlePaymentError(err);
+                    throw err;
                 }
-            } catch (error: any) {
-                if (error.isRecoverable) {
-                }
-                consola.error("PayPal payment start error:", error);
-                handlePaymentError(error);
-                throw error;
             }
         });
     }
 
     useEffect(() => {
-        //cancelled 变量用于在组件卸载或 effect 被重新触发时中止异步流程，避免在已卸载的组件上做状态更新或继续创建/使用资源
+        // cancelled 用于在组件卸载或 effect 重新触发时中止异步流程，
+        // 避免在已卸载的组件上做状态更新或重复初始化 SDK。
         let cancelled = false;
 
         if (!ready) return;
@@ -60,42 +67,35 @@ export default function APPSwitch() {
                 if (cancelled) return;
 
                 const paypal = (window as any).paypal;
-                // console.log(
-                //     "[Redirect]PayPal SDK ready:",
-                //     paypal,
-                //     "initOptions:",
-                //     initOptions
-                // );
 
                 const sdkInstance = await paypal?.createInstance?.({
                     ...initOptions,
                     components: ["paypal-payments"],
                     pageType: "checkout",
                 });
+                if (cancelled) {
+                    if (sdkInstance?.destroy) sdkInstance.destroy();
+                    return;
+                }
 
-                const paypalPaymentSession =
+                const paypalPaymentSession: OneTimePaymentSession =
                     sdkInstance.createPayPalOneTimePaymentSession(
                         paymentSessionOptions
                     );
 
+                // After returning from the PayPal app, the SDK detects the
+                // round trip via hasReturned(). Call resume() instead of
+                // re-binding the button, otherwise the in-flight payment
+                // session is dropped.
                 if (paypalPaymentSession.hasReturned()) {
-                    
-                    consola.log("------[A]------");
+                    console.log("[APPSwitch] hasReturned=true → resume()");
                     await paypalPaymentSession.resume();
                 } else {
-                    consola.log("------[B]------");
+                    console.log("[APPSwitch] hasReturned=false → setup button");
                     setupPayPalButton(paypalPaymentSession);
                 }
-
-                setupPayPalButton(sdkInstance);
-
-                if (cancelled) {
-                    // 如果实例需要销毁，按需处理
-                    if (sdkInstance?.destroy) sdkInstance.destroy();
-                    return;
-                }
             } catch (e) {
-                if (!cancelled) consola.error("PayPal init error:", e);
+                if (!cancelled) console.error("[APPSwitch] init error:", e);
             }
         })();
 
