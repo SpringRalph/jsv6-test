@@ -19,7 +19,7 @@ export default function ShippingCallbacksPage() {
                     </Link>
                     <h1 className="text-3xl font-bold mb-2">Direct APP Switch</h1>
                     <p className="text-muted-foreground">
-                        Need test this on Mobile, and in live Env
+                        Test Verified on 2026-06-09
                     </p>
                 </div>
 
