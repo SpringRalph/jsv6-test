@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(echo:*)",
-      "mcp__plugin_ecc_exa__web_search_exa"
-    ]
-  }
-}
