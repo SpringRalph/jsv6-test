@@ -3,7 +3,4 @@
 
 验证了新JSv6在真实生产环境, NextJS + TailwindCSS + TypeScript 中的可行性
 
-```yml
-https://2fa.run/
-XA7NTGYH2RBZGLDK
-```
+
