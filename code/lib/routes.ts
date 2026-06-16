@@ -51,7 +51,15 @@ export const routes: RouteMetadata[] = [
     panelIcon: "Layers",
     workStage: 4, // 完成
   },
- {
+  {
+    path: "/jsv6-test-cases/buttons/bcdc-inline-with-email",
+    title: "BCDC-inline-with-email",
+    description: "Test inline BCDC with email pre-filled in checkout form",
+    group: "Buttons",
+    panelIcon: "Layers",
+    workStage: 4, // 完成
+  },
+  {
     path: "/jsv6-test-cases/buttons/bcdc-inline-autostart",
     title: "BCDC-inline-Auto",
     description: "Test inline BCDC Auto expansion",
