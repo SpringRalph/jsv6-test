@@ -13,6 +13,7 @@ import {
     AppSdkInstance,
     paymentSessionOptions,
 } from "@/services/paypal-sdk-function/paypalSharedObject";
+import { safeFindEligibleMethods } from "@/services/paypal-sdk-function/safe-find-eligible-methods";
 
 import { useEffect, useRef, useState } from "react";
 import consola from "consola";
@@ -206,7 +207,8 @@ export default function CardFields() {
 
                     // Check eligibility for all payment methods
                     const paymentMethods =
-                        await sdkInstance.findEligibleMethods();
+                        await safeFindEligibleMethods(sdkInstance);
+                    if (!paymentMethods) return;
 
                     consola.log(JSON.stringify(paymentMethods, null, "  "));
 

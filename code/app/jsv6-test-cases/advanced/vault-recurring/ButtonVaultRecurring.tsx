@@ -11,6 +11,7 @@ import {
     enhancedPaymentSessionOptions,
     paymentSessionOptions,
 } from "@/services/paypal-sdk-function/paypalSharedObject";
+import { safeFindEligibleMethods } from "@/services/paypal-sdk-function/safe-find-eligible-methods";
 
 import React, { useEffect, useState } from "react";
 import consola from "consola";
@@ -83,9 +84,10 @@ export default function ButtonBasic() {
                 setIsInitializing(true);
                 try {
                     const paymentMethods =
-                        await sdkInstance.findEligibleMethods({
+                        await safeFindEligibleMethods(sdkInstance, {
                             currencyCode: "USD",
                         });
+                    if (!paymentMethods) return;
                     if (paymentMethods.isEligible("paypal")) {
                         setupPayPalButton(sdkInstance);
                     }

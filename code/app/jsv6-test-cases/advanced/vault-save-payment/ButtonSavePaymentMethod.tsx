@@ -9,6 +9,7 @@ import {
     handlePaymentError,
 } from "@/services/paypal-sdk-function/browser-function";
 import { AppSdkInstance } from "@/services/paypal-sdk-function/paypalSharedObject";
+import { safeFindEligibleMethods } from "@/services/paypal-sdk-function/safe-find-eligible-methods";
 import { SavePaymentSessionOptions } from "@paypal/paypal-js/sdk-v6";
 import React, { useEffect, useState } from "react";
 import consola from "consola";
@@ -105,10 +106,11 @@ export default function ButtonBasic() {
 
                 setIsInitializing(true);
                 try {
-                    const paymentMethods = await sdkInstance.findEligibleMethods({
+                    const paymentMethods = await safeFindEligibleMethods(sdkInstance, {
                         paymentFlow: "VAULT_WITHOUT_PAYMENT",
                         currencyCode: "USD",
                     });
+                    if (!paymentMethods) return;
                     if (paymentMethods.isEligible("paypal")) {
                         setupPayPalButton(sdkInstance);
                     }
