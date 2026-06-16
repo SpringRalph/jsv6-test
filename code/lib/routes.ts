@@ -335,4 +335,12 @@ export const routes: RouteMetadata[] = [
     panelIcon: "CircleDollarSign",
     workStage: 4,
   },
+  {
+    path: "/jsv6-test-cases/APM/sepa",
+    title: "SEPA Direct Debit",
+    description: "Test APM -- SEPA",
+    group: "APM",
+    panelIcon: "CircleDollarSign",
+    workStage: 4,
+  },
 ]

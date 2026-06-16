@@ -73,6 +73,9 @@ declare module 'react' {
       'p24-button': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
         [key: string]: any;
       }
+      'sepa-button': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
+        [key: string]: any;
+      }
     }
   }
 }

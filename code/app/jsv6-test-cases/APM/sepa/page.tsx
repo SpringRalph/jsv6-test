@@ -3,9 +3,10 @@ import { ProductPanel } from "@/components/panels/ProductPanel";
 import { CartSummary } from "@/components/panels/CartSummary";
 import { PaymentPlaceholder } from "@/components/panels/PaymentPlaceholder";
 import Link from "next/link";
-import P24Payments from "./p24Payments";
-import Image from 'next/image';
+import BliKPayments from "./sepaPayments";
+import Image from "next/image";
 import { Building2 } from "lucide-react";
+
 
 export default function ButtonsBasicPage() {
     return (
@@ -27,11 +28,11 @@ export default function ButtonsBasicPage() {
                     <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 p-6 rounded-2xl border-2 border-blue-200 dark:border-blue-800">
                         <h1 className="text-3xl font-bold mb-2 flex items-center gap-3">
                             <Building2 className="size-8 text-blue-500" />
-                            Przelewy24
+                            SEPA Direct Debit (SEPA)
                         </h1>
                         <p className="text-muted-foreground flex items-center gap-2">
                             <span className="text-lg">📝</span>
-                            P24 (Przelewy24) One-Time Payment Integration
+                            sepa (Przelewy24) One-Time Payment Integration
                         </p>
                     </div>
                 </div>
@@ -43,15 +44,15 @@ export default function ButtonsBasicPage() {
                     </div>
                     <div>
                         <PaymentPlaceholder
-                            scenario="Poland"
-                            children={<P24Payments />}
+                            scenario="Germany"
+                            children={<BliKPayments />}
                             placeHolder=""
                             paymentAreaIcon={
                                 <Image
                                     loading="eager"
                                     // style={{ width: "auto", height: "auto" }}
-                                    src="/payment-area-icon/APM/Przelewy24.svg"
-                                    alt="Przelewy24"
+                                    src="/payment-area-icon/APM/sepa.svg"
+                                    alt="SEPA"
                                     width={100}
                                     height={100}
                                 />
