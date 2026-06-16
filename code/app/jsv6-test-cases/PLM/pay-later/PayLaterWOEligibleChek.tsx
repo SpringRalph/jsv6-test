@@ -10,6 +10,7 @@ import {
     AppSdkInstance,
     paymentSessionOptions,
 } from "@/services/paypal-sdk-function/paypalSharedObject";
+import { safeFindEligibleMethods } from "@/services/paypal-sdk-function/safe-find-eligible-methods";
 import { useEffect } from "react";
 
 
@@ -80,9 +81,10 @@ export default function PayLater() {
                 // 如果需check Paylater Eligible，取消 if 条件并实现 findEligibleMethods 逻辑
                 if (!true) {
                     const paymentMethods =
-                        await sdkInstance.findEligibleMethods({
+                        await safeFindEligibleMethods(sdkInstance, {
                             currencyCode: "USD",
                         });
+                    if (!paymentMethods) return;
                     if (paymentMethods.isEligible("paylater")) {
                          setupPayLaterButton(sdkInstance);
                     }
