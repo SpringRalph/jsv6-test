@@ -4,6 +4,7 @@ import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { EnvBody } from "@/components/layout/EnvBody";
 import { Toaster } from "react-hot-toast";
+import { GlobalErrorDialog } from "@/components/ui/GlobalErrorDialog";
 
 export const metadata: Metadata = {
     title: "PayPal JS v6 Test Framework",
@@ -25,6 +26,7 @@ export default function RootLayout({
                 <Navbar />
                 <main className="min-h-screen">{children}</main>
                 <Toaster position="top-center" />
+                <GlobalErrorDialog />
             </EnvBody>
         </html>
     );
