@@ -107,11 +107,11 @@ export default function BCDCInline() {
 
 
                     //Auto-render
-                    await startGuestPaymentSession(
-                        bcdcButton,
-                        paypalGuestPaymentSession,
-                        createOrderPromise,
-                    );
+                    // await startGuestPaymentSession(
+                    //     bcdcButton,
+                    //     paypalGuestPaymentSession,
+                    //     createOrderPromise,
+                    // );
 
                     await setupBCDCButton(
                         bcdcButton,
