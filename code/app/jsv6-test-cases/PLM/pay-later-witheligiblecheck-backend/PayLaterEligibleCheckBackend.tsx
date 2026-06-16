@@ -4,12 +4,13 @@ import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
 import { useSdkInitOptions } from "@/hooks/useSdkInitOptions";
 import {
     createOrder,
+    customFindEligibleMethods,
 } from "@/services/paypal-sdk-function/browser-function";
 import {
     AppSdkInstance,
+    findEligibleMethodsPayload,
     paymentSessionOptions,
 } from "@/services/paypal-sdk-function/paypalSharedObject";
-import { safeFindEligibleMethods } from "@/services/paypal-sdk-function/safe-find-eligible-methods";
 import { useEffect, useState } from "react";
 
 import { type FindEligibleMethodsGetDetails } from "@paypal/paypal-js/sdk-v6";
@@ -89,8 +90,11 @@ export default function PayLater() {
                 const eligibleCheckStart = performance.now();
 
                 setIsInitializing(true);
-                const paymentMethods = await safeFindEligibleMethods(sdkInstance);
-                if (!paymentMethods) return;
+                const customEligibilityResponse =
+                    await customFindEligibleMethods(findEligibleMethodsPayload);
+                const paymentMethods = await sdkInstance.hydrateEligibleMethods(
+                    customEligibilityResponse,
+                );
                 setIsInitializing(false);
                 ColorConsoleHelper.cyan(
                     `findEligibleMethods took ${(performance.now() - eligibleCheckStart).toFixed(2)} ms`,
