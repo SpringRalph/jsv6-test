@@ -10,6 +10,7 @@ import {
     AppSdkInstance,
     paymentSessionOptions,
 } from "@/services/paypal-sdk-function/paypalSharedObject";
+import { safeFindEligibleMethods } from "@/services/paypal-sdk-function/safe-find-eligible-methods";
 import { OneTimePaymentSession } from "@paypal/paypal-js/sdk-v6";
 import React, { useEffect } from "react";
 import consola from "consola";
@@ -77,9 +78,10 @@ export default function ButtonBasic() {
 
                     // Check eligibility for all payment methods
                     const paymentMethods =
-                        await sdkInstance.findEligibleMethods({
+                        await safeFindEligibleMethods(sdkInstance, {
                             currencyCode: "USD",
                         });
+                    if (!paymentMethods) return;
 
                     // debugger;
 

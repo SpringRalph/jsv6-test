@@ -11,6 +11,7 @@ import {
     AppSdkInstance,
     paymentSessionOptions,
 } from "@/services/paypal-sdk-function/paypalSharedObject";
+import { safeFindEligibleMethods } from "@/services/paypal-sdk-function/safe-find-eligible-methods";
 
 import { useEffect, useState } from "react";
 import consola from "consola";
@@ -125,9 +126,10 @@ export default function BCDCInline() {
 
                     // Check eligibility for all payment methods
                     const paymentMethods =
-                        await sdkInstance.findEligibleMethods({
+                        await safeFindEligibleMethods(sdkInstance, {
                             currencyCode: "USD",
                         });
+                    if (!paymentMethods) return;
 
                     document
                         .querySelector("#paypal-basic-card-container")

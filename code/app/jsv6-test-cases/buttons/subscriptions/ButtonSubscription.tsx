@@ -4,6 +4,7 @@ import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
 import { useSdkInitOptions } from "@/hooks/useSdkInitOptions";
 import { handlePaymentCancellation, handlePaymentError } from "@/services/paypal-sdk-function/browser-function";
 import { getPayPalHeaders } from "@/services/paypal-sdk-function/paypal-headers";
+import { safeFindEligibleMethods } from "@/services/paypal-sdk-function/safe-find-eligible-methods";
 import React, { useEffect, useRef, useState } from "react";
 import consola from "consola";
 import toast from "react-hot-toast";
@@ -104,10 +105,11 @@ export default function ButtonSubscription({ defaultPlanId = "" }: ButtonSubscri
                     return;
                 }
 
-                const paymentMethods = await sdkInstance.findEligibleMethods({
+                const paymentMethods = await safeFindEligibleMethods(sdkInstance, {
                     paymentFlow: "RECURRING_PAYMENT",
                     currencyCode: "USD",
                 });
+                if (!paymentMethods) return;
 
                 if (paymentMethods.isEligible("paypal")) {
                     await setupSubscriptionButton(sdkInstance);
