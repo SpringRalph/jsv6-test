@@ -6,6 +6,7 @@ import {
     createOrder,
     handlePaymentError,
 } from "@/services/paypal-sdk-function/browser-function";
+import { safeFindEligibleMethods } from "@/services/paypal-sdk-function/safe-find-eligible-methods";
 import {
     AppSdkInstance,
     paymentSessionOptions,
@@ -107,9 +108,11 @@ export default function MerchantAsyncValidation() {
 
                     // Check eligibility for all payment methods
                     const paymentMethods =
-                        await sdkInstance.findEligibleMethods({
+                        await safeFindEligibleMethods(sdkInstance, {
                             currencyCode: "USD",
                         });
+
+                    if (!paymentMethods) return;
 
                     // debugger;
 
