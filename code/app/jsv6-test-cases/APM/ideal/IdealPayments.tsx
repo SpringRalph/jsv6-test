@@ -10,6 +10,7 @@ import {
     AppSdkInstance,
     paymentSessionOptions,
 } from "@/services/paypal-sdk-function/paypalSharedObject";
+import { safeFindEligibleMethods } from "@/services/paypal-sdk-function/safe-find-eligible-methods";
 
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -108,10 +109,10 @@ export default function IdealPayments() {
                     pageType: "checkout",
                 });
 
-                const paymentMethods = await sdkInstance.findEligibleMethods({
+                const paymentMethods = await safeFindEligibleMethods(sdkInstance, {
                     currencyCode: "EUR",
                 });
-
+                if (!paymentMethods) return;
 
                 if (paymentMethods.isEligible("ideal")) {
                     const idealSession =
