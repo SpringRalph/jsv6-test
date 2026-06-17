@@ -137,3 +137,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "internal error", details: String(err) }, { status: 500 });
   }
 }
+
+export async function DELETE() {
+  const size = tokenCache.size;
+  tokenCache.clear();
+  consola.info(`[/api/paypal/client-token] cache cleared (${size} entries)`);
+  return new NextResponse(null, { status: 204 });
+}
