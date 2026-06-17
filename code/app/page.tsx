@@ -1,7 +1,6 @@
 // 移除不必要的React导入
 import { Container } from "@/components/layout/Container";
-import { EnvPanel } from "@/components/panels/EnvPanel";
-import { AuthModePanel } from "@/components/panels/AuthModePanel";
+import { SdkConfigPanel } from "@/components/panels/SdkConfigPanel";
 import { routes } from "@/lib/routes";
 import Image from "next/image"
 import Link from "next/link";
@@ -132,8 +131,7 @@ export default function HomePage() {
                     </div>
                 </div>
 
-                <EnvPanel />
-                <AuthModePanel />
+                <SdkConfigPanel />
 
                 <div>
                     <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
