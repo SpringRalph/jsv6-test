@@ -1,26 +1,21 @@
 "use client";
 
 import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
-import { useSdkInitOptions } from "@/hooks/useSdkInitOptions";
 import {
     createEUROrder,
+    getBrowserSafeClientToken,
     handlePaymentError,
 } from "@/services/paypal-sdk-function/browser-function";
 import {
     AppSdkInstance,
     paymentSessionOptions,
 } from "@/services/paypal-sdk-function/paypalSharedObject";
-import { safeFindEligibleMethods } from "@/services/paypal-sdk-function/safe-find-eligible-methods";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import toast from "react-hot-toast";
-import consola from "consola";
-import { EligibilityOverlay } from "@/components/ui/EligibilityOverlay";
 
 export default function IdealPayments() {
     const { ready, loading, error } = usePayPalWebSdk();
-    const { getInitOptions } = useSdkInitOptions();
-    const [isInitializing, setIsInitializing] = useState(false);
 
     function setupPaymentFields(idealCheckout: any) {
         // Create payment field for full name with optional prefill
@@ -39,7 +34,9 @@ export default function IdealPayments() {
         });
 
         // Mount the field to the container
-        document.querySelector("#ideal-full-name")!.appendChild(fullNameField);
+        document
+            .querySelector("#ideal-full-name")!
+            .appendChild(fullNameField);
     }
 
     // Setup standard iDeal button
@@ -47,16 +44,17 @@ export default function IdealPayments() {
         const idealButton = document.querySelector("#ideal-button")!;
         idealButton.removeAttribute("hidden");
 
+      
         idealButton.addEventListener("click", async () => {
             try {
-                consola.log("Validating payment fields...");
+                console.log("Validating payment fields...");
 
                 // Validate the payment fields
                 const isValid = await idealSession.validate();
 
                 if (isValid) {
-                    consola.log(
-                        "Validation successful, starting payment flow...",
+                    console.log(
+                        "Validation successful, starting payment flow..."
                     );
 
                     // get the promise reference by invoking createOrder()
@@ -66,16 +64,16 @@ export default function IdealPayments() {
                     // Start payment flow with popup mode
                     await idealSession.start(
                         { presentationMode: "popup" },
-                        createOrderPromise,
+                        createOrderPromise
                     );
                 } else {
-                    consola.error("Validation failed");
+                    console.error("Validation failed");
                     toast.error(
-                        "Please fill in all required fields correctly.",
+                        "Please fill in all required fields correctly."
                     );
                 }
             } catch (error) {
-                consola.error("PayPal payment start error:", error);
+                console.error("PayPal payment start error:", error);
                 handlePaymentError(error);
             }
         });
@@ -87,51 +85,61 @@ export default function IdealPayments() {
 
         if (!ready) return;
 
-        setIsInitializing(true);
-
         (async () => {
             try {
-                const initOptions = await getInitOptions();
+                const clientToken = await getBrowserSafeClientToken();
                 if (cancelled) return;
 
                 const paypal = (window as any).paypal;
-                consola.log(
+                console.log(
                     "PayPal SDK ready:",
                     paypal,
-                    "initOptions:",
-                    initOptions,
+                    "clientToken:",
+                    clientToken
                 );
 
                 const sdkInstance = await paypal?.createInstance?.({
-                    ...initOptions,
-                    testBuyerCountry: "NL", // Netherlands for iDeal testing
+                    clientToken,
+                    testBuyerCountry: "NL", // Netherlands  for iDeal testing
                     components: ["ideal-payments"],
                     pageType: "checkout",
                 });
 
-                const paymentMethods = await safeFindEligibleMethods(sdkInstance, {
-                    currencyCode: "EUR",
-                });
-                if (!paymentMethods) return;
+                const idealSession =
+                    //@ts-ignore
+                    sdkInstance.createIdealOneTimePaymentSession(
+                        paymentSessionOptions
+                    );
 
-                if (paymentMethods.isEligible("ideal")) {
-                    const idealSession =
-                        //@ts-ignore
-                        sdkInstance.createIdealOneTimePaymentSession(
-                            paymentSessionOptions,
-                        );
+                if (!true) {
+                    // ####################### 进行eligibility check ###############################
+
+                    // Check if ideal is eligible
+                    const paymentMethods =
+                        await sdkInstance.findEligibleMethods({
+                            currencyCode: "EUR",
+                        });
+
+                    if (paymentMethods.isEligible("ideal")) {
+                        // Setup payment fields
+                        setupPaymentFields(idealSession);
+                        setupIdealButtonHandler(idealSession);
+                    }
+
+                    // ############################################################################
+                } else {
+                    // Setup payment fields
                     setupPaymentFields(idealSession);
                     setupIdealButtonHandler(idealSession);
                 }
 
                 if (cancelled) {
+                    // 如果实例需要销毁，按需处理
                     if (sdkInstance?.destroy) sdkInstance.destroy();
                     return;
                 }
             } catch (e) {
-                if (!cancelled) consola.error("PayPal init error:", e);
-            } finally {
-                if (!cancelled) setIsInitializing(false);
+                if (!cancelled) console.error("PayPal init error:", e);
             }
         })();
 
@@ -144,11 +152,8 @@ export default function IdealPayments() {
     if (error) return <div>PayPal SDK加载失败: {error.message}</div>;
 
     return (
-        <div className="relative w-full flex items-center justify-center flex-col">
-            <EligibilityOverlay
-                isVisible={isInitializing}
-                message="Checking iDeal Eligibility…"
-            />
+        <div className="w-full flex items-center justify-center flex-col">
+        
             <div id="ideal-full-name" className=" h-[60] w-full"></div>
             <ideal-button
                 id="ideal-button"

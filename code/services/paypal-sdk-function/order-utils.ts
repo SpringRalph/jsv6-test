@@ -128,5 +128,4 @@ export const getOrderConfig = () => {
         }
     };
 
-    return payload
-}
+    return payload}

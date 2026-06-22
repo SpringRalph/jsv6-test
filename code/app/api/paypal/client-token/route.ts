@@ -135,5 +135,4 @@ export async function GET(req: NextRequest) {
   } catch (err: any) {
     consola.error("[/api/paypal/client-token] error fetching token", err);
     return NextResponse.json({ error: "internal error", details: String(err) }, { status: 500 });
-  }
-}
+  }}

@@ -1,4 +1,4 @@
-import { buildBasicAuthHeader, getPayPalConfig, getPayPalConfigFromRequest } from "@/services/paypal-server-side-function/server-function";
+import { buildBasicAuthHeader, getPayPalConfig } from "@/services/paypal-server-side-function/server-function";
 import { NextResponse } from "next/server";
 import consola from "consola";
 
@@ -12,16 +12,16 @@ type Item = {
 };
 
 export async function POST(req: Request) {
-    console.info("[/api/paypal/create-order-ACDC-With-3DS] HTTP POST received");
+    consola.info("[/api/paypal/create-order] HTTP POST received");
     try {
-        const { clientId, clientSecret, base } = getPayPalConfigFromRequest(req);
-        console.debug("------[1]------")
+        const { clientId, clientSecret, base } = getPayPalConfig();
+        console.log("------[1]------")
         const basic = buildBasicAuthHeader(clientId, clientSecret);
 
         const body = await req.json().catch(() => null);
-        console.debug("------[2]------")
+        console.log("------[2]------")
 
-        // console.debug(JSON.stringify(body, null, "  "))
+        console.log(JSON.stringify(body, null, "  "))
 
         if (!body) {
             return NextResponse.json({ error: "invalid request body" }, { status: 400 });
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
             );
         }
 
-        console.debug("------[3]------")
+        console.log("------[3]------")
         // 组装 PayPal v2 order body
         const paypalItems = items.map((it) => ({
             name: it.name,
@@ -62,7 +62,7 @@ export async function POST(req: Request) {
             items: paypalItems,
         };
 
-        const orderBody: Record<string, any> = {
+        const orderBody = {
             intent: "CAPTURE",
             purchase_units: [purchaseUnit],
         };
@@ -75,6 +75,7 @@ export async function POST(req: Request) {
                     attributes: {
                         "verification": {
                             "method": "SCA_ALWAYS",
+                            "_comment": "SCA_ALWAYS to force otherwise use SCA_WHEN_REQUIRED"
                         },
                     },
                     "experience_context": {
@@ -83,11 +84,11 @@ export async function POST(req: Request) {
                     }
                 }
             };
-            orderBody["payment_source"] = payment_source
+            Object.assign(orderBody, payment_source)
         }
 
 
-        console.debug(JSON.stringify(orderBody, null, 2))
+        console.log(JSON.stringify(orderBody, null, "  "))
 
         const createRes = await fetch(`${base}/v2/checkout/orders`, {
             method: "POST",
@@ -116,5 +117,4 @@ export async function POST(req: Request) {
         return NextResponse.json({ order: createJson, orderId: createJson.id });
     } catch (err: any) {
         return NextResponse.json({ error: "internal error", details: String(err) }, { status: 500 });
-    }
-}
+    }}

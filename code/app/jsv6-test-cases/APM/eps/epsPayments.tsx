@@ -1,26 +1,21 @@
 "use client";
 
 import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
-import { useSdkInitOptions } from "@/hooks/useSdkInitOptions";
 import {
     createEUROrder,
+    getBrowserSafeClientToken,
     handlePaymentError,
 } from "@/services/paypal-sdk-function/browser-function";
 import {
     AppSdkInstance,
     paymentSessionOptions,
 } from "@/services/paypal-sdk-function/paypalSharedObject";
-import { safeFindEligibleMethods } from "@/services/paypal-sdk-function/safe-find-eligible-methods";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import toast from "react-hot-toast";
-import consola from "consola";
-import { EligibilityOverlay } from "@/components/ui/EligibilityOverlay";
 
 export default function epsPayments() {
     const { ready, loading, error } = usePayPalWebSdk();
-    const { getInitOptions } = useSdkInitOptions();
-    const [isInitializing, setIsInitializing] = useState(false);
 
     function setupPaymentFields(epsCheckout: any) {
         // Create payment field for full name with optional prefill
@@ -52,13 +47,13 @@ export default function epsPayments() {
       
         epsButton.addEventListener("click", async () => {
             try {
-                consola.log("Validating payment fields...");
+                console.log("Validating payment fields...");
 
                 // Validate the payment fields
                 const isValid = await epsSession.validate();
 
                 if (isValid) {
-                    consola.log(
+                    console.log(
                         "Validation successful, starting payment flow..."
                     );
 
@@ -72,13 +67,13 @@ export default function epsPayments() {
                         createOrderPromise
                     );
                 } else {
-                    consola.error("Validation failed");
+                    console.error("Validation failed");
                     toast.error(
                         "Please fill in all required fields correctly."
                     );
                 }
             } catch (error) {
-                consola.error("PayPal payment start error:", error);
+                console.error("PayPal payment start error:", error);
                 handlePaymentError(error);
             }
         });
@@ -90,51 +85,61 @@ export default function epsPayments() {
 
         if (!ready) return;
 
-        setIsInitializing(true);
-
         (async () => {
             try {
-                const initOptions = await getInitOptions();
+                const clientToken = await getBrowserSafeClientToken();
                 if (cancelled) return;
 
                 const paypal = (window as any).paypal;
-                consola.log(
+                console.log(
                     "PayPal SDK ready:",
                     paypal,
-                    "initOptions:",
-                    initOptions
+                    "clientToken:",
+                    clientToken
                 );
 
                 const sdkInstance = await paypal?.createInstance?.({
-                    ...initOptions,
-                    testBuyerCountry: "AT", // Austria for eps testing
+                    clientToken,
+                    testBuyerCountry: "AT", // Austria   for eps testing
                     components: ["eps-payments"],
                     pageType: "checkout",
                 });
 
-                const paymentMethods = await safeFindEligibleMethods(sdkInstance, {
-                    currencyCode: "EUR",
-                });
-                if (!paymentMethods) return;
+                const epsSession =
+                    //@ts-ignore
+                    sdkInstance.createEpsOneTimePaymentSession(
+                        paymentSessionOptions
+                    );
 
-                if (paymentMethods.isEligible("eps")) {
-                    const epsSession =
-                        //@ts-ignore
-                        sdkInstance.createEpsOneTimePaymentSession(
-                            paymentSessionOptions
-                        );
+                if (!true) {
+                    // ####################### 进行eligibility check ###############################
+
+                    // Check if eps is eligible
+                    const paymentMethods =
+                        await sdkInstance.findEligibleMethods({
+                            currencyCode: "EUR",
+                        });
+
+                    if (paymentMethods.isEligible("eps")) {
+                        // Setup payment fields
+                        setupPaymentFields(epsSession);
+                        setupEpsButtonHandler(epsSession);
+                    }
+
+                    // ############################################################################
+                } else {
+                    // Setup payment fields
                     setupPaymentFields(epsSession);
                     setupEpsButtonHandler(epsSession);
                 }
 
                 if (cancelled) {
+                    // 如果实例需要销毁，按需处理
                     if (sdkInstance?.destroy) sdkInstance.destroy();
                     return;
                 }
             } catch (e) {
-                if (!cancelled) consola.error("PayPal init error:", e);
-            } finally {
-                if (!cancelled) setIsInitializing(false);
+                if (!cancelled) console.error("PayPal init error:", e);
             }
         })();
 
@@ -147,8 +152,8 @@ export default function epsPayments() {
     if (error) return <div>PayPal SDK加载失败: {error.message}</div>;
 
     return (
-        <div className="relative w-full flex items-center justify-center flex-col">
-            <EligibilityOverlay isVisible={isInitializing} message="Checking EPS Eligibility…" />
+        <div className="w-full flex items-center justify-center flex-col">
+        
             <div id="eps-full-name" className=" h-[60] w-full"></div>
             <eps-button
                 id="eps-button"

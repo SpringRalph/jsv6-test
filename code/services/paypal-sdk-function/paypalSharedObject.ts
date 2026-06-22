@@ -98,5 +98,4 @@ export const findEligibleMethodsPayload = {
     },
     purchase_units: [{ amount: { currency_code: "USD" } }],
 }
-
 export type AppSdkInstance = SdkInstance<["paypal-payments", "venmo-payments"]>;
