@@ -155,5 +155,4 @@ export async function POST(req: Request) {
         return NextResponse.json({ order: createJson, orderId: createJson.id });
     } catch (err: any) {
         return NextResponse.json({ error: "internal error", details: String(err) }, { status: 500 });
-    }
-}
+    }}

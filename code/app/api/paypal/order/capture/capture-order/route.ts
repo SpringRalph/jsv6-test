@@ -48,5 +48,4 @@ export async function POST(req: Request) {
 		return NextResponse.json({ capture: json, orderId: orderId });
 	} catch (err: any) {
 		return NextResponse.json({ error: "internal error", details: String(err) }, { status: 500 });
-	}
-}
+	}}

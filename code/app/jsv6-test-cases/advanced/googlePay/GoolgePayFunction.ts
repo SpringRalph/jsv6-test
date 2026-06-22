@@ -158,5 +158,4 @@ async function onPaymentAuthorized(
                 message: err.message,
             },
         };
-    }
-}
+    }}

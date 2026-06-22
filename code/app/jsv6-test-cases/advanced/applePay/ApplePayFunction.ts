@@ -101,5 +101,4 @@ function setupApplePayEventHandlers(applePaySession, paypalSession, paymentReque
     // Payment cancellation
     applePaySession.oncancel = () => {
         consola.log("Apple Pay cancelled");
-    };
-}
+    };}
