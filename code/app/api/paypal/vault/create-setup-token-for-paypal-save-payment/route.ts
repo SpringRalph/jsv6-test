@@ -1,4 +1,4 @@
-import { buildBasicAuthHeader, getPayPalConfig, getPayPalConfigFromRequest } from "@/services/paypal-server-side-function/server-function";
+import { buildBasicAuthHeader, buildPayPalRequestHeaders, getPayPalConfig, getPayPalConfigFromRequest } from "@/services/paypal-server-side-function/server-function";
 import { NextResponse } from "next/server";
 import consola from "consola";
 
@@ -59,10 +59,7 @@ export async function GET(req: Request) {
 
         const setupRes = await fetch(`${base}/v3/vault/setup-tokens`, {
             method: "POST",
-            headers: {
-                Authorization: basic,
-                "Content-Type": "application/json",
-            },
+            headers: buildPayPalRequestHeaders(req, basic),
             body: JSON.stringify(payload),
         });
 
