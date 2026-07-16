@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 import { useEffect, useState } from "react"
 
 export function Navbar() {
-  const { env, activeClientId } = useEnvStore()
+  const { env, activeClientId, integrationMode } = useEnvStore()
   // 延迟到客户端挂载后再读 persist 出来的值。
   // 否则 SSR 用 envDefaults (process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID),
   // 而首次客户端渲染读的是 localStorage 里 zustand-persist 复水后的值,
@@ -17,6 +17,7 @@ export function Navbar() {
   useEffect(() => setMounted(true), [])
 
   const isLive = mounted && env === "live"
+  const isPartnerMode = mounted && integrationMode === "partner"
   const currentClientId = mounted ? activeClientId() : ""
 
   return (
@@ -95,6 +96,18 @@ export function Navbar() {
                   )}
                 >
                   {isLive ? "LIVE" : "SBX"}
+                </span>
+
+                {/* integration mode badge */}
+                <span
+                  className={cn(
+                    "inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider leading-none",
+                    isPartnerMode
+                      ? "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300"
+                      : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300",
+                  )}
+                >
+                  {isPartnerMode ? "3RD" : "1ST"}
                 </span>
 
                 <span className="text-xs text-muted-foreground">Client ID:</span>
