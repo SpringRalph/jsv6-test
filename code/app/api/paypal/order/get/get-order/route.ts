@@ -1,5 +1,6 @@
 import {
     buildBasicAuthHeader,
+    buildPayPalRequestHeaders,
     getPayPalConfigFromRequest,
 } from "@/services/paypal-server-side-function/server-function";
 import consola from "consola";
@@ -35,11 +36,7 @@ export async function POST(req: Request) {
             `${base}/v2/checkout/orders/${encodeURIComponent(orderId)}`,
             {
                 method: "GET",
-                headers: {
-                    Authorization: basic,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
+                headers: buildPayPalRequestHeaders(req, basic, { Accept: "application/json" }),
             },
         );
 
