@@ -11,6 +11,7 @@ import {
 } from "@/store/useEnvStore";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { Input } from "@/components/ui/Input";
 import { VaultManagerDialog } from "@/components/panels/VaultManagerDialog";
 import {
     CredentialCombobox,
@@ -18,7 +19,7 @@ import {
 } from "@/components/ui/CredentialCombobox";
 import { useSettingsChange } from "@/hooks/useSettingsChange";
 import { AlertTriangle, KeyRound, Coins } from "lucide-react";
-import type { PayPalEnv, AuthMode } from "@/types/env";
+import type { PayPalEnv, AuthMode, IntegrationMode } from "@/types/env";
 
 const SHOPPAAS_SANDBOX_CLIENT_ID =
     "ATIwW9NdRH9Nqde8MCftI_0QbOL9APdYok0a7ircWl2-3fBHv-CoMYsfIDpcUDisqTHmHT7d0Dz9DV7V";
@@ -63,26 +64,47 @@ export function SdkConfigPanel() {
     const {
         env,
         authMode,
+        integrationMode,
         clientId,
         secret,
         liveClientId,
         liveSecret,
+        partnerClientId,
+        partnerSecret,
+        livePartnerClientId,
+        livePartnerSecret,
+        authAssertionMerchantId,
+        liveAuthAssertionMerchantId,
         setEnv,
         setAuthMode,
+        setIntegrationMode,
         setClientId,
         setSecret,
         setLiveClientId,
         setLiveSecret,
+        setPartnerClientId,
+        setPartnerSecret,
+        setLivePartnerClientId,
+        setLivePartnerSecret,
+        setAuthAssertionMerchantId,
+        setLiveAuthAssertionMerchantId,
         reset,
     } = useEnvStore();
     const applySettingsChange = useSettingsChange();
 
     const isSandbox = env === "sandbox";
+    const isPartnerMode = integrationMode === "partner";
 
     const [localClientId, setLocalClientId] = useState(clientId);
     const [localSecret, setLocalSecret] = useState(secret);
     const [localLiveClientId, setLocalLiveClientId] = useState(liveClientId);
     const [localLiveSecret, setLocalLiveSecret] = useState(liveSecret);
+    const [localPartnerClientId, setLocalPartnerClientId] = useState(partnerClientId);
+    const [localPartnerSecret, setLocalPartnerSecret] = useState(partnerSecret);
+    const [localLivePartnerClientId, setLocalLivePartnerClientId] = useState(livePartnerClientId);
+    const [localLivePartnerSecret, setLocalLivePartnerSecret] = useState(livePartnerSecret);
+    const [localAuthAssertionMerchantId, setLocalAuthAssertionMerchantId] = useState(authAssertionMerchantId);
+    const [localLiveAuthAssertionMerchantId, setLocalLiveAuthAssertionMerchantId] = useState(liveAuthAssertionMerchantId);
     const [saved, setSaved] = useState(false);
     const [showLiveConfirm, setShowLiveConfirm] = useState(false);
 
@@ -94,6 +116,22 @@ export function SdkConfigPanel() {
     const setActiveLocalSecret = isSandbox
         ? setLocalSecret
         : setLocalLiveSecret;
+
+    const activeLocalPartnerClientId = isSandbox ? localPartnerClientId : localLivePartnerClientId;
+    const activeLocalPartnerSecret = isSandbox ? localPartnerSecret : localLivePartnerSecret;
+    const setActiveLocalPartnerClientId = isSandbox
+        ? setLocalPartnerClientId
+        : setLocalLivePartnerClientId;
+    const setActiveLocalPartnerSecret = isSandbox
+        ? setLocalPartnerSecret
+        : setLocalLivePartnerSecret;
+
+    const activeLocalAuthAssertionMerchantId = isSandbox
+        ? localAuthAssertionMerchantId
+        : localLiveAuthAssertionMerchantId;
+    const setActiveLocalAuthAssertionMerchantId = isSandbox
+        ? setLocalAuthAssertionMerchantId
+        : setLocalLiveAuthAssertionMerchantId;
 
     const handleClientIdChange = (newClientId: string) => {
         setActiveLocalClientId(newClientId);
@@ -122,19 +160,40 @@ export function SdkConfigPanel() {
         await applySettingsChange();
     };
 
+    const handleIntegrationModeToggle = async (mode: IntegrationMode) => {
+        if (mode === integrationMode) return;
+        setIntegrationMode(mode);
+        await applySettingsChange();
+    };
+
     const handleSave = async () => {
         const prevClientId = isSandbox ? clientId : liveClientId;
         const prevSecret = isSandbox ? secret : liveSecret;
+        const prevPartnerClientId = isSandbox ? partnerClientId : livePartnerClientId;
+        const prevPartnerSecret = isSandbox ? partnerSecret : livePartnerSecret;
+        const prevAuthAssertionMerchantId = isSandbox
+            ? authAssertionMerchantId
+            : liveAuthAssertionMerchantId;
+
         const changed =
             activeLocalClientId !== prevClientId ||
-            activeLocalSecret !== prevSecret;
+            activeLocalSecret !== prevSecret ||
+            activeLocalPartnerClientId !== prevPartnerClientId ||
+            activeLocalPartnerSecret !== prevPartnerSecret ||
+            activeLocalAuthAssertionMerchantId !== prevAuthAssertionMerchantId;
 
         if (isSandbox) {
             setClientId(localClientId);
             setSecret(localSecret);
+            setPartnerClientId(localPartnerClientId);
+            setPartnerSecret(localPartnerSecret);
+            setAuthAssertionMerchantId(localAuthAssertionMerchantId);
         } else {
             setLiveClientId(localLiveClientId);
             setLiveSecret(localLiveSecret);
+            setLivePartnerClientId(localLivePartnerClientId);
+            setLivePartnerSecret(localLivePartnerSecret);
+            setLiveAuthAssertionMerchantId(localLiveAuthAssertionMerchantId);
         }
 
         if (changed) {
@@ -151,6 +210,12 @@ export function SdkConfigPanel() {
         setLocalSecret(process.env.NEXT_PUBLIC_PAYPAL_SECRET ?? "");
         setLocalLiveClientId(LIVE_CLIENT_ID_C2);
         setLocalLiveSecret(LIVE_SECRET_C2);
+        setLocalPartnerClientId("");
+        setLocalPartnerSecret("");
+        setLocalLivePartnerClientId("");
+        setLocalLivePartnerSecret("");
+        setLocalAuthAssertionMerchantId("");
+        setLocalLiveAuthAssertionMerchantId("");
         await applySettingsChange();
     };
 
@@ -213,66 +278,172 @@ export function SdkConfigPanel() {
                         )}
                     </section>
 
+                    {/* ────── Integration Mode ────── */}
+                    <section>
+                        <p className={SECTION_TITLE_CLS}>集成模式</p>
+                        <div className="inline-flex rounded-lg border border-border overflow-hidden text-sm">
+                            <button
+                                type="button"
+                                onClick={() => handleIntegrationModeToggle("merchant")}
+                                className={`px-4 py-1.5 transition-colors ${
+                                    !isPartnerMode
+                                        ? "bg-blue-600 text-white font-semibold"
+                                        : "bg-background text-muted-foreground hover:bg-muted"
+                                }`}
+                            >
+                                一方 Merchant
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handleIntegrationModeToggle("partner")}
+                                className={`px-4 py-1.5 transition-colors ${
+                                    isPartnerMode
+                                        ? "bg-blue-600 text-white font-semibold"
+                                        : "bg-background text-muted-foreground hover:bg-muted"
+                                }`}
+                            >
+                                三方 Partner
+                            </button>
+                        </div>
+                    </section>
+
                     {/* ────── Credentials ────── */}
                     <section>
                         <p className={SECTION_TITLE_CLS}>Credentials</p>
-                        <div className="space-y-4">
-                            <div>
-                                <label
-                                    htmlFor="clientId"
-                                    className="block text-sm font-medium mb-2 flex items-center gap-2"
-                                >
-                                    <span className="text-lg">🔑</span>
-                                    PayPal Client ID
-                                </label>
-                                <CredentialCombobox
-                                    value={activeLocalClientId}
-                                    onChange={handleClientIdChange}
-                                    options={clientIdOptions}
-                                    placeholder="Select or enter Client ID"
-                                    inputType="text"
-                                />
-                            </div>
+                        {isPartnerMode ? (
+                            <div className="space-y-4">
+                                <div>
+                                    <label
+                                        htmlFor="partnerClientId"
+                                        className="block text-sm font-medium mb-2 flex items-center gap-2"
+                                    >
+                                        <span className="text-lg">🔑</span>
+                                        Partner Client ID
+                                    </label>
+                                    <Input
+                                        id="partnerClientId"
+                                        value={activeLocalPartnerClientId}
+                                        onChange={(e) => setActiveLocalPartnerClientId(e.target.value)}
+                                        placeholder="test_partner_client_id"
+                                    />
+                                </div>
 
-                            <div>
-                                <label
-                                    htmlFor="secret"
-                                    className="block text-sm font-medium mb-2 flex items-center gap-2"
-                                >
-                                    <span className="text-lg">🔐</span>
-                                    PayPal Secret
-                                </label>
-                                <CredentialCombobox
-                                    value={activeLocalSecret}
-                                    onChange={setActiveLocalSecret}
-                                    options={secretOptions}
-                                    placeholder="Select or enter Secret"
-                                    inputType="password"
-                                />
-                            </div>
+                                <div>
+                                    <label
+                                        htmlFor="partnerSecret"
+                                        className="block text-sm font-medium mb-2 flex items-center gap-2"
+                                    >
+                                        <span className="text-lg">🔐</span>
+                                        Partner Client Secret
+                                    </label>
+                                    <Input
+                                        id="partnerSecret"
+                                        type="password"
+                                        value={activeLocalPartnerSecret}
+                                        onChange={(e) => setActiveLocalPartnerSecret(e.target.value)}
+                                        placeholder="test_partner_client_secret"
+                                    />
+                                </div>
 
-                            <div className="flex items-center flex-wrap gap-3">
-                                <Button
-                                    onClick={handleSave}
-                                    className="shadow-md hover:shadow-lg transition-shadow"
-                                >
-                                    💾 Save Configuration
-                                </Button>
-                                <Button
-                                    onClick={handleReset}
-                                    variant="secondary"
-                                    className="shadow-md hover:shadow-lg transition-shadow"
-                                >
-                                    🔄 Reset
-                                </Button>
-                                <VaultManagerDialog />
-                                {saved && (
-                                    <span className="text-sm text-green-600 dark:text-green-400 font-medium flex items-center gap-1 animate-in fade-in slide-in-from-left-2">
-                                        ✅ Saved — SDK reloading
-                                    </span>
-                                )}
+                                <div>
+                                    <label
+                                        htmlFor="authAssertionMerchantId"
+                                        className="block text-sm font-medium mb-2 flex items-center gap-2"
+                                    >
+                                        <span className="text-lg">🪪</span>
+                                        授权 Merchant ID
+                                        <span className="text-xs font-normal text-muted-foreground">
+                                            （用于 Auth Assertion）
+                                        </span>
+                                    </label>
+                                    <Input
+                                        id="authAssertionMerchantId"
+                                        value={activeLocalAuthAssertionMerchantId}
+                                        onChange={(e) => setActiveLocalAuthAssertionMerchantId(e.target.value)}
+                                        placeholder="test_partner_merchant_id"
+                                    />
+                                </div>
+
+                                <div className="flex items-center flex-wrap gap-3">
+                                    <Button
+                                        onClick={handleSave}
+                                        className="shadow-md hover:shadow-lg transition-shadow"
+                                    >
+                                        💾 Save Configuration
+                                    </Button>
+                                    <Button
+                                        onClick={handleReset}
+                                        variant="secondary"
+                                        className="shadow-md hover:shadow-lg transition-shadow"
+                                    >
+                                        🔄 Reset
+                                    </Button>
+                                    {saved && (
+                                        <span className="text-sm text-green-600 dark:text-green-400 font-medium flex items-center gap-1 animate-in fade-in slide-in-from-left-2">
+                                            ✅ Saved — SDK reloading
+                                        </span>
+                                    )}
+                                </div>
                             </div>
-                        </div>
+                        ) : (
+                            <div className="space-y-4">
+                                <div>
+                                    <label
+                                        htmlFor="clientId"
+                                        className="block text-sm font-medium mb-2 flex items-center gap-2"
+                                    >
+                                        <span className="text-lg">🔑</span>
+                                        PayPal Client ID
+                                    </label>
+                                    <CredentialCombobox
+                                        value={activeLocalClientId}
+                                        onChange={handleClientIdChange}
+                                        options={clientIdOptions}
+                                        placeholder="Select or enter Client ID"
+                                        inputType="text"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label
+                                        htmlFor="secret"
+                                        className="block text-sm font-medium mb-2 flex items-center gap-2"
+                                    >
+                                        <span className="text-lg">🔐</span>
+                                        PayPal Secret
+                                    </label>
+                                    <CredentialCombobox
+                                        value={activeLocalSecret}
+                                        onChange={setActiveLocalSecret}
+                                        options={secretOptions}
+                                        placeholder="Select or enter Secret"
+                                        inputType="password"
+                                    />
+                                </div>
+
+                                <div className="flex items-center flex-wrap gap-3">
+                                    <Button
+                                        onClick={handleSave}
+                                        className="shadow-md hover:shadow-lg transition-shadow"
+                                    >
+                                        💾 Save Configuration
+                                    </Button>
+                                    <Button
+                                        onClick={handleReset}
+                                        variant="secondary"
+                                        className="shadow-md hover:shadow-lg transition-shadow"
+                                    >
+                                        🔄 Reset
+                                    </Button>
+                                    <VaultManagerDialog />
+                                    {saved && (
+                                        <span className="text-sm text-green-600 dark:text-green-400 font-medium flex items-center gap-1 animate-in fade-in slide-in-from-left-2">
+                                            ✅ Saved — SDK reloading
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+                        )}
                     </section>
 
                     {/* ────── SDK Init Mode ────── */}
