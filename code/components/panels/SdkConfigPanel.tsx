@@ -133,6 +133,22 @@ export function SdkConfigPanel() {
         ? setLocalAuthAssertionMerchantId
         : setLocalLiveAuthAssertionMerchantId;
 
+    const clientIdDirty = activeLocalClientId !== (isSandbox ? clientId : liveClientId);
+    const secretDirty = activeLocalSecret !== (isSandbox ? secret : liveSecret);
+    const partnerClientIdDirty =
+        activeLocalPartnerClientId !== (isSandbox ? partnerClientId : livePartnerClientId);
+    const partnerSecretDirty =
+        activeLocalPartnerSecret !== (isSandbox ? partnerSecret : livePartnerSecret);
+    const merchantIdDirty =
+        activeLocalAuthAssertionMerchantId !==
+        (isSandbox ? authAssertionMerchantId : liveAuthAssertionMerchantId);
+
+    const isDirty = isPartnerMode
+        ? partnerClientIdDirty || partnerSecretDirty || merchantIdDirty
+        : clientIdDirty || secretDirty;
+
+    const DIRTY_INPUT_CLS = "border-amber-400 dark:border-amber-500";
+
     const handleClientIdChange = (newClientId: string) => {
         setActiveLocalClientId(newClientId);
         const pairs = isSandbox
@@ -322,6 +338,7 @@ export function SdkConfigPanel() {
                                     </label>
                                     <Input
                                         id="partnerClientId"
+                                        className={partnerClientIdDirty ? DIRTY_INPUT_CLS : undefined}
                                         value={activeLocalPartnerClientId}
                                         onChange={(e) => setActiveLocalPartnerClientId(e.target.value)}
                                         placeholder="test_partner_client_id"
@@ -343,6 +360,7 @@ export function SdkConfigPanel() {
                                         data-lpignore="true"
                                         data-1p-ignore=""
                                         data-bwignore=""
+                                        className={partnerSecretDirty ? DIRTY_INPUT_CLS : undefined}
                                         value={activeLocalPartnerSecret}
                                         onChange={(e) => setActiveLocalPartnerSecret(e.target.value)}
                                         placeholder="test_partner_client_secret"
@@ -362,6 +380,7 @@ export function SdkConfigPanel() {
                                     </label>
                                     <Input
                                         id="authAssertionMerchantId"
+                                        className={merchantIdDirty ? DIRTY_INPUT_CLS : undefined}
                                         value={activeLocalAuthAssertionMerchantId}
                                         onChange={(e) => setActiveLocalAuthAssertionMerchantId(e.target.value)}
                                         placeholder="test_partner_merchant_id"
@@ -371,7 +390,9 @@ export function SdkConfigPanel() {
                                 <div className="flex items-center flex-wrap gap-3">
                                     <Button
                                         onClick={handleSave}
-                                        className="shadow-md hover:shadow-lg transition-shadow"
+                                        className={`shadow-md hover:shadow-lg transition-shadow ${
+                                            isDirty ? "ring-2 ring-amber-400 ring-offset-2 animate-pulse" : ""
+                                        }`}
                                     >
                                         💾 Save Configuration
                                     </Button>
@@ -405,6 +426,7 @@ export function SdkConfigPanel() {
                                         options={clientIdOptions}
                                         placeholder="Select or enter Client ID"
                                         inputType="text"
+                                        className={clientIdDirty ? DIRTY_INPUT_CLS : undefined}
                                     />
                                 </div>
 
@@ -422,13 +444,16 @@ export function SdkConfigPanel() {
                                         options={secretOptions}
                                         placeholder="Select or enter Secret"
                                         inputType="password"
+                                        className={secretDirty ? DIRTY_INPUT_CLS : undefined}
                                     />
                                 </div>
 
                                 <div className="flex items-center flex-wrap gap-3">
                                     <Button
                                         onClick={handleSave}
-                                        className="shadow-md hover:shadow-lg transition-shadow"
+                                        className={`shadow-md hover:shadow-lg transition-shadow ${
+                                            isDirty ? "ring-2 ring-amber-400 ring-offset-2 animate-pulse" : ""
+                                        }`}
                                     >
                                         💾 Save Configuration
                                     </Button>
