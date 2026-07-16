@@ -33,3 +33,15 @@ export function getPayPalConfigFromRequest(req: Request) {
     const overrideEnv = overrideEnvRaw === "live" ? "production" : overrideEnvRaw;
     return getPayPalConfig({ clientId: overrideClientId, clientSecret: overrideSecret, env: overrideEnv });
 }
+
+/**
+ * Builds headers for an outbound PayPal API call, forwarding the
+ * PayPal-Auth-Assertion value (if the browser sent one via
+ * x-paypal-auth-assertion) so 3rd-party/partner requests carry it.
+ */
+export function buildPayPalRequestHeaders(req: Request, authorization: string, extra?: Record<string, string>) {
+    const headers: Record<string, string> = { Authorization: authorization, "Content-Type": "application/json", ...extra };
+    const authAssertion = req.headers.get("x-paypal-auth-assertion");
+    if (authAssertion) headers["PayPal-Auth-Assertion"] = authAssertion;
+    return headers;
+}
