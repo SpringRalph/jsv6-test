@@ -1,16 +1,13 @@
-import { buildBasicAuthHeader, getPayPalConfigFromRequest } from "@/services/paypal-server-side-function/server-function";
+import { buildBasicAuthHeader, buildPayPalRequestHeaders, getPayPalConfigFromRequest } from "@/services/paypal-server-side-function/server-function";
 import { NextResponse } from "next/server";
 import consola from "consola";
 
 export const runtime = 'edge';
 
-async function getAccessToken(base: string, basic: string): Promise<string> {
+async function getAccessToken(base: string, basic: string, req: Request): Promise<string> {
     const res = await fetch(`${base}/v1/oauth2/token`, {
         method: "POST",
-        headers: {
-            Authorization: basic,
-            "Content-Type": "application/x-www-form-urlencoded",
-        },
+        headers: buildPayPalRequestHeaders(req, basic, { "Content-Type": "application/x-www-form-urlencoded" }),
         body: "grant_type=client_credentials",
     });
     if (!res.ok) throw new Error(`Failed to get access token: ${res.status}`);
@@ -18,13 +15,10 @@ async function getAccessToken(base: string, basic: string): Promise<string> {
     return json.access_token;
 }
 
-async function createProduct(base: string, token: string): Promise<string> {
+async function createProduct(base: string, token: string, req: Request): Promise<string> {
     const res = await fetch(`${base}/v1/catalogs/products`, {
         method: "POST",
-        headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-        },
+        headers: buildPayPalRequestHeaders(req, `Bearer ${token}`),
         body: JSON.stringify({
             name: "Sample Subscription Product",
             description: "Sample product for subscription testing",
@@ -40,14 +34,10 @@ async function createProduct(base: string, token: string): Promise<string> {
     return json.id;
 }
 
-async function createBillingPlan(base: string, token: string, productId: string): Promise<string> {
+async function createBillingPlan(base: string, token: string, productId: string, req: Request): Promise<string> {
     const res = await fetch(`${base}/v1/billing/plans`, {
         method: "POST",
-        headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-            Prefer: "return=minimal",
-        },
+        headers: buildPayPalRequestHeaders(req, `Bearer ${token}`, { Prefer: "return=minimal" }),
         body: JSON.stringify({
             product_id: productId,
             name: "Sample Monthly Plan",
@@ -92,21 +82,16 @@ export async function POST(req: Request) {
 
         if (!planId) {
             consola.info("No planId configured — creating product and billing plan on the fly");
-            const accessToken = await getAccessToken(base, basic);
-            const productId = await createProduct(base, accessToken);
+            const accessToken = await getAccessToken(base, basic, req);
+            const productId = await createProduct(base, accessToken, req);
             consola.info("Created product:", productId);
-            planId = await createBillingPlan(base, accessToken, productId);
+            planId = await createBillingPlan(base, accessToken, productId, req);
             consola.info("Created billing plan:", planId);
         }
 
         const createRes = await fetch(`${base}/v1/billing/subscriptions`, {
             method: "POST",
-            headers: {
-                Authorization: basic,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-                Prefer: "return=minimal",
-            },
+            headers: buildPayPalRequestHeaders(req, basic, { Accept: "application/json", Prefer: "return=minimal" }),
             body: JSON.stringify({
                 plan_id: planId,
                 application_context: {
