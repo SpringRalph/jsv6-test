@@ -1,4 +1,4 @@
-import { buildBasicAuthHeader, getPayPalConfig, getPayPalConfigFromRequest } from "@/services/paypal-server-side-function/server-function";
+import { buildBasicAuthHeader, buildPayPalRequestHeaders, getPayPalConfig, getPayPalConfigFromRequest } from "@/services/paypal-server-side-function/server-function";
 import consola from "consola";
 import { NextResponse } from "next/server";
 
@@ -19,11 +19,7 @@ export async function POST(req: Request) {
 
 		const captureRes = await fetch(`${base}/v2/checkout/orders/${encodeURIComponent(orderId)}/capture`, {
 			method: "POST",
-			headers: {
-				Authorization: basic,
-				"Content-Type": "application/json",
-				Accept: "application/json",
-			},
+			headers: buildPayPalRequestHeaders(req, basic, { Accept: "application/json" }),
 			// PayPal 接口允许空 body；留空或传 {} 均可
 			body: JSON.stringify({}),
 		});
