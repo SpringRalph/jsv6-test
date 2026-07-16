@@ -339,6 +339,10 @@ export function SdkConfigPanel() {
                                     <Input
                                         id="partnerSecret"
                                         type="password"
+                                        autoComplete="new-password"
+                                        data-lpignore="true"
+                                        data-1p-ignore=""
+                                        data-bwignore=""
                                         value={activeLocalPartnerSecret}
                                         onChange={(e) => setActiveLocalPartnerSecret(e.target.value)}
                                         placeholder="test_partner_client_secret"
