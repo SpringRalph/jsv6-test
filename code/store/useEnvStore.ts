@@ -2,19 +2,27 @@
 
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
-import type { EnvState, PayPalEnv, AuthMode } from "@/types/env"
+import type { EnvState, PayPalEnv, AuthMode, IntegrationMode } from "@/types/env"
 
 interface EnvStore extends EnvState {
   setEnv: (env: PayPalEnv) => void
   setAuthMode: (mode: AuthMode) => void
+  setIntegrationMode: (mode: IntegrationMode) => void
   setClientId: (clientId: string) => void
   setSecret: (secret: string) => void
   setLiveClientId: (clientId: string) => void
   setLiveSecret: (secret: string) => void
+  setPartnerClientId: (clientId: string) => void
+  setPartnerSecret: (secret: string) => void
+  setLivePartnerClientId: (clientId: string) => void
+  setLivePartnerSecret: (secret: string) => void
+  setAuthAssertionMerchantId: (merchantId: string) => void
+  setLiveAuthAssertionMerchantId: (merchantId: string) => void
   reset: () => void
-  // returns active credentials based on current env
+  // returns active credentials based on current env + integration mode
   activeClientId: () => string
   activeSecret: () => string
+  activeAuthAssertionMerchantId: () => string
   sdkReloadToken: number
   bumpSdkReloadToken: () => void
 }
@@ -37,10 +45,17 @@ export const SANDBOX_SECRET_ID_C2 = "ELYFWy2PauSftn1lFaTkqsUd2sDu_gPrOi3cGOGj_6J
 const envDefaults: EnvState = {
   env: "sandbox",
   authMode: "clientToken",
+  integrationMode: "merchant",
   clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? "",
   secret: process.env.NEXT_PUBLIC_PAYPAL_SECRET ?? "",
   liveClientId: LIVE_CLIENT_ID_C2,
   liveSecret: LIVE_SECRET_C2,
+  partnerClientId: "",
+  partnerSecret: "",
+  livePartnerClientId: "",
+  livePartnerSecret: "",
+  authAssertionMerchantId: "",
+  liveAuthAssertionMerchantId: "",
 }
 
 export const useEnvStore = create<EnvStore>()(
@@ -49,13 +64,36 @@ export const useEnvStore = create<EnvStore>()(
       ...envDefaults,
       setEnv: (env) => set({ env }),
       setAuthMode: (authMode) => set({ authMode }),
+      setIntegrationMode: (integrationMode) => set({ integrationMode }),
       setClientId: (clientId) => set({ clientId }),
       setSecret: (secret) => set({ secret }),
       setLiveClientId: (liveClientId) => set({ liveClientId }),
       setLiveSecret: (liveSecret) => set({ liveSecret }),
+      setPartnerClientId: (partnerClientId) => set({ partnerClientId }),
+      setPartnerSecret: (partnerSecret) => set({ partnerSecret }),
+      setLivePartnerClientId: (livePartnerClientId) => set({ livePartnerClientId }),
+      setLivePartnerSecret: (livePartnerSecret) => set({ livePartnerSecret }),
+      setAuthAssertionMerchantId: (authAssertionMerchantId) => set({ authAssertionMerchantId }),
+      setLiveAuthAssertionMerchantId: (liveAuthAssertionMerchantId) => set({ liveAuthAssertionMerchantId }),
       reset: () => set(envDefaults),
-      activeClientId: () => get().env === "live" ? get().liveClientId : get().clientId,
-      activeSecret: () => get().env === "live" ? get().liveSecret : get().secret,
+      activeClientId: () => {
+        const s = get()
+        if (s.integrationMode === "partner") {
+          return s.env === "live" ? s.livePartnerClientId : s.partnerClientId
+        }
+        return s.env === "live" ? s.liveClientId : s.clientId
+      },
+      activeSecret: () => {
+        const s = get()
+        if (s.integrationMode === "partner") {
+          return s.env === "live" ? s.livePartnerSecret : s.partnerSecret
+        }
+        return s.env === "live" ? s.liveSecret : s.secret
+      },
+      activeAuthAssertionMerchantId: () => {
+        const s = get()
+        return s.env === "live" ? s.liveAuthAssertionMerchantId : s.authAssertionMerchantId
+      },
       sdkReloadToken: 0,
       bumpSdkReloadToken: () => set((s) => ({ sdkReloadToken: s.sdkReloadToken + 1 })),
     }),
