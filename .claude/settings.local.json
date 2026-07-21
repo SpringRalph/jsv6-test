@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Skill(superpowers:brainstorming)",
-      "mcp__plugin_ecc_playwright__browser_navigate"
+      "mcp__plugin_ecc_playwright__browser_navigate",
+      "Skill(superpowers-chrome:browsing)",
+      "mcp__plugin_superpowers-chrome_chrome__use_browser"
     ]
   }
 }
