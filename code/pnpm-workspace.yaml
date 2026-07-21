@@ -1,0 +1,7 @@
+allowBuilds:
+  core-js: true
+  sharp: true
+minimumReleaseAgeExclude:
+  - '@hookform/resolvers@3.10.0'
+  - 'geist@1.5.1'
+  - caniuse-lite@1.0.30001753
