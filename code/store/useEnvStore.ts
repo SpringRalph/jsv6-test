@@ -42,6 +42,11 @@ export const SANDBOX_CLIENT_ID_C2 = "ATW2maVlMXBh67xRprsLYttNFXVCDO7MhEUE_VId1zb
 export const SANDBOX_SECRET_ID_C2 = "ELYFWy2PauSftn1lFaTkqsUd2sDu_gPrOi3cGOGj_6JyORnlG46cp16oBnLLmpBBQuhxQIKIiOIwCu_D";
 
 
+export const SANDBOX_CLIENT_ID_C2_PARTNER = "AePs-yrCXVsSOXgyI366Of0nlHm4siQdYBTKmQHSOwAaelbWFi836og7nc1y-gKZxROWTNFSV1l7oELW"
+export const SANDBOX_SECRET_ID_C2_PARTNER = "ELZFWy2PauSftn1lFaTkqsUd2sDu_gPrOi3cGOGj_6JyORnlG46cp16oBnLLmpBBQuhxQIKIiOIwCu_D"
+
+export const SANDBOX_PARTNER_MERCHANT_ID_C2 = "PVQS4XCWAMC72"
+
 const envDefaults: EnvState = {
   env: "sandbox",
   authMode: "clientToken",
@@ -50,11 +55,11 @@ const envDefaults: EnvState = {
   secret: process.env.NEXT_PUBLIC_PAYPAL_SECRET ?? "",
   liveClientId: LIVE_CLIENT_ID_C2,
   liveSecret: LIVE_SECRET_C2,
-  partnerClientId: "",
-  partnerSecret: "",
+  partnerClientId: SANDBOX_CLIENT_ID_C2_PARTNER,
+  partnerSecret: SANDBOX_SECRET_ID_C2_PARTNER,
   livePartnerClientId: "",
   livePartnerSecret: "",
-  authAssertionMerchantId: "",
+  authAssertionMerchantId: SANDBOX_PARTNER_MERCHANT_ID_C2,
   liveAuthAssertionMerchantId: "",
 }
 
