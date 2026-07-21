@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <!-- PayPal 标准支付按钮 -->
+        <paypal-button id="paypal-button" type="pay" hidden></paypal-button>
+
+        <!-- 标准信用卡支付按钮 -->
+        <paypal-basic-card-container><paypal-basic-card-button
+            id="paypal-basic-card-button"
+        ></paypal-basic-card-button></paypal-basic-card-container>
+
+        <!-- 自定义支付按钮 -->
+        <sdk-custom-button-wrapper funding-source="paypal">
+            <button id="merchant-button">                
+                    <span>Merchant Button</span>
+            </button>
+        </sdk-custom-button-wrapper>
+
+
+    </body>
+</html>

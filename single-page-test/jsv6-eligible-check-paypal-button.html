@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>JSv6 Eligible Check + PayPal Button</title>
+
+        <script src="https://cdn.tailwindcss.com"></script>
+
+        <style>
+            body {
+                font-family: -apple-system, "Inter", sans-serif;
+            }
+            paypal-button {
+                display: block;
+                margin-top: 1.25rem;
+            }
+            #log pre {
+                font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+            }
+            #log::-webkit-scrollbar {
+                width: 6px;
+            }
+            #log::-webkit-scrollbar-thumb {
+                background: #374151;
+                border-radius: 3px;
+            }
+        </style>
+    </head>
+    <body class="bg-gray-50 text-slate-800 min-h-screen flex flex-col items-center p-6">
+        <div class="max-w-xl w-full bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5">
+            <header class="space-y-3">
+                <h1 class="text-xl font-bold text-slate-900">
+                    JSv6 Eligible Check + PayPal Button
+                </h1>
+                <p class="text-sm text-gray-600 leading-relaxed">
+                    以 <code class="px-1 py-0.5 rounded bg-gray-100 text-slate-700 text-xs">client-id</code>
+                    方式加载 SDK Instance，components 包含
+                    <code class="px-1 py-0.5 rounded bg-gray-100 text-slate-700 text-xs">paypal-payments</code>、
+                    <code class="px-1 py-0.5 rounded bg-gray-100 text-slate-700 text-xs">paypal-guest-payments</code>、
+                    <code class="px-1 py-0.5 rounded bg-gray-100 text-slate-700 text-xs">googlepay-payments</code>、
+                    <code class="px-1 py-0.5 rounded bg-gray-100 text-slate-700 text-xs">applepay-payments</code>。
+                    <span class="whitespace-nowrap">findEligibleMethods</span>
+                    校验通过后渲染标准 PayPal 按钮。
+                </p>
+                <div class="flex gap-2 rounded-lg border-l-4 border-amber-400 bg-amber-50 px-3 py-2">
+                    <span class="text-amber-500 leading-none">&#9888;</span>
+                    <p class="text-xs text-amber-800 leading-relaxed">
+                        create-order / capture 走的是
+                        <code class="text-amber-900 font-medium">ppgms-test-github-io.pages.dev</code>
+                        的真实接口（sandbox），会产生真实的 sandbox 订单与 capture 记录。
+                    </p>
+                </div>
+            </header>
+
+            <section class="space-y-2">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                        运行日志
+                    </h2>
+                    <button
+                        id="clear-log"
+                        class="text-xs text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                        清空
+                    </button>
+                </div>
+                <div
+                    id="log"
+                    class="text-xs bg-gray-900 text-gray-200 rounded-lg p-3 max-h-96 overflow-y-auto space-y-2.5"
+                ></div>
+            </section>
+
+            <paypal-button id="paypal-btn" type="pay" hidden></paypal-button>
+        </div>
+
+        <script
+            id="paypal-websdk-v6-core"
+            src="https://www.sandbox.paypal.com/web-sdk/v6/core"
+            crossorigin="anonymous"
+        ></script>
+
+        <script type="module">
+            import { ACCOUNTS } from "./common/paypal-accounts.js";
+            import { createLogger } from "./common/logger.js";
+            import { onPayPalSdkReady } from "./common/sdk-loader.js";
+
+            const { log, clear } = createLogger("log");
+            document.getElementById("clear-log").addEventListener("click", clear);
+
+            const API_BASE = "https://ppgms-test-github-io.pages.dev";
+
+            async function createOrder() {
+                const res = await fetch(`${API_BASE}/api/checkout/orders/create`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        intent: "CAPTURE",
+                        purchaseUnits: [
+                            { amount: { currencyCode: "USD", value: "10.00" } },
+                        ],
+                    }),
+                });
+                if (!res.ok) {
+                    const text = await res.text().catch(() => "");
+                    throw new Error(`创建订单失败: ${res.status} ${text}`);
+                }
+                const json = await res.json();
+                const orderId = json?.id;
+                if (!orderId) throw new Error("后端未返回订单ID");
+                log("create-order 成功", { orderId });
+                return { orderId };
+            }
+
+            async function captureOrder(orderId) {
+                const res = await fetch(
+                    `${API_BASE}/api/checkout/orders/${orderId}/capture`,
+                    { method: "POST" }
+                );
+                if (!res.ok) {
+                    const text = await res.text().catch(() => "");
+                    throw new Error(`capture 失败: ${res.status} ${text}`);
+                }
+                return res.json();
+            }
+
+            async function main() {
+                try {
+                    log("[1] PayPal SDK loaded, creating instance...");
+                    const sdkInstance = await window.paypal.createInstance({
+                        clientId: ACCOUNTS.C2.clientId,
+                        components: [
+                            "paypal-payments",
+                            "paypal-guest-payments",
+                            "googlepay-payments",
+                            "applepay-payments",
+                        ],
+                        pageType: "checkout",
+                    });
+                    log("[2] sdkInstance created.");
+
+                    const paymentMethods = await sdkInstance.findEligibleMethods({
+                        customer: { country_code: "US" },
+                        preferences: {
+                            payment_flow: "ONE_TIME_PAYMENT",
+                            payment_source_constraint: {
+                                constraint_type: "INCLUDE",
+                                payment_sources: [
+                                    "PAYPAL",
+                                    "PAYPAL_PAY_LATER",
+                                    "PAYPAL_CREDIT",
+                                    "VENMO",
+                                    "ADVANCED_CARDS",
+                                ],
+                            },
+                        },
+                        purchase_units: [{ amount: { currency_code: "USD" } }],
+                    });
+                    log("[3] findEligibleMethods done.");
+
+                    const isPayPalEligible = paymentMethods.isEligible("paypal");
+                    log(`[4] isEligible("paypal")`, isPayPalEligible);
+
+                    if (!isPayPalEligible) {
+                        log("PayPal 不可用，不渲染按钮。", undefined, "error");
+                        return;
+                    }
+
+                    const paypalPaymentSession =
+                        sdkInstance.createPayPalOneTimePaymentSession({
+                            async onApprove(data) {
+                                log("onApprove", data);
+                                try {
+                                    const orderId = data.orderId ?? data.id;
+                                    const captureData = await captureOrder(orderId);
+                                    log("capture 完成", captureData, "success");
+                                } catch (error) {
+                                    log(
+                                        "capture error",
+                                        error?.message ?? String(error),
+                                        "error"
+                                    );
+                                }
+                            },
+                            onCancel() {
+                                log("onCancel");
+                            },
+                            onError(error) {
+                                log("onError", error?.message ?? error, "error");
+                            },
+                        });
+
+                    const paypalButton = document.querySelector("#paypal-btn");
+                    paypalButton.removeAttribute("hidden");
+
+                    paypalButton.addEventListener("click", async () => {
+                        try {
+                            await paypalPaymentSession.start(
+                                { presentationMode: "auto" },
+                                createOrder()
+                            );
+                        } catch (error) {
+                            log("start error", error?.message ?? error, "error");
+                        }
+                    });
+
+                    log("[5] PayPal button rendered.", undefined, "success");
+                } catch (error) {
+                    log("Error", error?.message ?? error, "error");
+                    console.error(error);
+                }
+            }
+
+            const sdkScript = document.getElementById("paypal-websdk-v6-core");
+            onPayPalSdkReady(sdkScript, main);
+        </script>
+    </body>
+</html>
