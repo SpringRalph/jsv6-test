@@ -41,11 +41,20 @@ export const LIVE_SECRET_C2 = "EAx19qrwczQSJeSzQ5FjlzAUAjgd7LJcneDH9k93ZocGWaF4k
 export const SANDBOX_CLIENT_ID_C2 = "ATW2maVlMXBh67xRprsLYttNFXVCDO7MhEUE_VId1zbwqSSfYfIAC8mtdLaLRwA4nZpTzGBZPws7Kf-Z";
 export const SANDBOX_SECRET_ID_C2 = "ELYFWy2PauSftn1lFaTkqsUd2sDu_gPrOi3cGOGj_6JyORnlG46cp16oBnLLmpBBQuhxQIKIiOIwCu_D";
 
-
+/**
+ * partner js v6 sandbox credentials
+ * email: p-test-cn-v6-2026-partner@test.com
+ * payer-id: PVQS4XCWAMC72
+ */
 export const SANDBOX_CLIENT_ID_C2_PARTNER = "AePs-yrCXVsSOXgyI366Of0nlHm4siQdYBTKmQHSOwAaelbWFi836og7nc1y-gKZxROWTNFSV1l7oELW"
-export const SANDBOX_SECRET_ID_C2_PARTNER = "ELZFWy2PauSftn1lFaTkqsUd2sDu_gPrOi3cGOGj_6JyORnlG46cp16oBnLLmpBBQuhxQIKIiOIwCu_D"
+export const SANDBOX_SECRET_ID_C2_PARTNER = "EAvQRspHg3Z5ID5q8u0NY5PmmXVHNJFpEQpqjIoqhUe5iwWQNnZTMpYDSP9LVz_TEwDn7midKulLkRZ4"
 
-export const SANDBOX_PARTNER_MERCHANT_ID_C2 = "PVQS4XCWAMC72"
+/**
+ * US merchant, same with 1st US acct
+ * email: p-test-us-v6-2025@test.com
+ * pwd: 111222333
+ */
+export const SANDBOX_PARTNER_MERCHANT_ID_C2 = "S6F9D8L9KLQJA"
 
 const envDefaults: EnvState = {
   env: "sandbox",
