@@ -22,8 +22,7 @@ export const ACCOUNTS = {
         secret:
             "EC-Qcp-6LdYoEw9g02iTkVTRHa49c_HLP19P2hxbSHATN3cov2_G-wmFzp5-Cx2gK3phIzrKhOhbLhPJ",
     },
-    // 同一个 Shoppaas 凭证，create-order / capture 额外带上 paypal-auth-assertion header。
-    // 主工程里没有对应的生成逻辑，这是手动提供的静态 JWT（iss = 上面 Shoppaas 的 clientId）
+    
     SHOPPAAS_AUTH_ASSERTION_ORIGIN: {
         label: "Shoppaas + Auth Assertion + Origin",
         clientId:
@@ -33,6 +32,8 @@ export const ACCOUNTS = {
         authAssertion:
             "eyJhbGciOiJub25lIn0=.eyJpc3MiOiJBVEl3VzlOZFJIOU5xZGU4TUNmdElfMFFiT0w5QVBkWW9rMGE3aXJjV2wyLTNmQkh2LUNvTVlzZklEcGNVRGlzcVRIbUhUN2QwRHo5RFY3ViIsInBheWVyX2lkIjoiVlRUTVRZUU5GNjI4VSJ9.",
     },
+
+
     SHOPPAAS_AUTH_ASSERTION_CMHAMMNAXCMGA: {
         label: "Shoppaas + Auth Assertion + CMHAMMNAXCMGA",
         clientId:
@@ -41,6 +42,21 @@ export const ACCOUNTS = {
             "EC-Qcp-6LdYoEw9g02iTkVTRHa49c_HLP19P2hxbSHATN3cov2_G-wmFzp5-Cx2gK3phIzrKhOhbLhPJ",
         
         authAssertion: `${btoa('{"alg":"none"}')}.${btoa('{"iss":"ATIwW9NdRH9Nqde8MCftI_0QbOL9APdYok0a7ircWl2-3fBHv-CoMYsfIDpcUDisqTHmHT7d0Dz9DV7V","payer_id":"CMHAMMNAXCMGA"}')}.`,
+      
+    },
+
+    //新sandbox测试账号, us-acct-with-no-eur@test.com
+    //pwd: 12345678
+    //merchant-id: us-acct-with-no-eur@test.com
+    // Onboard completed
+     SHOPPAAS_AUTH_ASSERTION_UEVX8LK4Y7TLA: {
+        label: "Shoppaas + Auth Assertion + UEVX8LK4Y7TLA",
+        clientId:
+            "ATIwW9NdRH9Nqde8MCftI_0QbOL9APdYok0a7ircWl2-3fBHv-CoMYsfIDpcUDisqTHmHT7d0Dz9DV7V",
+        secret:
+            "EC-Qcp-6LdYoEw9g02iTkVTRHa49c_HLP19P2hxbSHATN3cov2_G-wmFzp5-Cx2gK3phIzrKhOhbLhPJ",
+        
+        authAssertion: `${btoa('{"alg":"none"}')}.${btoa('{"iss":"ATIwW9NdRH9Nqde8MCftI_0QbOL9APdYok0a7ircWl2-3fBHv-CoMYsfIDpcUDisqTHmHT7d0Dz9DV7V","payer_id":"UEVX8LK4Y7TLA"}')}.`,
       
     },
 };
