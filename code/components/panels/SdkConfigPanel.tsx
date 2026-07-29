@@ -19,6 +19,11 @@ import {
 } from "@/components/ui/CredentialCombobox";
 import { useSettingsChange } from "@/hooks/useSettingsChange";
 import { AlertTriangle, KeyRound, Coins } from "lucide-react";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
 import type { PayPalEnv, AuthMode, IntegrationMode } from "@/types/env";
 
 const SHOPPAAS_SANDBOX_CLIENT_ID =
@@ -297,29 +302,68 @@ export function SdkConfigPanel() {
                     {/* ────── Integration Mode ────── */}
                     <section>
                         <p className={SECTION_TITLE_CLS}>集成模式</p>
-                        <div className="inline-flex rounded-lg border border-border overflow-hidden text-sm">
-                            <button
-                                type="button"
-                                onClick={() => handleIntegrationModeToggle("merchant")}
-                                className={`px-4 py-1.5 transition-colors ${
-                                    !isPartnerMode
-                                        ? "bg-blue-600 text-white font-semibold"
-                                        : "bg-background text-muted-foreground hover:bg-muted"
-                                }`}
-                            >
-                                一方 Merchant
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => handleIntegrationModeToggle("partner")}
-                                className={`px-4 py-1.5 transition-colors ${
-                                    isPartnerMode
-                                        ? "bg-blue-600 text-white font-semibold"
-                                        : "bg-background text-muted-foreground hover:bg-muted"
-                                }`}
-                            >
-                                三方 Partner
-                            </button>
+                        <div className="flex items-center">
+                            <div className="inline-flex rounded-lg border border-border overflow-hidden text-sm">
+                                <button
+                                    type="button"
+                                    onClick={() => handleIntegrationModeToggle("merchant")}
+                                    className={`px-4 py-1.5 transition-colors ${
+                                        !isPartnerMode
+                                            ? "bg-blue-600 text-white font-semibold"
+                                            : "bg-background text-muted-foreground hover:bg-muted"
+                                    }`}
+                                >
+                                    一方 Merchant
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => handleIntegrationModeToggle("partner")}
+                                    className={`px-4 py-1.5 transition-colors ${
+                                        isPartnerMode
+                                            ? "bg-blue-600 text-white font-semibold"
+                                            : "bg-background text-muted-foreground hover:bg-muted"
+                                    }`}
+                                >
+                                    三方 Partner
+                                </button>
+                            </div>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <button
+                                        type="button"
+                                        className="ml-2 text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
+                                    >
+                                        more info
+                                    </button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-80 text-sm">
+                                    <p className="font-medium mb-2">
+                                        How to init a 3rd party sdk instance:
+                                    </p>
+                                    <ul className="space-y-1 list-decimal list-inside">
+                                        <li>
+                                            <a
+                                                href="https://paypal.atlassian.net/wiki/spaces/~71202057e9c84bd72f4c18930b5841bea8a502/pages/2910223184/JS+SDK+v5+upgrade+to+v6"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-blue-600 hover:underline"
+                                            >
+                                                JS SDK v5 upgrade to v6
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a
+                                                href="https://paypal.atlassian.net/wiki/spaces/Int/pages/2910149129/v6+Reference"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-blue-600 hover:underline"
+                                            >
+                                                v6 Reference
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </PopoverContent>
+                            </Popover>
                         </div>
                     </section>
 
