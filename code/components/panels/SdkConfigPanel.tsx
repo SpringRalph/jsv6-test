@@ -348,7 +348,7 @@ export function SdkConfigPanel() {
                                                 rel="noopener noreferrer"
                                                 className="text-blue-600 hover:underline"
                                             >
-                                                JS SDK v5 upgrade to v6
+                                                Use ClientToken, Pass PayPal-Auth-Assertion when creating OAuth token.
                                             </a>
                                         </li>
                                         <li>
@@ -358,7 +358,7 @@ export function SdkConfigPanel() {
                                                 rel="noopener noreferrer"
                                                 className="text-blue-600 hover:underline"
                                             >
-                                                v6 Reference
+                                                Use ClientId, Pass merchant-id when creating sdkInstance in frontend.
                                             </a>
                                         </li>
                                     </ul>
