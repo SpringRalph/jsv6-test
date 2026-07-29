@@ -12,11 +12,13 @@ interface CacheEntry {
   fetchingPromise: Promise<string> | null
 }
 
-// Cache keyed by "clientId::env" to support multiple credential sets
+// Cache keyed by "clientId::env::authAssertion" to support multiple credential sets.
+// authAssertion is included because a single partner clientId can act on behalf of
+// different merchants (different PayPal-Auth-Assertion values), each needing its own token.
 const tokenCache = new Map<string, CacheEntry>();
 
-function getCacheKey(clientId: string, env: string): string {
-  return `${clientId}::${env}`;
+function getCacheKey(clientId: string, env: string, authAssertion: string): string {
+  return `${clientId}::${env}::${authAssertion}`;
 }
 
 // export async function GET() {
@@ -63,6 +65,7 @@ async function fetchClientTokenFromPayPal(
   env: string,
   base: string,
   cacheKey: string,
+  authAssertion: string | undefined,
 ): Promise<string> {
   const entry = tokenCache.get(cacheKey);
   if (entry?.fetchingPromise) return entry.fetchingPromise;
@@ -71,14 +74,18 @@ async function fetchClientTokenFromPayPal(
     const form = new URLSearchParams();
     form.append("grant_type", "client_credentials");
     form.append("response_type", "client_token");
+    form.append("intent", "sdk_init");
 
     const auth = buildBasicAuthHeader(clientId, clientSecret);
+    const headers: Record<string, string> = {
+      Authorization: auth,
+      "Content-Type": "application/x-www-form-urlencoded",
+    };
+    if (authAssertion) headers["PayPal-Auth-Assertion"] = authAssertion;
+
     const tokenRes = await fetch(`${base}/v1/oauth2/token`, {
       method: "POST",
-      headers: {
-        Authorization: auth,
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
+      headers,
       body: form.toString(),
     });
 
@@ -122,7 +129,8 @@ export async function GET(req: NextRequest) {
       env: overrideEnv,
     });
 
-    const cacheKey = getCacheKey(clientId, env);
+    const authAssertion = req.headers.get("x-paypal-auth-assertion") || undefined;
+    const cacheKey = getCacheKey(clientId, env, authAssertion ?? "");
     const entry = tokenCache.get(cacheKey);
 
     if (entry && !entry.fetchingPromise && entry.token && Date.now() - entry.cachedAt < CACHE_TTL) {
@@ -130,7 +138,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ clientToken: entry.token });
     }
 
-    const token = await fetchClientTokenFromPayPal(clientId, clientSecret, env, base, cacheKey);
+    const token = await fetchClientTokenFromPayPal(clientId, clientSecret, env, base, cacheKey, authAssertion);
     return NextResponse.json({ clientToken: token });
   } catch (err: any) {
     consola.error("[/api/paypal/client-token] error fetching token", err);

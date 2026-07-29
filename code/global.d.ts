@@ -12,7 +12,9 @@ type PayLaterButtonProps = ButtonProps & {
 };
 
 type InstanceInput = {
-  clientToken: string;
+  clientToken?: string;
+  clientId?: string;
+  merchantId?: string;
   locale?: string;
   pageType?: string;
   components?: string[];
