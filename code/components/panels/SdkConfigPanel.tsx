@@ -7,18 +7,20 @@ import {
     LIVE_SECRET_C2,
     SANDBOX_CLIENT_ID_C2,
     SANDBOX_SECRET_ID_C2,
+    SANDBOX_CLIENT_ID_C2_PARTNER,
+    SANDBOX_SECRET_ID_C2_PARTNER,
+    SANDBOX_PARTNER_MERCHANT_ID_C2,
     useEnvStore,
 } from "@/store/useEnvStore";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { Input } from "@/components/ui/Input";
 import { VaultManagerDialog } from "@/components/panels/VaultManagerDialog";
 import {
     CredentialCombobox,
     type CredentialOption,
 } from "@/components/ui/CredentialCombobox";
 import { useSettingsChange } from "@/hooks/useSettingsChange";
-import { AlertTriangle, KeyRound, Coins } from "lucide-react";
+import { AlertTriangle, KeyRound, Coins, Info, ExternalLink } from "lucide-react";
 import {
     Popover,
     PopoverContent,
@@ -61,6 +63,29 @@ const LIVE_CLIENT_ID_OPTIONS: CredentialOption[] = [
 const LIVE_SECRET_OPTIONS: CredentialOption[] = [
     { label: "Live Test Account", value: LIVE_SECRET_C2 },
 ];
+
+const SANDBOX_PARTNER_CLIENT_ID_OPTIONS: CredentialOption[] = [
+    { label: "C2 Acct", value: SANDBOX_CLIENT_ID_C2_PARTNER },
+];
+
+const SANDBOX_PARTNER_SECRET_OPTIONS: CredentialOption[] = [
+    { label: "C2 Acct", value: SANDBOX_SECRET_ID_C2_PARTNER },
+];
+
+const SANDBOX_PARTNER_CREDENTIAL_PAIRS: Record<string, string> = {
+    [SANDBOX_CLIENT_ID_C2_PARTNER]: SANDBOX_SECRET_ID_C2_PARTNER,
+};
+
+const LIVE_PARTNER_CLIENT_ID_OPTIONS: CredentialOption[] = [];
+const LIVE_PARTNER_SECRET_OPTIONS: CredentialOption[] = [];
+const LIVE_PARTNER_CREDENTIAL_PAIRS: Record<string, string> = {};
+
+// Independent from the Partner Client ID / Secret pair above — merchant ID has its own preset list.
+const SANDBOX_MERCHANT_ID_OPTIONS: CredentialOption[] = [
+    { label: "US Acct", value: SANDBOX_PARTNER_MERCHANT_ID_C2 },
+];
+
+const LIVE_MERCHANT_ID_OPTIONS: CredentialOption[] = [];
 
 const SECTION_TITLE_CLS =
     "text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2";
@@ -165,6 +190,17 @@ export function SdkConfigPanel() {
         }
     };
 
+    const handlePartnerClientIdChange = (newClientId: string) => {
+        setActiveLocalPartnerClientId(newClientId);
+        const pairs = isSandbox
+            ? SANDBOX_PARTNER_CREDENTIAL_PAIRS
+            : LIVE_PARTNER_CREDENTIAL_PAIRS;
+        const pairedSecret = pairs[newClientId];
+        if (pairedSecret !== undefined) {
+            setActiveLocalPartnerSecret(pairedSecret);
+        }
+    };
+
     const handleEnvToggle = async (newEnv: PayPalEnv) => {
         if (newEnv === env) return;
         if (newEnv === "live") {
@@ -252,6 +288,15 @@ export function SdkConfigPanel() {
     const secretOptions = isSandbox
         ? SANDBOX_SECRET_OPTIONS
         : LIVE_SECRET_OPTIONS;
+    const partnerClientIdOptions = isSandbox
+        ? SANDBOX_PARTNER_CLIENT_ID_OPTIONS
+        : LIVE_PARTNER_CLIENT_ID_OPTIONS;
+    const partnerSecretOptions = isSandbox
+        ? SANDBOX_PARTNER_SECRET_OPTIONS
+        : LIVE_PARTNER_SECRET_OPTIONS;
+    const merchantIdOptions = isSandbox
+        ? SANDBOX_MERCHANT_ID_OPTIONS
+        : LIVE_MERCHANT_ID_OPTIONS;
 
     return (
         <>
@@ -331,37 +376,61 @@ export function SdkConfigPanel() {
                                 <PopoverTrigger asChild>
                                     <button
                                         type="button"
-                                        className="ml-2 text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
+                                        aria-label="How to init a 3rd party sdk instance"
+                                        className="ml-2 inline-flex h-5 w-5 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-blue-400 hover:text-blue-600"
                                     >
-                                        more info
+                                        <Info className="h-3 w-3" />
                                     </button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-80 text-sm">
-                                    <p className="font-medium mb-2">
-                                        How to init a 3rd party sdk instance:
-                                    </p>
-                                    <ul className="space-y-1 list-decimal list-inside">
-                                        <li>
-                                            <a
-                                                href="https://paypal.atlassian.net/wiki/spaces/~71202057e9c84bd72f4c18930b5841bea8a502/pages/2910223184/JS+SDK+v5+upgrade+to+v6"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-blue-600 hover:underline"
-                                            >
-                                                Use ClientToken, Pass PayPal-Auth-Assertion when creating OAuth token.
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a
-                                                href="https://paypal.atlassian.net/wiki/spaces/Int/pages/2910149129/v6+Reference"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-blue-600 hover:underline"
-                                            >
-                                                Use ClientId, Pass merchant-id when creating sdkInstance in frontend.
-                                            </a>
-                                        </li>
-                                    </ul>
+                                <PopoverContent className="w-96 p-4">
+                                    <div className="flex items-start gap-2 mb-3">
+                                        <Info className="h-4 w-4 mt-0.5 text-blue-600 shrink-0" />
+                                        <p className="text-sm font-medium leading-snug">
+                                            How to init a 3rd-party SDK instance
+                                        </p>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <a
+                                            href="https://paypal.atlassian.net/wiki/spaces/~71202057e9c84bd72f4c18930b5841bea8a502/pages/2910223184/JS+SDK+v5+upgrade+to+v6"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="group block rounded-lg border border-border p-3 transition-colors hover:border-blue-300 hover:bg-blue-50/60 dark:hover:bg-blue-950/20"
+                                        >
+                                            <div className="flex items-center justify-between gap-2">
+                                                <span className="text-xs font-semibold uppercase tracking-wide text-blue-600">
+                                                    Client Token
+                                                </span>
+                                                <ExternalLink className="h-3.5 w-3.5 text-muted-foreground group-hover:text-blue-600" />
+                                            </div>
+                                            <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+                                                Pass{" "}
+                                                <code className="rounded bg-muted px-1 py-0.5 text-[11px]">
+                                                    PayPal-Auth-Assertion
+                                                </code>{" "}
+                                                when creating the OAuth token.
+                                            </p>
+                                        </a>
+                                        <a
+                                            href="https://paypal.atlassian.net/wiki/spaces/Int/pages/2910149129/v6+Reference"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="group block rounded-lg border border-border p-3 transition-colors hover:border-blue-300 hover:bg-blue-50/60 dark:hover:bg-blue-950/20"
+                                        >
+                                            <div className="flex items-center justify-between gap-2">
+                                                <span className="text-xs font-semibold uppercase tracking-wide text-blue-600">
+                                                    Client Id
+                                                </span>
+                                                <ExternalLink className="h-3.5 w-3.5 text-muted-foreground group-hover:text-blue-600" />
+                                            </div>
+                                            <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+                                                Pass{" "}
+                                                <code className="rounded bg-muted px-1 py-0.5 text-[11px]">
+                                                    merchant-id
+                                                </code>{" "}
+                                                when creating the sdkInstance in the frontend.
+                                            </p>
+                                        </a>
+                                    </div>
                                 </PopoverContent>
                             </Popover>
                         </div>
@@ -380,12 +449,13 @@ export function SdkConfigPanel() {
                                         <span className="text-lg">🔑</span>
                                         Partner Client ID
                                     </label>
-                                    <Input
-                                        id="partnerClientId"
-                                        className={partnerClientIdDirty ? DIRTY_INPUT_CLS : undefined}
+                                    <CredentialCombobox
                                         value={activeLocalPartnerClientId}
-                                        onChange={(e) => setActiveLocalPartnerClientId(e.target.value)}
-                                        placeholder="test_partner_client_id"
+                                        onChange={handlePartnerClientIdChange}
+                                        options={partnerClientIdOptions}
+                                        placeholder="Select or enter Partner Client ID"
+                                        inputType="text"
+                                        className={partnerClientIdDirty ? DIRTY_INPUT_CLS : undefined}
                                     />
                                 </div>
 
@@ -397,17 +467,13 @@ export function SdkConfigPanel() {
                                         <span className="text-lg">🔐</span>
                                         Partner Client Secret
                                     </label>
-                                    <Input
-                                        id="partnerSecret"
-                                        type="password"
-                                        autoComplete="new-password"
-                                        data-lpignore="true"
-                                        data-1p-ignore=""
-                                        data-bwignore=""
-                                        className={partnerSecretDirty ? DIRTY_INPUT_CLS : undefined}
+                                    <CredentialCombobox
                                         value={activeLocalPartnerSecret}
-                                        onChange={(e) => setActiveLocalPartnerSecret(e.target.value)}
-                                        placeholder="test_partner_client_secret"
+                                        onChange={setActiveLocalPartnerSecret}
+                                        options={partnerSecretOptions}
+                                        placeholder="Select or enter Partner Secret"
+                                        inputType="password"
+                                        className={partnerSecretDirty ? DIRTY_INPUT_CLS : undefined}
                                     />
                                 </div>
 
@@ -422,12 +488,13 @@ export function SdkConfigPanel() {
                                             （用于 Auth Assertion）
                                         </span>
                                     </label>
-                                    <Input
-                                        id="authAssertionMerchantId"
-                                        className={merchantIdDirty ? DIRTY_INPUT_CLS : undefined}
+                                    <CredentialCombobox
                                         value={activeLocalAuthAssertionMerchantId}
-                                        onChange={(e) => setActiveLocalAuthAssertionMerchantId(e.target.value)}
-                                        placeholder="test_partner_merchant_id"
+                                        onChange={setActiveLocalAuthAssertionMerchantId}
+                                        options={merchantIdOptions}
+                                        placeholder="Select or enter Merchant ID"
+                                        inputType="text"
+                                        className={merchantIdDirty ? DIRTY_INPUT_CLS : undefined}
                                     />
                                 </div>
 
