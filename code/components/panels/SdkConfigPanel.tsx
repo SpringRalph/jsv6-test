@@ -444,7 +444,7 @@ export function SdkConfigPanel() {
                                 <div>
                                     <label
                                         htmlFor="partnerClientId"
-                                        className="block text-sm font-medium mb-2 flex items-center gap-2"
+                                        className="text-sm font-medium mb-2 flex items-center gap-2"
                                     >
                                         <span className="text-lg">🔑</span>
                                         Partner Client ID
@@ -462,7 +462,7 @@ export function SdkConfigPanel() {
                                 <div>
                                     <label
                                         htmlFor="partnerSecret"
-                                        className="block text-sm font-medium mb-2 flex items-center gap-2"
+                                        className="text-sm font-medium mb-2 flex items-center gap-2"
                                     >
                                         <span className="text-lg">🔐</span>
                                         Partner Client Secret
@@ -480,7 +480,7 @@ export function SdkConfigPanel() {
                                 <div>
                                     <label
                                         htmlFor="authAssertionMerchantId"
-                                        className="block text-sm font-medium mb-2 flex items-center gap-2"
+                                        className="text-sm font-medium mb-2 flex items-center gap-2"
                                     >
                                         <span className="text-lg">🪪</span>
                                         授权 Merchant ID
@@ -526,7 +526,7 @@ export function SdkConfigPanel() {
                                 <div>
                                     <label
                                         htmlFor="clientId"
-                                        className="block text-sm font-medium mb-2 flex items-center gap-2"
+                                        className="text-sm font-medium mb-2 flex items-center gap-2"
                                     >
                                         <span className="text-lg">🔑</span>
                                         PayPal Client ID
@@ -544,7 +544,7 @@ export function SdkConfigPanel() {
                                 <div>
                                     <label
                                         htmlFor="secret"
-                                        className="block text-sm font-medium mb-2 flex items-center gap-2"
+                                        className="text-sm font-medium mb-2 flex items-center gap-2"
                                     >
                                         <span className="text-lg">🔐</span>
                                         PayPal Secret

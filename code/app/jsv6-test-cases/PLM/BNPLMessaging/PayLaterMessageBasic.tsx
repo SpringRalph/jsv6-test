@@ -15,7 +15,7 @@ import consola from "consola";
 export default function PayLaterMessageBasic() {
     const { ready, loading, error } = usePayPalWebSdk();
     const { getInitOptions } = useSdkInitOptions();
-    const total = useCartTotal()
+    const total = useCartTotal();
 
     useEffect(() => {
         //cancelled 变量用于在组件卸载或 effect 被重新触发时中止异步流程，避免在已卸载的组件上做状态更新或继续创建/使用资源
@@ -33,7 +33,7 @@ export default function PayLaterMessageBasic() {
                     "PayPal SDK ready:",
                     paypal,
                     "clientToken:",
-                    initOptions
+                    initOptions,
                 );
 
                 const sdkInstance = await paypal?.createInstance?.({
@@ -42,7 +42,9 @@ export default function PayLaterMessageBasic() {
                     pageType: "checkout",
                 });
 
-                sdkInstance.createPayPalMessages();
+                sdkInstance.createPayPalMessages({
+                    buyerCountry: "US",
+                });
 
                 if (cancelled) {
                     // 如果实例需要销毁，按需处理
@@ -62,7 +64,7 @@ export default function PayLaterMessageBasic() {
     if (loading) return <div>正在加载 PayPal SDK…</div>;
     if (error) return <div>PayPal SDK加载失败: {error.message}</div>;
 
-    consola.log("totolAmount:",total)
+    consola.log("totolAmount:", total);
     return (
         <div className="w-full min-h-[60px] flex items-center justify-center">
             <paypal-message
