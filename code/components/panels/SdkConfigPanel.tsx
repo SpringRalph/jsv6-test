@@ -27,14 +27,14 @@ const SHOPPAAS_SANDBOX_SECRET_KEY =
     "EC-Qcp-6LdYoEw9g02iTkVTRHa49c_HLP19P2hxbSHATN3cov2_G-wmFzp5-Cx2gK3phIzrKhOhbLhPJ";
 
 const SANDBOX_CLIENT_ID_OPTIONS: CredentialOption[] = [
-    { label: "US Acct", value: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? "" },
-    { label: "C2 Acct", value: SANDBOX_CLIENT_ID_C2 },
+    { label: "US Acct(p-test-us-v6-2025@test.com)", value: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? "" },
+    { label: "C2 Acct(p-test-cn-v6-2025@test.com)", value: SANDBOX_CLIENT_ID_C2 },
     { label: "Shoppaas", value: SHOPPAAS_SANDBOX_CLIENT_ID },
 ];
 
 const SANDBOX_SECRET_OPTIONS: CredentialOption[] = [
-    { label: "US Acct", value: process.env.NEXT_PUBLIC_PAYPAL_SECRET ?? "" },
-    { label: "C2 Acct", value: SANDBOX_SECRET_ID_C2 },
+    { label: "US Acct(p-test-us-v6-2025@test.com)", value: process.env.NEXT_PUBLIC_PAYPAL_SECRET ?? "" },
+    { label: "C2 Acct(p-test-cn-v6-2025@test.com)", value: SANDBOX_SECRET_ID_C2 },
     { label: "Shoppaas", value: SHOPPAAS_SANDBOX_SECRET_KEY },
 ];
 
