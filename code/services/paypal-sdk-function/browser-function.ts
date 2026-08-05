@@ -113,11 +113,11 @@ export async function createOrderRedirect(): Promise<any> {
 }
 
 export async function createOrderGooglePay(): Promise<any> {
-	return createOrderAPIFactory("/api/paypal/order/create/create-order", "google")();
+	return createOrderAPIFactory("/api/paypal/order/create/create-order", "google_pay")();
 }
 
 export async function createOrderApplePay(): Promise<any> {
-	return createOrderAPIFactory("/api/paypal/order/create/create-order", "apple")();
+	return createOrderAPIFactory("/api/paypal/order/create/create-order", "apple_pay")();
 }
 
 export async function createOrderWithVault(): Promise<any> {
