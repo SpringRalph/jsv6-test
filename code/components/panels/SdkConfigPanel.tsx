@@ -11,6 +11,7 @@ import {
     SANDBOX_SECRET_ID_C2_PARTNER,
     SANDBOX_PARTNER_MERCHANT_ID_C2,
     useEnvStore,
+    SANDBOX_PARTNER_MERCHANT_ID_US,
 } from "@/store/useEnvStore";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -82,7 +83,8 @@ const LIVE_PARTNER_CREDENTIAL_PAIRS: Record<string, string> = {};
 
 // Independent from the Partner Client ID / Secret pair above — merchant ID has its own preset list.
 const SANDBOX_MERCHANT_ID_OPTIONS: CredentialOption[] = [
-    { label: "US Acct(p-test-us-v6-2025@test.com)", value: SANDBOX_PARTNER_MERCHANT_ID_C2 },
+    { label: "US Acct(p-test-us-v6-2025@test.com)", value: SANDBOX_PARTNER_MERCHANT_ID_US },
+    { label: "CN Acct(p-test-cn-v6-2025@test.com)", value: SANDBOX_PARTNER_MERCHANT_ID_C2 },
 ];
 
 const LIVE_MERCHANT_ID_OPTIONS: CredentialOption[] = [];

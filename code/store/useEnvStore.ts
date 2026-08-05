@@ -54,7 +54,14 @@ export const SANDBOX_SECRET_ID_C2_PARTNER = "EAvQRspHg3Z5ID5q8u0NY5PmmXVHNJFpEQp
  * email: p-test-us-v6-2025@test.com
  * pwd: 111222333
  */
-export const SANDBOX_PARTNER_MERCHANT_ID_C2 = "S6F9D8L9KLQJA"
+export const SANDBOX_PARTNER_MERCHANT_ID_US = "S6F9D8L9KLQJA"
+
+/**
+ * CN merchant, same with 1st C2 acct
+ * email: p-test-cn-v6-2025@test.com
+ * pwd: Qq111222333
+ */
+export const SANDBOX_PARTNER_MERCHANT_ID_C2 = "6YFNG8HZ6A7NJ"
 
 const envDefaults: EnvState = {
   env: "sandbox",
