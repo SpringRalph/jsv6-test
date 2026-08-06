@@ -12,6 +12,7 @@ import {
     SANDBOX_PARTNER_MERCHANT_ID_C2,
     useEnvStore,
     SANDBOX_PARTNER_MERCHANT_ID_US,
+    SANDBOX_PARTNER_MERCHANT_ID_AUTH,
 } from "@/store/useEnvStore";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -85,6 +86,7 @@ const LIVE_PARTNER_CREDENTIAL_PAIRS: Record<string, string> = {};
 const SANDBOX_MERCHANT_ID_OPTIONS: CredentialOption[] = [
     { label: "US Acct(p-test-us-v6-2025@test.com)", value: SANDBOX_PARTNER_MERCHANT_ID_US },
     { label: "CN Acct(p-test-cn-v6-2025@test.com)", value: SANDBOX_PARTNER_MERCHANT_ID_C2 },
+    { label: "Shoppaas Acct(sb-9ohi151601171@business.example.com)", value: SANDBOX_PARTNER_MERCHANT_ID_AUTH },
 ];
 
 const LIVE_MERCHANT_ID_OPTIONS: CredentialOption[] = [];

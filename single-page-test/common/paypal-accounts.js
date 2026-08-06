@@ -23,6 +23,10 @@ export const ACCOUNTS = {
             "EC-Qcp-6LdYoEw9g02iTkVTRHa49c_HLP19P2hxbSHATN3cov2_G-wmFzp5-Cx2gK3phIzrKhOhbLhPJ",
     },
     
+    // 三方 Partner 授权 merchant
+    // email: sb-9ohi151601171@business.example.com
+    // pwd: iD3u_{H>
+    // merchant-id: VTTMTYQNF628U
     SHOPPAAS_AUTH_ASSERTION_ORIGIN: {
         label: "Shoppaas + Auth Assertion + Origin",
         clientId:

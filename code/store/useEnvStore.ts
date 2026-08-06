@@ -63,6 +63,13 @@ export const SANDBOX_PARTNER_MERCHANT_ID_US = "S6F9D8L9KLQJA"
  */
 export const SANDBOX_PARTNER_MERCHANT_ID_C2 = "6YFNG8HZ6A7NJ"
 
+/**
+ * 三方 Partner 授权 merchant
+ * email: sb-9ohi151601171@business.example.com
+ * pwd: iD3u_{H>
+ */
+export const SANDBOX_PARTNER_MERCHANT_ID_AUTH = "VTTMTYQNF628U"
+
 const envDefaults: EnvState = {
   env: "sandbox",
   authMode: "clientToken",
