@@ -55,3 +55,87 @@ export async function GET(req: Request) {
         return NextResponse.json({ error: "internal error", details: String(err) }, { status: 500 });
     }
 }
+
+export async function POST(req: Request) {
+    consola.info("[/api/paypal/apple-pay/domain-registration] HTTP POST received");
+    const guardErr = requirePartnerMode(req);
+    if (guardErr) return guardErr;
+
+    try {
+        const body = await req.json().catch(() => null);
+        const domain: string = body?.domain;
+        if (!domain) {
+            return NextResponse.json({ error: "domain is required" }, { status: 400 });
+        }
+
+        const { clientId, clientSecret, base } = getPayPalConfigFromRequest(req);
+        const basic = buildBasicAuthHeader(clientId, clientSecret);
+        const accessToken = await getAccessToken(base, basic, req);
+
+        const res = await fetch(`${base}/v1/customer/wallet-domains`, {
+            method: "POST",
+            headers: buildPayPalRequestHeaders(req, `Bearer ${accessToken}`),
+            body: JSON.stringify({
+                provider_type: "APPLE_PAY",
+                domain: { name: domain },
+            }),
+        });
+
+        const text = await res.text();
+        if (!res.ok) {
+            let details: any = text;
+            try { details = JSON.parse(text); } catch { }
+            consola.error("PayPal wallet-domains register failed:", details);
+            return NextResponse.json({ error: "failed to register domain", details }, { status: 502 });
+        }
+
+        const json = text ? JSON.parse(text) : {};
+        return NextResponse.json(json);
+    } catch (err: any) {
+        consola.error("Apple Pay domain register error:", err);
+        return NextResponse.json({ error: "internal error", details: String(err) }, { status: 500 });
+    }
+}
+
+export async function DELETE(req: Request) {
+    consola.info("[/api/paypal/apple-pay/domain-registration] HTTP DELETE received");
+    const guardErr = requirePartnerMode(req);
+    if (guardErr) return guardErr;
+
+    try {
+        const body = await req.json().catch(() => null);
+        const domain: string = body?.domain;
+        if (!domain) {
+            return NextResponse.json({ error: "domain is required" }, { status: 400 });
+        }
+        const reason: string = body?.reason || "Merchant requested to deregister domain";
+
+        const { clientId, clientSecret, base } = getPayPalConfigFromRequest(req);
+        const basic = buildBasicAuthHeader(clientId, clientSecret);
+        const accessToken = await getAccessToken(base, basic, req);
+
+        const res = await fetch(`${base}/v1/customer/unregister-wallet-domain`, {
+            method: "POST",
+            headers: buildPayPalRequestHeaders(req, `Bearer ${accessToken}`),
+            body: JSON.stringify({
+                provider_type: "APPLE_PAY",
+                domain: { name: domain },
+                reason,
+            }),
+        });
+
+        const text = await res.text();
+        if (!res.ok) {
+            let details: any = text;
+            try { details = JSON.parse(text); } catch { }
+            consola.error("PayPal wallet-domains deregister failed:", details);
+            return NextResponse.json({ error: "failed to deregister domain", details }, { status: 502 });
+        }
+
+        const json = text ? JSON.parse(text) : {};
+        return NextResponse.json(json);
+    } catch (err: any) {
+        consola.error("Apple Pay domain deregister error:", err);
+        return NextResponse.json({ error: "internal error", details: String(err) }, { status: 500 });
+    }
+}
