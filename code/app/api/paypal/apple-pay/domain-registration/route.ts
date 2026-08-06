@@ -35,7 +35,9 @@ export async function GET(req: Request) {
         const basic = buildBasicAuthHeader(clientId, clientSecret);
         const accessToken = await getAccessToken(base, basic, req);
 
-        const res = await fetch(`${base}/v1/customer/wallet-domains`, {
+        // PayPal defaults page_size to 1 on this endpoint; request a page large enough
+        // to cover a test account's domains in one call.
+        const res = await fetch(`${base}/v1/customer/wallet-domains?page_size=20&page=1`, {
             method: "GET",
             headers: buildPayPalRequestHeaders(req, `Bearer ${accessToken}`),
         });
@@ -49,9 +51,7 @@ export async function GET(req: Request) {
         }
 
         const json = JSON.parse(text);
-        // TEMP DIAGNOSTIC: return the full raw response alongside `domains` so we can
-        // inspect pagination metadata (total_items/links) in the Network tab.
-        return NextResponse.json({ domains: json.wallet_domains ?? [], _raw: json });
+        return NextResponse.json({ domains: json.wallet_domains ?? [] });
     } catch (err: any) {
         consola.error("Apple Pay domain list error:", err);
         return NextResponse.json({ error: "internal error", details: String(err) }, { status: 500 });
