@@ -6,6 +6,13 @@ import { Card } from "@/components/ui/Card"
 import { useEnvStore } from "@/store/useEnvStore"
 import { getPayPalHeaders } from "@/services/paypal-sdk-function/paypal-headers"
 
+function extractDomainName(d: any): string {
+  if (typeof d === "string") return d
+  if (typeof d?.domain?.name === "string") return d.domain.name
+  if (typeof d?.name === "string") return d.name
+  return JSON.stringify(d)
+}
+
 export function ApplePayDomainPanel() {
   const integrationMode = useEnvStore((s) => s.integrationMode)
   const isPartnerMode = integrationMode === "partner"
@@ -35,7 +42,7 @@ export function ApplePayDomainPanel() {
         toast.error(data.error ?? "Failed to list domains")
         return
       }
-      const names: string[] = (data.domains ?? []).map((d: any) => d?.name ?? d).filter(Boolean)
+      const names: string[] = (data.domains ?? []).map(extractDomainName).filter(Boolean)
       setDomains(names)
     } catch (err: any) {
       toast.error(`Failed to list domains: ${String(err)}`)
