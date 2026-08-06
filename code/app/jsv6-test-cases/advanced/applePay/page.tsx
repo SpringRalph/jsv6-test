@@ -1,6 +1,7 @@
 import { Container } from "@/components/layout/Container";
 import { ProductPanel } from "@/components/panels/ProductPanel";
 import { CartSummary } from "@/components/panels/CartSummary";
+import { ApplePayDomainPanel } from "@/components/panels/ApplePayDomainPanel";
 import { PaymentPlaceholder } from "@/components/panels/PaymentPlaceholder";
 import Link from "next/link";
 import ApplePay from "./ApplePayButton";
@@ -40,6 +41,7 @@ export default function ButtonsBasicPage() {
                     <div className="space-y-6">
                         <ProductPanel />
                         <CartSummary />
+                        <ApplePayDomainPanel />
                     </div>
                     <div>
                         <PaymentPlaceholder
