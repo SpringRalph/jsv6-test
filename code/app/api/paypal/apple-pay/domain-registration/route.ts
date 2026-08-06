@@ -49,7 +49,9 @@ export async function GET(req: Request) {
         }
 
         const json = JSON.parse(text);
-        return NextResponse.json({ domains: json.wallet_domains ?? [] });
+        // TEMP DIAGNOSTIC: return the full raw response alongside `domains` so we can
+        // inspect pagination metadata (total_items/links) in the Network tab.
+        return NextResponse.json({ domains: json.wallet_domains ?? [], _raw: json });
     } catch (err: any) {
         consola.error("Apple Pay domain list error:", err);
         return NextResponse.json({ error: "internal error", details: String(err) }, { status: 500 });
