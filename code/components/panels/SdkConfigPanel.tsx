@@ -68,14 +68,17 @@ const LIVE_SECRET_OPTIONS: CredentialOption[] = [
 
 const SANDBOX_PARTNER_CLIENT_ID_OPTIONS: CredentialOption[] = [
     { label: "C2 Acct", value: SANDBOX_CLIENT_ID_C2_PARTNER },
+    { label: "Shoppaas Acct", value: SHOPPAAS_SANDBOX_CLIENT_ID },
 ];
 
 const SANDBOX_PARTNER_SECRET_OPTIONS: CredentialOption[] = [
     { label: "C2 Acct", value: SANDBOX_SECRET_ID_C2_PARTNER },
+    { label: "Shoppaas Acct", value: SHOPPAAS_SANDBOX_SECRET_KEY },
 ];
 
 const SANDBOX_PARTNER_CREDENTIAL_PAIRS: Record<string, string> = {
     [SANDBOX_CLIENT_ID_C2_PARTNER]: SANDBOX_SECRET_ID_C2_PARTNER,
+    [SHOPPAAS_SANDBOX_CLIENT_ID]: SHOPPAAS_SANDBOX_SECRET_KEY,
 };
 
 const LIVE_PARTNER_CLIENT_ID_OPTIONS: CredentialOption[] = [];
