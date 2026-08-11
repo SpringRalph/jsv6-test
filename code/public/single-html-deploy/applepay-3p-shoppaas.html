@@ -19,6 +19,11 @@
       --card-b: #15112c;
       --receipt-bg: #fbf9f4;
       --radius-card: 20px;
+      --tok-key: #4a3b8f;
+      --tok-string: #1f6f5c;
+      --tok-number: #b45309;
+      --tok-boolean: #0e7490;
+      --tok-null: #767b85;
     }
 
     * { box-sizing: border-box; }
@@ -154,6 +159,35 @@
       color: var(--muted);
     }
 
+    .log-line {
+      margin-bottom: 8px;
+    }
+    .log-line:last-child {
+      margin-bottom: 0;
+    }
+    .log-line__text {
+      display: block;
+    }
+
+    .log-json {
+      margin: 6px 0 0;
+      padding: 10px 12px;
+      background: rgba(59, 46, 115, 0.05);
+      border-left: 2px solid var(--card-a);
+      border-radius: 0 6px 6px 0;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      white-space: pre;
+      word-break: break-all;
+      overflow-x: auto;
+    }
+    .tok-key { color: var(--tok-key); font-weight: 600; }
+    .tok-string { color: var(--tok-string); }
+    .tok-number { color: var(--tok-number); }
+    .tok-boolean { color: var(--tok-boolean); }
+    .tok-null { color: var(--tok-null); font-style: italic; }
+
     .domains {
       margin-top: 20px;
       background: var(--receipt-bg);
@@ -274,11 +308,62 @@
       },
     };
 
+    function escapeHtml(str) {
+      const div = document.createElement("div");
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    // ===== JSON 语法高亮（key/string/number/boolean/null 分色）=====
+    function syntaxHighlightJson(json) {
+      const escaped = escapeHtml(json);
+      return escaped.replace(
+        /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\btrue\b|\bfalse\b|\bnull\b|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)/g,
+        (match) => {
+          let cls = "tok-number";
+          if (/^"/.test(match)) {
+            cls = /:$/.test(match) ? "tok-key" : "tok-string";
+          } else if (/^(true|false)$/.test(match)) {
+            cls = "tok-boolean";
+          } else if (match === "null") {
+            cls = "tok-null";
+          }
+          return `<span class="${cls}">${match}</span>`;
+        }
+      );
+    }
+
     function log(...args) {
-      const line = args.map((a) => (typeof a === "string" ? a : JSON.stringify(a))).join(" ");
-      console.log(line);
+      console.log(...args);
       const el = document.getElementById("status-log");
-      el.textContent += line + "\n";
+
+      const line = document.createElement("div");
+      line.className = "log-line";
+
+      const textParts = [];
+      const flushText = () => {
+        if (!textParts.length) return;
+        const span = document.createElement("span");
+        span.className = "log-line__text";
+        span.textContent = textParts.join(" ");
+        line.appendChild(span);
+        textParts.length = 0;
+      };
+
+      args.forEach((a) => {
+        if (typeof a === "string") {
+          textParts.push(a);
+        } else {
+          flushText();
+          const pre = document.createElement("pre");
+          pre.className = "log-json";
+          pre.innerHTML = syntaxHighlightJson(JSON.stringify(a, null, 2));
+          line.appendChild(pre);
+        }
+      });
+      flushText();
+
+      el.appendChild(line);
       el.scrollTop = el.scrollHeight;
     }
 
@@ -406,12 +491,6 @@
     function extractDomainName(item) {
       if (typeof item === "string") return item;
       return (item && item.domain && item.domain.name) || String(item);
-    }
-
-    function escapeHtml(str) {
-      const div = document.createElement("div");
-      div.textContent = str;
-      return div.innerHTML;
     }
 
     async function loadRegisteredDomains() {
