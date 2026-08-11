@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apple Pay · 三方模式 (Shoppaas)</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      max-width: 480px;
+      margin: 40px auto;
+      padding: 0 16px;
+      color: #1a1a1a;
+    }
+    h1 { font-size: 20px; }
+    .product-card {
+      border: 1px solid #e5e5e5;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+    .product-card .price {
+      font-size: 24px;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+    #applepay-button-container {
+      min-height: 48px;
+    }
+    #status-log {
+      margin-top: 24px;
+      padding: 12px;
+      background: #f5f5f5;
+      border-radius: 8px;
+      font-size: 13px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 240px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Apple Pay 测试 · 三方模式 (Shoppaas)</h1>
+
+  <div class="product-card">
+    <div id="product-title">Test Product</div>
+    <div class="price" id="product-price">$29.99</div>
+  </div>
+
+  <div id="applepay-button-container"></div>
+  <div id="status-log"></div>
+
+  <!-- vConsole：移动端 Safari 调试用 -->
+  <script src="https://cdn.jsdelivr.net/npm/vconsole@3.15.1/dist/vconsole.min.js"></script>
+  <script>
+    if (typeof VConsole !== "undefined") {
+      new VConsole();
+    }
+  </script>
+
+  <!-- Apple Pay JS SDK -->
+  <script src="https://applepay.cdn-apple.com/jsapi/1.latest/apple-pay-sdk.js"></script>
+
+  <!-- PayPal Web SDK v6 (sandbox) -->
+  <script src="https://www.sandbox.paypal.com/web-sdk/v6/core" crossorigin="anonymous"></script>
+
+  <script>
+    // ===== 固定配置（Shoppaas sandbox 三方模式）=====
+    const CONFIG = {
+      clientId: "ATIwW9NdRH9Nqde8MCftI_0QbOL9APdYok0a7ircWl2-3fBHv-CoMYsfIDpcUDisqTHmHT7d0Dz9DV7V",
+      merchantId: "VTTMTYQNF628U",
+      clientSecret: "EC-Qcp-6LdYoEw9g02iTkVTRHa49c_HLP19P2hxbSHATN3cov2_G-wmFzp5-Cx2gK3phIzrKhOhbLhPJ",
+      env: "sandbox",
+      product: {
+        id: "test-product-1",
+        name: "Test Product",
+        unitPrice: 29.99,
+        quantity: 1,
+        currency: "USD",
+      },
+    };
+
+    function log(...args) {
+      const line = args.map((a) => (typeof a === "string" ? a : JSON.stringify(a))).join(" ");
+      console.log(line);
+      const el = document.getElementById("status-log");
+      el.textContent += line + "\n";
+      el.scrollTop = el.scrollHeight;
+    }
+  </script>
+</body>
+</html>
