@@ -56,8 +56,16 @@ export default function HomePage() {
             path ===
             "/jsv6-test-cases/browser-display/directAppSwitch-outgoing";
 
+        // 单文件 HTML 分享版：同源静态文件，无需替换 href，只需要新标签页打开
+        const isSingleHtmlApplePay: boolean =
+            path === "/single-html-deploy/applepay-3p-shoppaas.html";
+
         let href = path;
         let targetFlag = false;
+
+        if (isSingleHtmlApplePay) {
+            targetFlag = true;
+        }
 
         // 如果是sandboxedIframe路由，使用外部URL，否则使用内部路由
         if (isSandboxedIframe) {

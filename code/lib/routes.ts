@@ -249,6 +249,14 @@ export const routes: RouteMetadata[] = [
     workStage: 4,
   },
   {
+    path: "/single-html-deploy/applepay-3p-shoppaas.html",
+    title: "Apple Pay（Single HTML 分享版）",
+    description: "可独立分享的单文件 Apple Pay 三方模式测试页（Shoppaas）",
+    group: "Advanced",
+    panelIcon: "ApplePay",
+    workStage: 4,
+  },
+  {
     path: "/jsv6-test-cases/advanced/ACDC",
     title: "ACDC",
     description: "Test Card Fields integration for custom checkout",
