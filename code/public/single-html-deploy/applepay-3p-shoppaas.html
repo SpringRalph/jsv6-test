@@ -154,6 +154,51 @@
       color: var(--muted);
     }
 
+    .domains {
+      margin-top: 20px;
+      background: var(--receipt-bg);
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 10px 24px -18px rgba(22, 24, 29, 0.35);
+    }
+
+    .domains__head {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed rgba(22, 24, 29, 0.15);
+    }
+
+    .domains__list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12.5px;
+      color: #33362e;
+    }
+
+    .domains__list li {
+      padding: 6px 0;
+    }
+
+    .domains__list li + li {
+      border-top: 1px dashed rgba(22, 24, 29, 0.1);
+    }
+
+    .domains__empty,
+    .domains__error {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12.5px;
+      color: var(--muted);
+    }
+
+    .domains__error { color: #a8391f; }
+
     @keyframes card-rise {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
@@ -191,6 +236,11 @@
       <div class="receipt__tear" aria-hidden="true"></div>
       <div class="receipt__head">交易日志</div>
       <div id="status-log" class="receipt__log"></div>
+    </section>
+
+    <section class="domains" aria-label="已注册域名">
+      <div class="domains__head">已注册域名</div>
+      <div id="domains-list"></div>
     </section>
   </main>
 
@@ -352,6 +402,49 @@
       return res.json();
     }
 
+    // ===== 已注册 Apple Pay 域名（只读展示）=====
+    function extractDomainName(item) {
+      if (typeof item === "string") return item;
+      return (item && item.domain && item.domain.name) || String(item);
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement("div");
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    async function loadRegisteredDomains() {
+      const el = document.getElementById("domains-list");
+      el.innerHTML = '<div class="domains__empty">正在获取已注册域名…</div>';
+
+      try {
+        const res = await fetch("/api/paypal/apple-pay/domain-registration", {
+          method: "GET",
+          headers: getPayPalHeaders(),
+        });
+        if (!res.ok) {
+          const text = await res.text().catch(() => "");
+          throw new Error(`获取失败: ${res.status} ${text}`);
+        }
+        const json = await res.json();
+        const domains = Array.isArray(json.domains) ? json.domains : [];
+
+        if (domains.length === 0) {
+          el.innerHTML = '<div class="domains__empty">暂无已注册域名</div>';
+          return;
+        }
+
+        const items = domains
+          .map((d) => `<li>${escapeHtml(extractDomainName(d))}</li>`)
+          .join("");
+        el.innerHTML = `<ul class="domains__list">${items}</ul>`;
+      } catch (err) {
+        const message = err && err.message ? err.message : String(err);
+        el.innerHTML = `<div class="domains__error">获取失败: ${escapeHtml(message)}</div>`;
+      }
+    }
+
     function handleApplePayClick(applePayConfig, paypalApplePaySession) {
       const { unitPrice, quantity, currency } = CONFIG.product;
       const total = (unitPrice * quantity).toFixed(2);
@@ -418,6 +511,7 @@
     }
 
     init();
+    loadRegisteredDomains();
   </script>
 </body>
 </html>
