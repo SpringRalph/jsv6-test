@@ -151,6 +151,129 @@
       });
     }
 
+    // ===== 组装 create-order 请求 body（对齐 getOrderConfig 的结构）=====
+    function buildOrderPayload() {
+      const { id, name, unitPrice, quantity, currency } = CONFIG.product;
+      const total = Number((unitPrice * quantity).toFixed(2));
+      return {
+        items: [{ id, name, unitPrice, quantity, total }],
+        totalAmount: total,
+        currency,
+        meta: {},
+        paymentDetail: {
+          endpoint: {
+            return_url: window.location.href,
+            cancel_url: window.location.href,
+          },
+          payment_source: "apple_pay",
+        },
+      };
+    }
+
+    function getPayPalHeaders() {
+      return {
+        "Content-Type": "application/json",
+        "x-paypal-client-id": CONFIG.clientId,
+        "x-paypal-secret": CONFIG.clientSecret,
+        "x-paypal-env": CONFIG.env,
+        "x-paypal-auth-assertion": buildAuthAssertionHeader(CONFIG.clientId, CONFIG.merchantId),
+      };
+    }
+
+    async function createOrder() {
+      const res = await fetch("/api/paypal/order/create/create-order", {
+        method: "POST",
+        headers: getPayPalHeaders(),
+        body: JSON.stringify(buildOrderPayload()),
+      });
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(`创建订单失败: ${res.status} ${text}`);
+      }
+      const json = await res.json();
+      const orderId = json && json.order && json.order.id;
+      if (!orderId) throw new Error("后端未返回 orderId");
+      return orderId;
+    }
+
+    async function captureOrder(orderId) {
+      const res = await fetch("/api/paypal/order/capture/capture-order", {
+        method: "POST",
+        headers: getPayPalHeaders(),
+        body: JSON.stringify({ orderId }),
+      });
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(`捕获订单失败: ${res.status} ${text}`);
+      }
+      return res.json();
+    }
+
+    function handleApplePayClick(applePayConfig, paypalApplePaySession) {
+      const { unitPrice, quantity, currency } = CONFIG.product;
+      const total = (unitPrice * quantity).toFixed(2);
+
+      const paymentRequest = {
+        countryCode: "US",
+        currencyCode: currency,
+        merchantCapabilities: applePayConfig.merchantCapabilities,
+        supportedNetworks: applePayConfig.supportedNetworks,
+        requiredBillingContactFields: ["name", "phone", "email", "postalAddress"],
+        requiredShippingContactFields: [],
+        total: { label: "Your Store Name", amount: total, type: "final" },
+      };
+
+      const applePaySession = new ApplePaySession(4, paymentRequest);
+
+      applePaySession.onvalidatemerchant = (event) => {
+        log("商户验证中...");
+        paypalApplePaySession
+          .validateMerchant({ validationUrl: event.validationURL })
+          .then((payload) => {
+            applePaySession.completeMerchantValidation(payload.merchantSession);
+            log("商户验证成功");
+          })
+          .catch((err) => {
+            log("商户验证失败:", err && err.message ? err.message : String(err));
+            applePaySession.abort();
+          });
+      };
+
+      applePaySession.onpaymentmethodselected = () => {
+        applePaySession.completePaymentMethodSelection({ newTotal: paymentRequest.total });
+      };
+
+      applePaySession.onpaymentauthorized = async (event) => {
+        try {
+          log("支付已授权，开始创建订单...");
+          const orderId = await createOrder();
+          log("订单已创建:", orderId);
+
+          await paypalApplePaySession.confirmOrder({
+            orderId,
+            token: event.payment.token,
+            billingContact: event.payment.billingContact,
+            shippingContact: event.payment.shippingContact,
+          });
+          log("订单已确认，开始捕获支付...");
+
+          const captureResult = await captureOrder(orderId);
+          log("支付捕获成功:", captureResult);
+
+          applePaySession.completePayment({ status: window.ApplePaySession.STATUS_SUCCESS });
+        } catch (err) {
+          log("支付失败:", err && err.message ? err.message : String(err));
+          applePaySession.completePayment({ status: window.ApplePaySession.STATUS_FAILURE });
+        }
+      };
+
+      applePaySession.oncancel = () => {
+        log("用户取消了 Apple Pay");
+      };
+
+      applePaySession.begin();
+    }
+
     init();
   </script>
 </body>
