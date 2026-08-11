@@ -98,6 +98,60 @@
       )));
       return `${header}.${payload}.`;
     }
+
+    // ===== 等待外部脚本加载完成 =====
+    function waitFor(checkFn, { timeoutMs = 10000, intervalMs = 100 } = {}) {
+      return new Promise((resolve, reject) => {
+        const start = Date.now();
+        const timer = setInterval(() => {
+          if (checkFn()) {
+            clearInterval(timer);
+            resolve();
+          } else if (Date.now() - start > timeoutMs) {
+            clearInterval(timer);
+            reject(new Error("等待脚本加载超时"));
+          }
+        }, intervalMs);
+      });
+    }
+
+    // ===== 初始化 PayPal SDK + Apple Pay Session =====
+    async function init() {
+      try {
+        log("等待 PayPal SDK 与 Apple Pay SDK 就绪...");
+        await waitFor(() => typeof window.paypal !== "undefined");
+        await waitFor(() => typeof window.ApplePaySession !== "undefined");
+        log("两个 SDK 都已就绪，开始初始化 PayPal 实例...");
+
+        const sdkInstance = await window.paypal.createInstance({
+          clientId: CONFIG.clientId,
+          merchantId: CONFIG.merchantId,
+          components: ["applepay-payments"],
+          pageType: "checkout",
+        });
+        log("PayPal 实例创建成功");
+
+        const applePaySession = await sdkInstance.createApplePayOneTimePaymentSession();
+        const applePayConfig = await applePaySession.config();
+        log("Apple Pay config:", applePayConfig);
+
+        renderApplePayButton(applePayConfig, applePaySession);
+      } catch (err) {
+        log("初始化失败:", err && err.message ? err.message : String(err));
+      }
+    }
+
+    function renderApplePayButton(applePayConfig, paypalApplePaySession) {
+      const container = document.getElementById("applepay-button-container");
+      container.innerHTML = '<apple-pay-button id="apple-pay-button" buttonstyle="black" type="buy" locale="en">';
+      log("Apple Pay 按钮已渲染");
+
+      document.getElementById("apple-pay-button").addEventListener("click", () => {
+        handleApplePayClick(applePayConfig, paypalApplePaySession);
+      });
+    }
+
+    init();
   </script>
 </body>
 </html>
