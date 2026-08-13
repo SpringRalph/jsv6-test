@@ -399,8 +399,18 @@
       });
     }
 
+    // ===== 带日志的 fetch：每一次 HTTP 调用的请求/响应都写进交易日志 =====
+    async function loggedFetch(url, options = {}) {
+      const method = (options.method || "GET").toUpperCase();
+      log(`→ HTTP ${method} ${url}`);
+      const res = await fetch(url, options);
+      log(`← HTTP ${method} ${res.status} ${url}`);
+      return res;
+    }
+
     // ===== 初始化 PayPal SDK + Apple Pay Session =====
     async function init() {
+      log("[init] 页面初始化开始");
       try {
         log("等待 PayPal SDK 与 Apple Pay SDK 就绪...");
         await waitFor(() => typeof window.paypal !== "undefined");
@@ -426,11 +436,13 @@
     }
 
     function renderApplePayButton(applePayConfig, paypalApplePaySession) {
+      log("[renderApplePayButton] 开始渲染按钮");
       const container = document.getElementById("applepay-button-container");
       container.innerHTML = '<apple-pay-button id="apple-pay-button" buttonstyle="black" type="buy" locale="en">';
       log("Apple Pay 按钮已渲染");
 
       document.getElementById("apple-pay-button").addEventListener("click", () => {
+        log("[renderApplePayButton] 按钮被点击");
         handleApplePayClick(applePayConfig, paypalApplePaySession);
       });
     }
@@ -488,10 +500,14 @@
     }
 
     async function createOrder() {
-      const res = await fetch(`${PAYPAL_API_BASE}/v2/checkout/orders`, {
+      log("[createOrder] 开始组装订单请求体");
+      const orderBody = buildOrderBody();
+      log("[createOrder] 请求体:", orderBody);
+
+      const res = await loggedFetch(`${PAYPAL_API_BASE}/v2/checkout/orders`, {
         method: "POST",
         headers: getPayPalDirectHeaders(),
-        body: JSON.stringify(buildOrderBody()),
+        body: JSON.stringify(orderBody),
       });
       if (!res.ok) {
         const text = await res.text().catch(() => "");
@@ -499,11 +515,13 @@
       }
       const json = await res.json();
       if (!json.id) throw new Error("PayPal 未返回 orderId");
+      log("[createOrder] 成功，orderId =", json.id);
       return json.id;
     }
 
     async function captureOrder(orderId) {
-      const res = await fetch(
+      log("[captureOrder] 开始捕获订单:", orderId);
+      const res = await loggedFetch(
         `${PAYPAL_API_BASE}/v2/checkout/orders/${encodeURIComponent(orderId)}/capture`,
         {
           method: "POST",
@@ -515,7 +533,9 @@
         const text = await res.text().catch(() => "");
         throw new Error(`捕获订单失败: ${res.status} ${text}`);
       }
-      return res.json();
+      const json = await res.json();
+      log("[captureOrder] 成功:", json);
+      return json;
     }
 
     // ===== 已注册 Apple Pay 域名（只读展示，直连 PayPal 官方 API，不经过本项目后端）=====
@@ -525,8 +545,9 @@
     }
 
     async function fetchPayPalAccessToken() {
+      log("[fetchPayPalAccessToken] 开始换取 access token");
       const basic = btoa(`${CONFIG.clientId}:${CONFIG.clientSecret}`);
-      const res = await fetch(`${PAYPAL_API_BASE}/v1/oauth2/token`, {
+      const res = await loggedFetch(`${PAYPAL_API_BASE}/v1/oauth2/token`, {
         method: "POST",
         headers: {
           Authorization: `Basic ${basic}`,
@@ -539,17 +560,19 @@
         throw new Error(`获取 access token 失败: ${res.status} ${text}`);
       }
       const json = await res.json();
+      log("[fetchPayPalAccessToken] 换取成功");
       return json.access_token;
     }
 
     async function loadRegisteredDomains() {
+      log("[loadRegisteredDomains] 开始查询已注册域名");
       const el = document.getElementById("domains-list");
       el.innerHTML = '<div class="domains__empty">正在获取已注册域名…</div>';
 
       try {
         const accessToken = await fetchPayPalAccessToken();
 
-        const res = await fetch(
+        const res = await loggedFetch(
           `${PAYPAL_API_BASE}/v1/customer/wallet-domains?page_size=20&page=1`,
           {
             method: "GET",
@@ -565,6 +588,7 @@
         }
         const json = await res.json();
         const domains = Array.isArray(json.wallet_domains) ? json.wallet_domains : [];
+        log("[loadRegisteredDomains] 查询成功，域名数:", domains.length);
 
         if (domains.length === 0) {
           el.innerHTML = '<div class="domains__empty">暂无已注册域名</div>';
@@ -577,11 +601,13 @@
         el.innerHTML = `<ul class="domains__list">${items}</ul>`;
       } catch (err) {
         const message = err && err.message ? err.message : String(err);
+        log("[loadRegisteredDomains] 查询失败:", message);
         el.innerHTML = `<div class="domains__error">获取失败: ${escapeHtml(message)}</div>`;
       }
     }
 
     function handleApplePayClick(applePayConfig, paypalApplePaySession) {
+      log("[handleApplePayClick] 开始构建 Apple Pay 支付请求");
       const { unitPrice, quantity, currency } = CONFIG.product;
       const total = (unitPrice * quantity).toFixed(2);
 
@@ -594,6 +620,7 @@
         requiredShippingContactFields: [],
         total: { label: "Your Store Name", amount: total, type: "final" },
       };
+      log("[handleApplePayClick] paymentRequest:", paymentRequest);
 
       const applePaySession = new ApplePaySession(4, paymentRequest);
 
@@ -612,6 +639,7 @@
       };
 
       applePaySession.onpaymentmethodselected = () => {
+        log("[onpaymentmethodselected] 用户已选择支付方式");
         applePaySession.completePaymentMethodSelection({ newTotal: paymentRequest.total });
       };
 
