@@ -161,6 +161,8 @@
 
     .log-line {
       margin-bottom: 8px;
+      padding-left: 10px;
+      border-left: 3px solid transparent;
     }
     .log-line:last-child {
       margin-bottom: 0;
@@ -168,6 +170,22 @@
     .log-line__text {
       display: block;
     }
+
+    .log-line--success { border-left-color: var(--tok-string); }
+    .log-line--success .log-line__text { color: var(--tok-string); font-weight: 600; }
+    .log-line--success .log-line__text::before { content: "✓ "; }
+
+    .log-line--error { border-left-color: #a8391f; background: rgba(168, 57, 31, 0.07); border-radius: 0 6px 6px 0; }
+    .log-line--error .log-line__text { color: #a8391f; font-weight: 700; }
+    .log-line--error .log-line__text::before { content: "✗ "; }
+
+    .log-line--http-out { border-left-color: var(--tok-number); }
+    .log-line--http-out .log-line__text { color: var(--tok-number); }
+    .log-line--http-out .log-line__text::before { content: "↑ "; }
+
+    .log-line--http-in { border-left-color: var(--tok-boolean); }
+    .log-line--http-in .log-line__text { color: var(--tok-boolean); }
+    .log-line--http-in .log-line__text::before { content: "↓ "; }
 
     .log-json {
       margin: 6px 0 0;
@@ -339,12 +357,24 @@
       );
     }
 
+    // ===== 按日志文本内容分类，给日志行加醒目的颜色/图标 =====
+    function classifyLogLevel(text) {
+      if (/失败|错误/.test(text)) return "error";
+      if (/^→ HTTP/.test(text)) return "http-out";
+      if (/^← HTTP/.test(text)) return "http-in";
+      if (/成功|已创建|已确认|已渲染|已就绪|已授权/.test(text)) return "success";
+      return "info";
+    }
+
     function log(...args) {
       console.log(...args);
       const el = document.getElementById("status-log");
 
+      const rawText = args.filter((a) => typeof a === "string").join(" ");
+      const level = classifyLogLevel(rawText);
+
       const line = document.createElement("div");
-      line.className = "log-line";
+      line.className = `log-line log-line--${level}`;
 
       const textParts = [];
       const flushText = () => {
