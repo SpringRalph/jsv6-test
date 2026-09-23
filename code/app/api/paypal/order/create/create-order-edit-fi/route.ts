@@ -59,6 +59,10 @@ export async function POST(req: Request) {
         const return_url = paymentDetail.endpoint?.return_url || "";
         const cancel_url = paymentDetail.endpoint?.cancel_url || "";
 
+        if (!vaultId || typeof vaultId !== "string" || !vaultId.trim()) {
+            return NextResponse.json({ error: "vault_id is required" }, { status: 400 });
+        }
+
         const orderBody: Record<string, any> = {
             intent: "CAPTURE",
             purchase_units: [purchaseUnit],

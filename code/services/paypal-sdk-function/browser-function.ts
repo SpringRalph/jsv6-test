@@ -129,11 +129,11 @@ export async function createOrderWithVaultId(vaultId: string): Promise<any> {
 	return createOrderAPIFactory("/api/paypal/order/create/create-order-paypal-with-vault-id", "paypal", { vault_id: vaultId })();
 }
 
-export async function createOrderInstant(vaultId: string, fraudnetId: string): Promise<any> {
+export async function createOrderInstant(vaultId: string, fraudnetId?: string): Promise<any> {
 	return createOrderAPIFactory(
 		"/api/paypal/order/create/create-order-instant",
 		"paypal",
-		{ vault_id: vaultId, fraudnet_id: fraudnetId },
+		{ vault_id: vaultId, ...(fraudnetId ? { fraudnet_id: fraudnetId } : {}) },
 	)();
 }
 

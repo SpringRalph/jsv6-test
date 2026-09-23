@@ -65,6 +65,10 @@ export async function POST(req: Request) {
         const vaultId = paymentDetail.vault_id as string | undefined;
         const fraudnetId = paymentDetail.fraudnet_id as string | undefined;
 
+        if (!vaultId || typeof vaultId !== "string" || !vaultId.trim()) {
+            return NextResponse.json({ error: "vault_id is required" }, { status: 400 });
+        }
+
         const orderBody: Record<string, any> = {
             intent: "CAPTURE",
             purchase_units: [purchaseUnit],
