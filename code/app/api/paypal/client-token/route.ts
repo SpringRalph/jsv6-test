@@ -12,9 +12,10 @@ interface CacheEntry {
   fetchingPromise: Promise<string> | null
 }
 
-// Cache keyed by "clientId::env::authAssertion" to support multiple credential sets.
-// authAssertion is included because a single partner clientId can act on behalf of
-// different merchants (different PayPal-Auth-Assertion values), each needing its own token.
+// Cache keyed by "clientId::env::authAssertion::vaultId" to support multiple credential sets
+// and vault-specific scoping. authAssertion is included because a single partner clientId
+// can act on behalf of different merchants, each needing its own token. vaultId is the
+// optional query param (empty string when absent from the request).
 const tokenCache = new Map<string, CacheEntry>();
 
 function getCacheKey(clientId: string, env: string, authAssertion: string, vaultId: string | undefined): string {

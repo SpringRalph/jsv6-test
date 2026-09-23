@@ -89,7 +89,7 @@ export async function POST(req: Request) {
 
         const createRes = await fetch(`${base}/v2/checkout/orders`, {
             method: "POST",
-            headers: buildPayPalRequestHeaders(req, basic),
+            headers: buildPayPalRequestHeaders(req, basic, { "PayPal-Request-Id": crypto.randomUUID() }),
             body: JSON.stringify(orderBody),
         });
 

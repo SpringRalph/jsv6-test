@@ -1,7 +1,6 @@
 "use client";
 
 import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
-import { useSdkInitOptions } from "@/hooks/useSdkInitOptions";
 import {
     createOrderInstant,
     createOrderEditFi,
@@ -12,6 +11,7 @@ import {
     AppSdkInstance,
 } from "@/services/paypal-sdk-function/paypalSharedObject";
 import { safeFindEligibleMethods } from "@/services/paypal-sdk-function/safe-find-eligible-methods";
+import { getPayPalHeaders } from "@/services/paypal-sdk-function/paypal-headers";
 
 import React, { useEffect, useState, useRef } from "react";
 import consola from "consola";
@@ -25,7 +25,7 @@ async function fetchVaultScopedClientToken(vaultId: string): Promise<string> {
     if (vaultId) params.append("vaultId", vaultId);
 
     const url = `/api/paypal/client-token${params.toString() ? "?" + params.toString() : ""}`;
-    const res = await fetch(url);
+    const res = await fetch(url, { headers: getPayPalHeaders() });
     if (!res.ok) {
         const text = await res.text();
         throw new Error(`Failed to fetch vault-scoped client token: ${text}`);

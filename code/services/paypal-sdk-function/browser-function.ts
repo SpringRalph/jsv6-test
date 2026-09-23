@@ -130,11 +130,35 @@ export async function createOrderWithVaultId(vaultId: string): Promise<any> {
 }
 
 export async function createOrderInstant(vaultId: string, fraudnetId?: string): Promise<any> {
-	return createOrderAPIFactory(
-		"/api/paypal/order/create/create-order-instant",
-		"paypal",
-		{ vault_id: vaultId, ...(fraudnetId ? { fraudnet_id: fraudnetId } : {}) },
-	)();
+	if (typeof window === "undefined") throw new Error("createOrderInstant must be called in browser");
+
+	const payload = getOrderConfig();
+	payload["paymentDetail"]["endpoint"]["return_url"] = window.location.href;
+	payload["paymentDetail"]["endpoint"]["cancel_url"] = window.location.href;
+	payload["paymentDetail"]["payment_source"] = "paypal";
+	payload["paymentDetail"]["vault_id"] = vaultId;
+	if (fraudnetId) payload["paymentDetail"]["fraudnet_id"] = fraudnetId;
+
+	const res = await fetch("/api/paypal/order/create/create-order-instant", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			...getPayPalHeaders(),
+		},
+		body: JSON.stringify(payload),
+	});
+
+	if (!res.ok) {
+		const text = await res.text().catch(() => "");
+		throw new Error(`createOrderInstant failed: ${res.status} ${text}`);
+	}
+
+	const json = await res.json();
+	consola.log("[createOrderInstant]", JSON.stringify(json, null, "  "));
+
+	// Return both orderId and status so the caller can check
+	// whether PayPal captured synchronously (status === "COMPLETED").
+	return { orderId: json.orderId, status: json.order?.status };
 }
 
 export async function createOrderEditFi(vaultId: string): Promise<any> {
