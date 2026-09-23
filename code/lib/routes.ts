@@ -301,6 +301,15 @@ export const routes: RouteMetadata[] = [
     workStage: 4,
   },
 
+  {
+    path: "/jsv6-test-cases/advanced/vault-return-buyer",
+    title: "Return Buyer — Edit-FI & Instant",
+    description: "Edit saved payment methods + pay instantly with vault ID",
+    group: "Advanced",
+    panelIcon: "CreditCard",
+    workStage: 1,
+  },
+
   // APM group
   {
     path: "/jsv6-test-cases/APM/bancontact",
