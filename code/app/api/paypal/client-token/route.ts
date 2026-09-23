@@ -17,8 +17,8 @@ interface CacheEntry {
 // different merchants (different PayPal-Auth-Assertion values), each needing its own token.
 const tokenCache = new Map<string, CacheEntry>();
 
-function getCacheKey(clientId: string, env: string, authAssertion: string): string {
-  return `${clientId}::${env}::${authAssertion}`;
+function getCacheKey(clientId: string, env: string, authAssertion: string, vaultId: string | undefined): string {
+  return `${clientId}::${env}::${authAssertion}::${vaultId ?? ""}`;
 }
 
 // export async function GET() {
@@ -66,6 +66,7 @@ async function fetchClientTokenFromPayPal(
   base: string,
   cacheKey: string,
   authAssertion: string | undefined,
+  vaultId: string | undefined,
 ): Promise<string> {
   const entry = tokenCache.get(cacheKey);
   if (entry?.fetchingPromise) return entry.fetchingPromise;
@@ -75,6 +76,9 @@ async function fetchClientTokenFromPayPal(
     form.append("grant_type", "client_credentials");
     form.append("response_type", "client_token");
     form.append("intent", "sdk_init");
+    if (vaultId) {
+      form.append("claims[]", `vault_id:${vaultId}`);
+    }
 
     const auth = buildBasicAuthHeader(clientId, clientSecret);
     const headers: Record<string, string> = {
@@ -117,6 +121,7 @@ export async function GET(req: NextRequest) {
   consola.info("  --[/api/paypal/client-token]: HTTP REQUEST received");
 
   try {
+    const vaultId = req.nextUrl.searchParams.get("vaultId") || undefined;
     const overrideClientId = req.headers.get("x-paypal-client-id") || undefined;
     const overrideSecret = req.headers.get("x-paypal-secret") || undefined;
     // store uses "sandbox" | "live"; map "live" → "production" for PayPal API
@@ -130,7 +135,7 @@ export async function GET(req: NextRequest) {
     });
 
     const authAssertion = req.headers.get("x-paypal-auth-assertion") || undefined;
-    const cacheKey = getCacheKey(clientId, env, authAssertion ?? "");
+    const cacheKey = getCacheKey(clientId, env, authAssertion ?? "", vaultId);
     const entry = tokenCache.get(cacheKey);
 
     if (entry && !entry.fetchingPromise && entry.token && Date.now() - entry.cachedAt < CACHE_TTL) {
@@ -138,7 +143,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ clientToken: entry.token });
     }
 
-    const token = await fetchClientTokenFromPayPal(clientId, clientSecret, env, base, cacheKey, authAssertion);
+    const token = await fetchClientTokenFromPayPal(clientId, clientSecret, env, base, cacheKey, authAssertion, vaultId);
     return NextResponse.json({ clientToken: token });
   } catch (err: any) {
     consola.error("[/api/paypal/client-token] error fetching token", err);
