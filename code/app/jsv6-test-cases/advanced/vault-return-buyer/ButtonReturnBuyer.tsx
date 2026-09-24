@@ -1,25 +1,24 @@
 "use client";
 
-import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
+import React, { useEffect, useState, useRef } from "react";
+import consola from "consola";
+import toast from "react-hot-toast";
+import { EligibilityOverlay } from "@/components/ui/EligibilityOverlay";
 import {
     createOrderInstant,
     createOrderEditFi,
     captureOrder,
     handlePaymentError,
 } from "@/services/paypal-sdk-function/browser-function";
-import {
-    AppSdkInstance,
-} from "@/services/paypal-sdk-function/paypalSharedObject";
+import { AppSdkInstance } from "@/services/paypal-sdk-function/paypalSharedObject";
 import { safeFindEligibleMethods } from "@/services/paypal-sdk-function/safe-find-eligible-methods";
 import { getPayPalHeaders } from "@/services/paypal-sdk-function/paypal-headers";
 
-import React, { useEffect, useState, useRef } from "react";
-import consola from "consola";
-import toast from "react-hot-toast";
-import { EligibilityOverlay } from "@/components/ui/EligibilityOverlay";
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 
-// Inline vault-scoped token fetch (not from useSdkInitOptions because
-// we need to append ?vaultId=...).
+/** Fetch a vault-scoped client token from the server. */
 async function fetchVaultScopedClientToken(vaultId: string): Promise<string> {
     const params = new URLSearchParams();
     if (vaultId) params.append("vaultId", vaultId);
@@ -35,30 +34,73 @@ async function fetchVaultScopedClientToken(vaultId: string): Promise<string> {
     return json.clientToken;
 }
 
+/**
+ * Inject the FraudNet fncls script tag + fb.js loader.
+ *
+ * Reference pattern:
+ *   <script type="application/json" fncls="fnparams-dede7cc5-...">
+ *     { "f": "<fraudnetSessionId>", "s": "editfi-return-buyer-instant-checkout" }
+ *   </script>
+ *   <script src="https://c.paypal.com/da/r/fb.js"></script>
+ *
+ * "f" must be the same id sent as PayPal-Client-Metadata-Id on the
+ * create-order call it's meant to protect, so this function returns the
+ * generated session id for the caller to stash.
+ */
+function injectFraudNet(): string {
+    const sessionId = Date.now().toString(36) + Math.random().toString(36).substring(2, 15);
+
+    // fncls JSON script
+    const fnScript = document.createElement("script");
+    fnScript.type = "application/json";
+    fnScript.setAttribute(
+        "fncls",
+        "fnparams-dede7cc5-15fd-4c75-a9f4-36c430ee3a99",
+    );
+    fnScript.textContent = JSON.stringify({
+        f: sessionId,
+        s: "editfi-return-buyer-instant-checkout",
+    });
+    document.body.appendChild(fnScript);
+
+    // fb.js loader
+    const fbScript = document.createElement("script");
+    fbScript.src = "https://c.paypal.com/da/r/fb.js";
+    document.body.appendChild(fbScript);
+
+    return sessionId;
+}
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
+
 export default function ButtonReturnBuyer() {
-    const { ready, loading, error } = usePayPalWebSdk();
+    // ---- state -----------------------------------------------------------
     const [isInitializing, setIsInitializing] = useState(false);
+    const [initialized, setInitialized] = useState(false);
 
     const [vaultId, setVaultId] = useState("");
     const [customerId, setCustomerId] = useState("");
+
     const [approvedOrderId, setApprovedOrderId] = useState<string | null>(null);
     const [showExecute, setShowExecute] = useState(false);
 
-    // Holders for the mutable session / instance refs so click handlers
-    // always use the latest.
+    const [paypalEligible, setPaypalEligible] = useState(false);
+    const [paylaterEligible, setPaylaterEligible] = useState(false);
+
+    // ---- refs (mutable holders so callbacks always see latest values) -----
     const sdkInstanceRef = useRef<AppSdkInstance | null>(null);
     const editSessionRef = useRef<any>(null);
     const fraudnetIdRef = useRef("");
 
-    // Generate a random fraudnet session ID once per mount
+    // ---- inject FraudNet on mount ----------------------------------------
     useEffect(() => {
-        fraudnetIdRef.current =
-            Date.now().toString(36) + Math.random().toString(36).substring(2, 15);
+        fraudnetIdRef.current = injectFraudNet();
     }, []);
 
-    // Load active vault on mount
+    // ---- load active vault on mount --------------------------------------
     useEffect(() => {
-        if (!ready) return;
         (async () => {
             try {
                 const res = await fetch("/api/vault/active");
@@ -73,11 +115,13 @@ export default function ButtonReturnBuyer() {
                 // no active vault — user enters manually
             }
         })();
-    }, [ready]);
+    }, []);
 
-    // Re-initialize SDK whenever vaultId changes (triggered by "Set" button)
+    // ---- SDK initialisation (triggered by "Set" button) ------------------
+
     async function initializeWithVault() {
-        if (!vaultId.trim()) {
+        const vid = vaultId.trim();
+        if (!vid) {
             toast.error("Please enter a vault ID");
             return;
         }
@@ -88,28 +132,58 @@ export default function ButtonReturnBuyer() {
         try {
             setIsInitializing(true);
 
-            const clientToken = await fetchVaultScopedClientToken(vaultId.trim());
+            // 1) Fetch vault-scoped client token
+            const clientToken = await fetchVaultScopedClientToken(vid);
 
+            // 2) createInstance — one-shot init for ALL components
             const paypal = (window as any).paypal;
             const sdkInstance = await paypal.createInstance({
                 clientToken,
-                components: ["paypal-payments", "paypal-saved-payment-methods", "paypal-messages"],
+                components: [
+                    "paypal-payments",
+                    "paypal-saved-payment-methods",
+                    "paypal-messages",
+                ],
                 pageType: "checkout",
             });
             sdkInstanceRef.current = sdkInstance;
 
+            // 3) findEligibleMethods → branch by eligibility
             const paymentMethods = await safeFindEligibleMethods(sdkInstance, {
                 currencyCode: "USD",
             });
-            if (!paymentMethods) return;
-            if (!paymentMethods.isEligible("paypal")) {
-                toast.error("PayPal not eligible for this vault");
+            if (!paymentMethods) {
+                toast.error("Eligibility check failed");
                 return;
             }
 
-            setupEditSavedPaymentSession(sdkInstance);
-            sdkInstance.createPayPalMessages();
+            const ppEligible = paymentMethods.isEligible("paypal");
+            const plEligible = paymentMethods.isEligible("paylater");
+            setPaypalEligible(ppEligible);
+            setPaylaterEligible(plEligible);
 
+            if (!ppEligible && !plEligible) {
+                toast.error("Neither PayPal nor Pay Later is eligible for this vault");
+                return;
+            }
+
+            // 4) Independent branches (each gets its own try/catch)
+            if (ppEligible) {
+                try {
+                    setupEditSavedPaymentSession(sdkInstance, vid);
+                } catch (e: any) {
+                    consola.error("setupEditSavedPaymentSession failed:", e);
+                }
+            }
+
+            // 5) Messaging
+            try {
+                sdkInstance.createPayPalMessages();
+            } catch (e: any) {
+                consola.error("createPayPalMessages failed:", e);
+            }
+
+            setInitialized(true);
             toast.success("SDK initialized with vault-scoped token");
         } catch (e: any) {
             consola.error("initializeWithVault failed:", e);
@@ -119,17 +193,19 @@ export default function ButtonReturnBuyer() {
         }
     }
 
-    // --- Edit-FI / SPM ---
+    // ---- Edit-FI / SPM ---------------------------------------------------
 
-    function setupEditSavedPaymentSession(sdkInstance: AppSdkInstance) {
-        // Remove existing SPM element if present
-        const existing = document.querySelector("#spm-element");
-        if (existing) existing.remove();
+    function setupEditSavedPaymentSession(sdkInstance: AppSdkInstance, vid: string) {
+        // Remove previous element if re-initialising
+        const old = document.querySelector("#spm-element");
+        if (old) old.remove();
 
+        // 1) Element MUST be in the DOM before creating the session
         const el = document.createElement("paypal-saved-payment-methods");
         el.id = "spm-element";
         document.getElementById("spm-container")!.appendChild(el);
 
+        // 2) commit:false → onApprove does NOT capture
         const session = (sdkInstance as any).createPayPalEditSavedPaymentSession({
             commit: false,
             onApprove: async (data: any) => {
@@ -140,7 +216,7 @@ export default function ButtonReturnBuyer() {
                 }
                 setApprovedOrderId(oid);
                 setShowExecute(true);
-                consola.log("[edit onApprove] approved order:", oid);
+                consola.log("[edit onApprove] FI edited & approved — order:", oid);
                 toast.success("Payment method updated — click Execute Order to capture");
             },
             onCancel: (data: any) => {
@@ -148,18 +224,18 @@ export default function ButtonReturnBuyer() {
                 toast("Edit cancelled", { icon: "⚠️" });
             },
             onError: (error: any) => {
-                consola.error("[edit onError]", error);
+                consola.error("[edit onError]", error.code, error.message);
                 toast.error(`Edit error: ${error.message || JSON.stringify(error)}`);
             },
         });
         editSessionRef.current = session;
 
+        // 3) The element's edit control drives the session
         el.addEventListener("click", async () => {
             try {
-                const createOrderPromise = createOrderEditFi(vaultId.trim());
                 await session.start(
                     { presentationMode: "auto" },
-                    createOrderPromise,
+                    createOrderEditFi(vid),
                 );
             } catch (err) {
                 consola.error("SPM session start error:", err);
@@ -168,7 +244,7 @@ export default function ButtonReturnBuyer() {
         });
     }
 
-    // --- Execute Order (capture after edit-FI approval) ---
+    // ---- Execute Order (capture after edit-FI approval) ------------------
 
     async function handleExecuteOrder() {
         if (!approvedOrderId) return;
@@ -182,17 +258,19 @@ export default function ButtonReturnBuyer() {
         }
     }
 
-    // --- Pay Now (instant) ---
+    // ---- Pay Now (instant) ------------------------------------------------
 
     async function handlePayNow() {
-        if (!vaultId.trim()) {
+        const vid = vaultId.trim();
+        if (!vid) {
             toast.error("Please enter a vault ID first");
             return;
         }
         const btn = document.querySelector("#pay-now-btn") as HTMLButtonElement | null;
         if (btn) btn.disabled = true;
         try {
-            const orderData = await createOrderInstant(vaultId.trim(), fraudnetIdRef.current);
+            // Pass FraudNet session ID — must match the "f" field in the fncls script
+            const orderData = await createOrderInstant(vid, fraudnetIdRef.current);
             if (orderData.status === "COMPLETED") {
                 toast.success(`Order ${orderData.orderId} completed instantly!`);
                 return;
@@ -208,19 +286,7 @@ export default function ButtonReturnBuyer() {
         }
     }
 
-    // --- Initial auto-init ---
-
-    useEffect(() => {
-        if (!ready) return;
-        // Auto-init if vaultId is already loaded from active vault
-        if (vaultId.trim()) {
-            initializeWithVault();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [ready, vaultId]);
-
-    if (loading) return <div>Loading PayPal SDK…</div>;
-    if (error) return <div>PayPal SDK load failed: {error.message}</div>;
+    // ---- render ----------------------------------------------------------
 
     return (
         <div className="relative w-full space-y-4">
@@ -256,47 +322,67 @@ export default function ButtonReturnBuyer() {
             </div>
 
             {/* Pay Now — instant one-click */}
-            <div>
-                <button
-                    id="pay-now-btn"
-                    onClick={handlePayNow}
-                    disabled={isInitializing}
-                    className="w-full px-4 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 disabled:opacity-50"
-                >
-                    ⚡ Pay Now in One Click
-                </button>
-                <p className="text-xs text-muted-foreground mt-1">
-                    Pays instantly with saved vault — no popup.
-                </p>
-            </div>
+            {initialized && paypalEligible && (
+                <div>
+                    <button
+                        id="pay-now-btn"
+                        onClick={handlePayNow}
+                        className="w-full px-4 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 disabled:opacity-50"
+                    >
+                        ⚡ Pay Now in One Click
+                    </button>
+                    <p className="text-xs text-muted-foreground mt-1">
+                        Pays instantly with saved vault — no popup.
+                    </p>
+                </div>
+            )}
 
             {/* Divider */}
-            <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-border" />
+            {initialized && paypalEligible && (
+                <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-border" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-background px-2 text-muted-foreground">or</span>
+                    </div>
                 </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-background px-2 text-muted-foreground">or</span>
-                </div>
-            </div>
+            )}
 
             {/* Edit-FI — SPM component */}
-            <div>
-                <p className="text-sm font-medium mb-2">
-                    View / Edit Saved Payment Method
-                </p>
-                <div
-                    id="spm-container"
-                    className="min-h-[48px] border-2 border-dashed border-blue-300 dark:border-blue-700 rounded-lg flex items-center justify-center p-2"
-                >
-                    <span className="text-sm text-muted-foreground">
-                        Click &quot;Set&quot; with a vault ID to load saved methods
-                    </span>
+            {initialized && paypalEligible && (
+                <div>
+                    <p className="text-sm font-medium mb-2">
+                        View / Edit Saved Payment Method
+                    </p>
+                    <div className="spm-row flex items-center gap-2">
+                        <img
+                            src="https://www.paypalobjects.com/js-sdk-logos/2.3.2/paypal-mark.svg"
+                            alt="PayPal"
+                            className="spm-mark h-6"
+                        />
+                        <span className="spm-mark-label text-sm text-muted-foreground">
+                            PayPal
+                        </span>
+                        <div
+                            id="spm-container"
+                            className="min-h-[48px] flex items-center justify-center p-2 flex-1"
+                        />
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                        Click the saved payment method above to edit — approve first,
+                        then capture.
+                    </p>
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                    Click the saved payment method above to edit — approve first, then capture.
+            )}
+
+            {/* Initial state */}
+            {!initialized && (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                    Enter a vault ID and click <strong>Set</strong> to load saved
+                    payment methods.
                 </p>
-            </div>
+            )}
 
             {/* Execute Order (shown after edit-FI approval) */}
             {showExecute && (
@@ -306,6 +392,17 @@ export default function ButtonReturnBuyer() {
                 >
                     ✅ Execute Order (Capture)
                 </button>
+            )}
+
+            {/* Pay Later button (eligibility-driven) */}
+            {initialized && paylaterEligible && (
+                <div className="mt-4">
+                    <paypal-pay-later-button
+                        id="paylater-button"
+                        hidden
+                        className="buttonsV6"
+                    />
+                </div>
             )}
         </div>
     );
