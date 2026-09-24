@@ -38,12 +38,14 @@ export default function ButtonBasic() {
                 );
 
                 const vaultId = createPaymentTokenResponse["paymentTokenId"];
+                const email =
+                    createPaymentTokenResponse["customer"]?.["email_address"] ?? "";
 
-                // 持久化到 Cloudflare D1
+                // 持久化到本地 / Cloudflare D1
                 await fetch('/api/vault', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ vault_id: vaultId, payment_type: 'paypal' }),
+                    body: JSON.stringify({ vault_id: vaultId, email, payment_type: 'paypal' }),
                 }).catch((e) => consola.error('Failed to save vault:', e));
 
                 const msg = `Vault ID: ${vaultId}`;

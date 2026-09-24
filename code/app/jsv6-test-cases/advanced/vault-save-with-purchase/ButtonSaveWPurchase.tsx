@@ -44,13 +44,18 @@ export default function ButtonBasic() {
                                 "attributes"
                             ]["vault"]["customer"]["id"];
 
-                        // 持久化到 Cloudflare D1
+                        const email =
+                            orderData["capture"]["payment_source"]["paypal"]
+                                ?.["email_address"] ?? "";
+
+                        // 持久化到本地 / Cloudflare D1
                         fetch('/api/vault', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
                                 vault_id: vaultId,
                                 customer_id: customerId,
+                                email,
                                 payment_type: 'paypal',
                             }),
                         }).catch((e) => console.error('Failed to save vault:', e));
