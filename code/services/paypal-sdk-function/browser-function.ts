@@ -169,6 +169,40 @@ export async function createOrderEditFi(vaultId: string): Promise<any> {
 	)();
 }
 
+// Unified saved-payment-methods order creation: omit vaultId for a
+// popup-eligible order (the <paypal-saved-payment-methods> component
+// resolves the saved method itself), pass vaultId for an instant-capture
+// order using the stored credential. Returns status so the caller can
+// tell whether PayPal captured synchronously.
+export async function createOrderForSavedPaymentMethods(vaultId?: string): Promise<{ orderId: string; status?: string; responseBody?: any }> {
+	if (typeof window === "undefined") throw new Error("createOrderForSavedPaymentMethods must be called in browser");
+
+	const payload = getOrderConfig();
+	payload["paymentDetail"]["endpoint"]["return_url"] = window.location.href;
+	payload["paymentDetail"]["endpoint"]["cancel_url"] = window.location.href;
+	payload["paymentDetail"]["payment_source"] = "paypal";
+	if (vaultId) payload["paymentDetail"]["vault_id"] = vaultId;
+
+	const res = await fetch("/api/paypal/order/create/create-order-for-paypal-saved-payment-methods", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			...getPayPalHeaders(),
+		},
+		body: JSON.stringify(payload),
+	});
+
+	const text = await res.text().catch(() => "");
+	if (!res.ok) {
+		throw new Error(`createOrderForSavedPaymentMethods failed: ${res.status} ${text}`);
+	}
+
+	const json = text ? JSON.parse(text) : {};
+	consola.log("[createOrderForSavedPaymentMethods]", JSON.stringify(json, null, "  "));
+
+	return { orderId: json.orderId, status: json.order?.status, responseBody: json.order };
+}
+
 
 export async function customFindEligibleMethods(findEligibleMethodsPayload: any) {
 	try {

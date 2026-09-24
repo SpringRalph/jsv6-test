@@ -310,6 +310,15 @@ export const routes: RouteMetadata[] = [
     workStage: 1,
   },
 
+  {
+    path: "/jsv6-test-cases/advanced/vault-saved-payment-methods",
+    title: "Vault Recurring — Saved Payment Methods",
+    description: "paypal-saved-payment-methods component, per official SDK sample integration",
+    group: "Advanced",
+    panelIcon: "Wallet",
+    workStage: 1,
+  },
+
   // APM group
   {
     path: "/jsv6-test-cases/APM/bancontact",

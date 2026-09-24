@@ -12,14 +12,14 @@ interface CacheEntry {
   fetchingPromise: Promise<string> | null
 }
 
-// Cache keyed by "clientId::env::authAssertion::vaultId" to support multiple credential sets
-// and vault-specific scoping. authAssertion is included because a single partner clientId
-// can act on behalf of different merchants, each needing its own token. vaultId is the
-// optional query param (empty string when absent from the request).
+// Cache keyed by "clientId::env::authAssertion::vaultId::targetCustomerId" to support multiple
+// credential sets and vault-specific scoping. authAssertion is included because a single partner
+// clientId can act on behalf of different merchants, each needing its own token. vaultId and
+// targetCustomerId are optional query params (empty string when absent from the request).
 const tokenCache = new Map<string, CacheEntry>();
 
-function getCacheKey(clientId: string, env: string, authAssertion: string, vaultId: string | undefined): string {
-  return `${clientId}::${env}::${authAssertion}::${vaultId ?? ""}`;
+function getCacheKey(clientId: string, env: string, authAssertion: string, vaultId: string | undefined, targetCustomerId: string | undefined): string {
+  return `${clientId}::${env}::${authAssertion}::${vaultId ?? ""}::${targetCustomerId ?? ""}`;
 }
 
 // export async function GET() {
@@ -68,6 +68,7 @@ async function fetchClientTokenFromPayPal(
   cacheKey: string,
   authAssertion: string | undefined,
   vaultId: string | undefined,
+  targetCustomerId: string | undefined,
 ): Promise<string> {
   const entry = tokenCache.get(cacheKey);
   if (entry?.fetchingPromise) return entry.fetchingPromise;
@@ -79,6 +80,9 @@ async function fetchClientTokenFromPayPal(
     form.append("intent", "sdk_init");
     if (vaultId) {
       form.append("claims[]", `vault_id:${vaultId}`);
+    }
+    if (targetCustomerId) {
+      form.append("target_customer_id", targetCustomerId);
     }
 
     const auth = buildBasicAuthHeader(clientId, clientSecret);
@@ -123,6 +127,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const vaultId = req.nextUrl.searchParams.get("vaultId") || undefined;
+    const targetCustomerId = req.nextUrl.searchParams.get("targetCustomerId") || undefined;
     const overrideClientId = req.headers.get("x-paypal-client-id") || undefined;
     const overrideSecret = req.headers.get("x-paypal-secret") || undefined;
     // store uses "sandbox" | "live"; map "live" → "production" for PayPal API
@@ -136,7 +141,7 @@ export async function GET(req: NextRequest) {
     });
 
     const authAssertion = req.headers.get("x-paypal-auth-assertion") || undefined;
-    const cacheKey = getCacheKey(clientId, env, authAssertion ?? "", vaultId);
+    const cacheKey = getCacheKey(clientId, env, authAssertion ?? "", vaultId, targetCustomerId);
     const entry = tokenCache.get(cacheKey);
 
     if (entry && !entry.fetchingPromise && entry.token && Date.now() - entry.cachedAt < CACHE_TTL) {
@@ -144,7 +149,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ clientToken: entry.token });
     }
 
-    const token = await fetchClientTokenFromPayPal(clientId, clientSecret, env, base, cacheKey, authAssertion, vaultId);
+    const token = await fetchClientTokenFromPayPal(clientId, clientSecret, env, base, cacheKey, authAssertion, vaultId, targetCustomerId);
     return NextResponse.json({ clientToken: token });
   } catch (err: any) {
     consola.error("[/api/paypal/client-token] error fetching token", err);
