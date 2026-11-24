@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef } from "react";
 import consola from "consola";
 import toast from "react-hot-toast";
 import { EligibilityOverlay } from "@/components/ui/EligibilityOverlay";
+import { usePayPalWebSdk } from "@/hooks/usePayPalWebSdk";
 import {
     createOrderInstant,
     createOrderEditFi,
@@ -76,6 +77,9 @@ function injectFraudNet(): string {
 // ---------------------------------------------------------------------------
 
 export default function ButtonReturnBuyer() {
+    // ---- SDK readiness ---------------------------------------------------
+    const { ready, loading, error: sdkError } = usePayPalWebSdk();
+
     // ---- state -----------------------------------------------------------
     const [isInitializing, setIsInitializing] = useState(false);
     const [initialized, setInitialized] = useState(false);
@@ -123,6 +127,11 @@ export default function ButtonReturnBuyer() {
         const vid = vaultId.trim();
         if (!vid) {
             toast.error("Please enter a vault ID");
+            return;
+        }
+
+        if (!ready || !(window as any).paypal) {
+            toast.error("PayPal SDK not ready yet — please wait a moment and try again");
             return;
         }
 
@@ -203,13 +212,22 @@ export default function ButtonReturnBuyer() {
         // 1) Element MUST be in the DOM before creating the session
         const el = document.createElement("paypal-saved-payment-methods");
         el.id = "spm-element";
-        document.getElementById("spm-container")!.appendChild(el);
+        const container = document.getElementById("spm-container")!;
+        container.appendChild(el);
+        consola.log("[setupSPM] element appended to DOM:", {
+            tagName: el.tagName,
+            id: el.id,
+            parentId: container.id,
+            inDOM: document.contains(el),
+        });
 
         // 2) commit:false → onApprove does NOT capture
+        consola.log("[setupSPM] creating createPayPalEditSavedPaymentSession...");
         const session = (sdkInstance as any).createPayPalEditSavedPaymentSession({
             commit: false,
             onApprove: async (data: any) => {
                 const oid = data.orderId || data.orderID;
+                consola.log("[edit onApprove]", { orderId: oid, data });
                 if (!oid) {
                     consola.warn("[edit onApprove] no order id");
                     return;
@@ -229,9 +247,12 @@ export default function ButtonReturnBuyer() {
             },
         });
         editSessionRef.current = session;
+        consola.log("[setupSPM] session created, editSessionRef set");
 
         // 3) The element's edit control drives the session
+        consola.log("[setupSPM] attaching click listener to SPM element...");
         el.addEventListener("click", async () => {
+            consola.log("[setupSPM] SPM element clicked! starting session...");
             try {
                 await session.start(
                     { presentationMode: "auto" },
@@ -242,6 +263,7 @@ export default function ButtonReturnBuyer() {
                 handlePaymentError(err);
             }
         });
+        consola.log("[setupSPM] done — SPM should now render as a clickable payment method");
     }
 
     // ---- Execute Order (capture after edit-FI approval) ------------------
@@ -287,6 +309,9 @@ export default function ButtonReturnBuyer() {
     }
 
     // ---- render ----------------------------------------------------------
+
+    if (loading) return <div className="py-8 text-center text-sm text-muted-foreground">Loading PayPal SDK…</div>;
+    if (sdkError) return <div className="py-8 text-center text-sm text-red-500">PayPal SDK load failed: {sdkError.message}</div>;
 
     return (
         <div className="relative w-full space-y-4">
@@ -350,31 +375,29 @@ export default function ButtonReturnBuyer() {
             )}
 
             {/* Edit-FI — SPM component */}
-            {initialized && paypalEligible && (
-                <div>
-                    <p className="text-sm font-medium mb-2">
-                        View / Edit Saved Payment Method
-                    </p>
-                    <div className="spm-row flex items-center gap-2">
-                        <img
-                            src="https://www.paypalobjects.com/js-sdk-logos/2.3.2/paypal-mark.svg"
-                            alt="PayPal"
-                            className="spm-mark h-6"
-                        />
-                        <span className="spm-mark-label text-sm text-muted-foreground">
-                            PayPal
-                        </span>
-                        <div
-                            id="spm-container"
-                            className="min-h-[48px] flex items-center justify-center p-2 flex-1"
-                        />
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                        Click the saved payment method above to edit — approve first,
-                        then capture.
-                    </p>
+            <div className={initialized && paypalEligible ? "" : "hidden"}>
+                <p className="text-sm font-medium mb-2">
+                    View / Edit Saved Payment Method
+                </p>
+                <div className="spm-row flex items-center gap-2">
+                    <img
+                        src="https://www.paypalobjects.com/js-sdk-logos/2.3.2/paypal-mark.svg"
+                        alt="PayPal"
+                        className="spm-mark h-6"
+                    />
+                    <span className="spm-mark-label text-sm text-muted-foreground">
+                        PayPal
+                    </span>
+                    <div
+                        id="spm-container"
+                        className="min-h-[48px] flex items-center justify-center p-2 flex-1"
+                    />
                 </div>
-            )}
+                <p className="text-xs text-muted-foreground mt-1">
+                    Click the saved payment method above to edit — approve first,
+                    then capture.
+                </p>
+            </div>
 
             {/* Initial state */}
             {!initialized && (
