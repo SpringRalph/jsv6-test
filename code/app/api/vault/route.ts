@@ -3,11 +3,14 @@ import {
   listVaultMethods,
   createVaultMethod,
   type CreateVaultPayload,
-} from "@/db/vault-local";
+} from "@/db/vaultDb";
+import { getCfEnv } from "@/db/cf-env";
+
+export const runtime = "edge";
 
 export async function GET(_req: NextRequest) {
   try {
-    const methods = await listVaultMethods();
+    const methods = await listVaultMethods(getCfEnv());
     return NextResponse.json({ methods });
   } catch (err: unknown) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
@@ -23,7 +26,7 @@ export async function POST(req: NextRequest) {
         { status: 400 },
       );
     }
-    const created = await createVaultMethod(body);
+    const created = await createVaultMethod(getCfEnv(), body);
     return NextResponse.json({ method: created }, { status: 201 });
   } catch (err: unknown) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
