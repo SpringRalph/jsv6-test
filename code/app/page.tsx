@@ -70,7 +70,7 @@ export default function HomePage() {
         // 如果是sandboxedIframe路由，使用外部URL，否则使用内部路由
         if (isSandboxedIframe) {
             href = isSandboxedIframe
-                ? "https://ppgms-test.github.io/jsv6-test/iframe-hostpage.html"
+                ? "https://ppgms-test.github.io/__2__-jsv6-test/__5__-iframe-hostpage.html"
                 : path;
             targetFlag = isSandboxedIframe;
         }
