@@ -5,6 +5,7 @@ import { PaymentPlaceholder } from "@/components/panels/PaymentPlaceholder"
 import Link from "next/link"
 import Image from "next/image"
 import IframeButtonTest from "./iframeButton"
+import { HostLinkPanel } from "./HostLinkPanel"
 
 export default function ShippingCallbacksPage() {
   return (
@@ -23,7 +24,7 @@ export default function ShippingCallbacksPage() {
             <ProductPanel />
             <CartSummary />
           </div>
-          <div>
+          <div className="space-y-6">
             <PaymentPlaceholder scenario="Sandboxed Iframe" children={<IframeButtonTest />}
               paymentAreaIcon={
                 <Image
@@ -34,7 +35,8 @@ export default function ShippingCallbacksPage() {
                 />
               }
 
-              placeHolder={<span>Host Page could communicate with Iframe Page</span>} />
+              placeHolder={<span>Host page can change the quantity and receives the transaction ID over postMessage</span>} />
+            <HostLinkPanel />
           </div>
         </div>
       </div>
